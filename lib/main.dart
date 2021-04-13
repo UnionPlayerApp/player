@@ -42,6 +42,7 @@ class _MainPageState extends State<MainPage> {
 
   String _stateString01 = "Play / Pause";
   String _stateString02 = "Loading / Buffering / Completed / Ready ";
+  IconData _fabIconData = Icons.play_arrow_rounded;
 
   void _playerStartStop() {
     if (_player.processingState == ProcessingState.ready) {
@@ -62,6 +63,32 @@ class _MainPageState extends State<MainPage> {
   Future<void> initPlayer() async {
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration.music());
+
+    _player.playerStateStream.listen((state) {
+      if (state.playing) {
+        _setStateToPlay();
+      } else {
+        _setStateToPause();
+      }
+      switch (state.processingState) {
+      case ProcessingState.idle:
+        _setStateString02("Idle");
+        break;
+      case ProcessingState.loading:
+        _setStateString02("Loading");
+        break;
+      case ProcessingState.buffering:
+        _setStateString02("Buffering");
+        break;
+      case ProcessingState.ready:
+        _setStateString02("Ready");
+        break;
+      case ProcessingState.completed:
+        _setStateString02("Completed");
+        break;
+      }
+    });
+
     _player.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
       showError("A stream error occurred", e);
@@ -71,6 +98,38 @@ class _MainPageState extends State<MainPage> {
     } catch (e) {
       showError("Stream load error happens", e);
     }
+  }
+
+  void _setStateToPlay() {
+    setState(() {
+      _stateString01 = "Playing";
+      _fabIconData = Icons.play_arrow_rounded;
+    });
+  }
+
+  void _setStateToPause() {
+    setState(() {
+      _stateString01 = "Pausing";
+      _fabIconData = Icons.pause_rounded;
+    });
+  }
+
+  void _setStateString01(String text) {
+    setState(() {
+      _stateString01 = text;
+    });
+  }
+
+  void _setStateString02(String text) {
+    setState(() {
+      _stateString02 = text;
+    });
+  }
+
+  void _setFabIconData(IconData iconData) {
+    setState(() {
+      _fabIconData = iconData;
+    });
   }
 
   @override
@@ -83,12 +142,10 @@ class _MainPageState extends State<MainPage> {
         title: Text(widget.title),
       );
 
-  Text createStateRow1() {
-    return Text(
+  Text createStateRow1() => Text(
       _stateString01,
       style: Theme.of(context).textTheme.bodyText2,
     );
-  }
 
   Text createStateRow2() => Text(
         _stateString02,
@@ -97,8 +154,8 @@ class _MainPageState extends State<MainPage> {
 
   FloatingActionButton createFAB() => FloatingActionButton(
         onPressed: _playerStartStop,
-        tooltip: 'Increment',
-        child: Icon(Icons.play_arrow_rounded),
+        tooltip: 'Play / Pause',
+        child: Icon(_fabIconData),
       );
 
   @override
