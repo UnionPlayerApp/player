@@ -114,21 +114,9 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
-  void _setStateString01(String text) {
-    setState(() {
-      _stateString01 = text;
-    });
-  }
-
   void _setStateString02(String text) {
     setState(() {
       _stateString02 = text;
-    });
-  }
-
-  void _setFabIconData(IconData iconData) {
-    setState(() {
-      _fabIconData = iconData;
     });
   }
 
