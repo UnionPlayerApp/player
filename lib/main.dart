@@ -103,14 +103,14 @@ class _MainPageState extends State<MainPage> {
   void _setStateToPlay() {
     setState(() {
       _stateString01 = "Playing";
-      _fabIconData = Icons.play_arrow_rounded;
+      _fabIconData = Icons.pause_rounded;
     });
   }
 
   void _setStateToPause() {
     setState(() {
       _stateString01 = "Pausing";
-      _fabIconData = Icons.pause_rounded;
+      _fabIconData = Icons.play_arrow_rounded;
     });
   }
 
