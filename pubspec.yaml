@@ -22,6 +22,7 @@ environment:
 
 dependencies:
   audio_session:
+  equatable:
   just_audio:
   flutter:
     sdk: flutter
