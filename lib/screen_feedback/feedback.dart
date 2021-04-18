@@ -68,7 +68,7 @@ class _EmailSenderState extends State<EmailSender> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Plugin example app'),
+        title: Text('UnionPlayer feedback'),
         actions: <Widget>[
           IconButton(
             onPressed: send,
