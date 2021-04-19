@@ -6,8 +6,6 @@ import 'package:union_player_app/ui/my_bottom_navigation_bar.dart';
 const LOG_TAG = "UPA -> ";
 late Logger logger = Logger();
 
-enum GenderList {male, female}
-
 class FeedbackScreen extends StatefulWidget {
   bool _isPlaying;
 
@@ -47,7 +45,7 @@ class FeedbackScreenState extends State {
         debugShowCheckedModeBanner: false,
      home: new Scaffold(
         appBar: MyAppBar(_onButtonAppBarTapped, _appBarIcon),
-        body: Container(padding: EdgeInsets.all(10.0), child:
+        body: SingleChildScrollView(padding: EdgeInsets.all(10.0), child:
         new Form(
             key: _formKey,
             child: new Column(children:
