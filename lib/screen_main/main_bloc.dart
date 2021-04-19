@@ -1,4 +1,5 @@
 import 'package:audio_session/audio_session.dart';
+import 'package:koin_flutter/koin_flutter.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
@@ -18,6 +19,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
         "Pausing",
         "Initialising",
         Icons.play_arrow_rounded)) {
+    _player = get();
     _initPlayer();
   }
 
