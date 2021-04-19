@@ -149,6 +149,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.1"
+  koin:
+    dependency: transitive
+    description:
+      name: koin
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.14.2"
+  koin_flutter:
+    dependency: "direct main"
+    description:
+      name: koin_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.10.0"
+  kt_dart:
+    dependency: transitive
+    description:
+      name: kt_dart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.8.0"
   logger:
     dependency: "direct main"
     description:

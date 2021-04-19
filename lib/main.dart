@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'packahghge:flutter_bloc/flutter_bloc.dart';
 import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/screen_main/main_page.dart';
 
 void main() {
+  startKoin((app) {
+    app.module(appModule);
+  });
   runApp(MyApp());
 }
 
