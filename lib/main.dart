@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:logger/logger.dart';
-import 'package:union_player_app/schedule_screen.dart';
+import 'file:///C:/Users/lenak/AndroidStudioProjects/GeekBrainsProjects/player-master/lib/schedule_screen/schedule_screen.dart';
 
-import 'feedback_screen.dart';
+import 'feedback_screen/feedback_screen.dart';
 
 const LOG_TAG = "UPA -> ";
 const STREAM_URL = "http://78.155.222.238:8010/souz_radio";
