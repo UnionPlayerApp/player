@@ -10,23 +10,12 @@ import 'package:union_player_app/screen_main/main_page.dart';
 import 'package:union_player_app/di/app_module.dart';
 import 'package:koin/koin.dart';
 
-import 'app/app_bloc.dart';
-
 void main() {
-  startKoin((app) {
-    app.module(appModule);
-  });
-
-  // runApp(MyApp());
-
-  // runApp(BlocProvider(
-  //   create: (context) => AppBloc(),
-  //   child: AppWidget(),
-  // ));
+  runApp(AppWidget());
 }
 
 class App extends StatefulWidget {
-  App(Key key) : super(key: key);
+  App({Key? key}) : super(key: key);
 
   @override
   State<App> createState() => _AppState();
@@ -58,15 +47,19 @@ class _AppState extends State<App> with ScopeStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final mainBloc = get<MainBloc>();
+    final mainPage = get<MainPage>();
+
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Union Radio Player',
-      theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
-      ),
-      home: BlocProvider(
-          create: (context) => MainBloc(),
-          child: MainPage(title: 'Union Player Home Page')),
+        debugShowCheckedModeBanner: false,
+        title: 'Union Radio Player',
+        theme: ThemeData(
+          primarySwatch: Colors.blueGrey,
+        ),
+        home: BlocProvider(
+          create: (context) => mainBloc,
+          child: mainPage,
+        )
     );
   }
 
@@ -76,20 +69,3 @@ class _AppState extends State<App> with ScopeStateMixin {
     super.dispose();
   }
 }
-
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       title: 'Union Radio Player',
-//       theme: ThemeData(
-//         primarySwatch: Colors.blueGrey,
-//       ),
-//       home: BlocProvider(
-//           create: (context) => MainBloc(),
-//           child: MainPage(title: 'Union Player Home Page')
-//       ),
-//     );
-//   }
-// }

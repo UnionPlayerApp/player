@@ -6,7 +6,7 @@ import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
 
 class MainPage extends StatelessWidget {
-  MainPage({Key? key, required this.title}) : super(key: key);
+  MainPage({Key? key, this.title: "Main screen"}) : super(key: key);
 
   final String title;
   late final MainBloc mainBloc;

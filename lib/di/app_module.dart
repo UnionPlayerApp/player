@@ -1,7 +1,11 @@
 import 'package:just_audio/just_audio.dart';
 import 'package:koin/koin.dart';
 import 'package:logger/logger.dart' as LoggerLib;
+import 'package:union_player_app/screen_main/main_bloc.dart';
+import 'package:union_player_app/screen_main/main_page.dart';
 
 final appModule = Module()
-  ..single((s) => AudioPlayer())
-  ..single((s) => LoggerLib.Logger());
+  ..single((scope) => AudioPlayer())
+  ..single((scope) => LoggerLib.Logger())
+  ..factory((scope) => MainBloc(scope.get(), scope.get()))
+  ..factory((scope) => MainPage());
