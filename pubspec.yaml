@@ -24,6 +24,7 @@ dependencies:
   audio_session:
   equatable:
   flutter_bloc:
+  koin_bloc:
   koin_flutter: ^0.11.0-nullsafety.0
   just_audio:
   flutter:

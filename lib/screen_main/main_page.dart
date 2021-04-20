@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-
+import 'package:koin_flutter/koin_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
 
 class MainPage extends StatelessWidget {
-  MainPage({Key? key, this.title: "Main screen"}) : super(key: key);
+  MainPage({Key? key}) : super(key: key);
 
-  final String title;
   late final MainBloc mainBloc;
 
   AppBar createAppBar() =>
       AppBar(
-        title: Text(title),
+        title: Text("Main screen"),
       );
 
   Text createStateRow(BuildContext context, String stateStr) =>

@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:koin_bloc/koin_bloc.dart';
+import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
 import 'package:union_player_app/utils/AppLogger.dart';
@@ -8,11 +10,13 @@ import 'package:union_player_app/utils/AppLogger.dart';
 const STREAM_URL = "http://78.155.222.238:8010/souz_radio";
 
 class MainBloc extends Bloc<MainEvent, MainState> {
-  AppLogger _logger;
-  AudioPlayer _player;
+  late AppLogger _logger;
+  late AudioPlayer _player;
 
-  MainBloc(this._player, this._logger)
+  MainBloc()
       : super(MainState("Pausing", "Initialising", Icons.play_arrow_rounded)) {
+    _logger = ;
+    _player = get();
     _initPlayer();
   }
 
@@ -39,7 +43,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
     _player.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
-      _showError("A stream error occurred", e);
+      _showError("Audio stream error: $e", Error());
     });
   }
 
@@ -69,7 +73,10 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       yield* _mapPlayerStateChangedReadyToState(event.isPlaying);
       return;
     }
-    _logError("Unknown event may be from user, may be from player");
+    _logger.logError(
+        "Unknown event may be from user, may be from player",
+        ArgumentError("Unknown event may be from user, may be from player")
+    );
   }
 
   Stream<MainState> _mapPlayPauseFabPressedToState() async* {

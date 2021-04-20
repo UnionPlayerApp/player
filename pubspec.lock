@@ -156,6 +156,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.15.0-nullsafety.0"
+  koin_bloc:
+    dependency: "direct main"
+    description:
+      name: koin_bloc
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0-nullsafety.0"
   koin_flutter:
     dependency: "direct main"
     description:
