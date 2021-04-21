@@ -23,10 +23,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  bloc: ^6.1.0
-  equatable: ^1.2.5
-  flutter_bloc: ^6.1.1
-  meta: ^1.2.4
+  bloc:
+  equatable:
+  flutter_bloc:
   audio_session:
   just_audio:
   logger:
