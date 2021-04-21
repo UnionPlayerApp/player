@@ -49,6 +49,6 @@ class _AppPageState extends State<AppPage> {
         debugShowCheckedModeBanner: false,
         title: 'Union Radio Player',
         theme: ThemeData(primarySwatch: Colors.blueGrey),
-        home: MainPage(),
+        home: get<MainPage>(),
       );
 }

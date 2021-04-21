@@ -33,7 +33,7 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mainBloc = MainBloc(get(), get());
+    final mainBloc = get<MainBloc>();
     return Scaffold(
         appBar: createAppBar(),
         body: Center(
