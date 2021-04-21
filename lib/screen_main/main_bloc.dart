@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
-import 'package:union_player_app/utils/AppLogger.dart';
+import 'package:union_player_app/utils/app_logger.dart';
 
 const STREAM_URL = "http://78.155.222.238:8010/souz_radio";
 
