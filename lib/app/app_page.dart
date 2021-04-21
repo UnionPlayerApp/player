@@ -1,21 +1,20 @@
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/screen_main/main_page.dart';
-import 'package:logger/logger.dart';
+import 'package:union_player_app/utils/AppLogger.dart';
 
-class AppWidget extends StatefulWidget {
-  const AppWidget({Key? key}) : super(key: key);
+class AppPage extends StatefulWidget {
+  const AppPage({Key? key}) : super(key: key);
 
   @override
-  _AppWidgetState createState() => _AppWidgetState();
+  _AppPageState createState() => _AppPageState();
 }
 
-class _AppWidgetState extends State<AppWidget> {
+class _AppPageState extends State<AppPage> {
   late AudioPlayer _player;
 
   @override
@@ -34,8 +33,8 @@ class _AppWidgetState extends State<AppWidget> {
     try {
       await _player.setAudioSource(_source);
     } catch (error) {
-      final logger = get<Logger>();
-      logger.e("Audio stream load error", error);
+      final _logger = get<AppLogger>();
+      _logger.e("Audio stream load error", error);
     }
   }
 
@@ -46,18 +45,10 @@ class _AppWidgetState extends State<AppWidget> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final mainBloc = get<MainBloc>();
-    final mainPage = get<MainPage>();
-
-    return MaterialApp(
+  Widget build(BuildContext context) => MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Union Radio Player',
         theme: ThemeData(primarySwatch: Colors.blueGrey),
-        home: BlocProvider(
-          create: (context) => mainBloc,
-          child: mainPage,
-        )
-    );
-  }
+        home: MainPage(),
+      );
 }

@@ -1,8 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:koin_bloc/koin_bloc.dart';
-import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
 import 'package:union_player_app/utils/AppLogger.dart';
@@ -13,10 +11,8 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   late AppLogger _logger;
   late AudioPlayer _player;
 
-  MainBloc()
+  MainBloc(this._player, this._logger)
       : super(MainState("Pausing", "Initialising", Icons.play_arrow_rounded)) {
-    _logger = ;
-    _player = get();
     _initPlayer();
   }
 
