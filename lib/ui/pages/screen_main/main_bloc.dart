@@ -3,8 +3,9 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:logger/logger.dart';
-import 'package:union_player_app/screen_main/main_event.dart';
-import 'package:union_player_app/screen_main/main_state.dart';
+
+import 'main_event.dart';
+import 'main_state.dart';
 
 const LOG_TAG = "UPA -> ";
 const STREAM_URL = "http://78.155.222.238:8010/souz_radio";

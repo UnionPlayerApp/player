@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:union_player_app/screen_main/main_bloc.dart';
-import 'package:union_player_app/screen_main/main_page.dart';
+import 'package:union_player_app/ui/app_screen.dart';
+
+import 'blocs/bottom_navigation/bottom_navigation_bloc.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,13 +14,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Union Radio Player',
-      theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
-      ),
-      home: BlocProvider(
-          create: (context) => MainBloc(),
-          child: MainPage(title: 'Union Player Home Page')
+      home: BlocProvider<BottomNavigationBloc>(
+        create: (context) => BottomNavigationBloc()..add(AppStarted()),
+        child: AppScreen(),
       ),
     );
   }

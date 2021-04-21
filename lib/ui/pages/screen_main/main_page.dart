@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:union_player_app/screen_main/main_bloc.dart';
-import 'package:union_player_app/screen_main/main_event.dart';
-import 'package:union_player_app/screen_main/main_state.dart';
+
+import '../../my_app_bar.dart';
+import 'main_bloc.dart';
+import 'main_event.dart';
+import 'main_state.dart';
 
 class MainPage extends StatelessWidget {
-  MainPage({Key? key, required this.title}) : super(key: key);
+  MainPage({Key? key}) : super(key: key);
 
-  final String title;
   late final MainBloc mainBloc;
-
-  AppBar createAppBar() =>
-      AppBar(
-        title: Text(title),
-      );
+  IconData _appBarIcon = Icons.play_circle_outline;
 
   Text createStateRow(BuildContext context, String stateStr) =>
       Text(
@@ -32,11 +29,14 @@ class MainPage extends StatelessWidget {
         child: Icon(iconData),
       );
 
+  void _onButtonAppBarTapped(){
+  }
+
   @override
   Widget build(BuildContext context) {
     mainBloc = BlocProvider.of<MainBloc>(context);
     return Scaffold(
-        appBar: createAppBar(),
+        appBar: new MyAppBar(_onButtonAppBarTapped, _appBarIcon),
         body: Center(
           child: BlocBuilder<MainBloc, MainState>(
             builder: (_, mainState) =>
