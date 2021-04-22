@@ -1,5 +1,6 @@
 import 'package:audio_session/audio_session.dart';
 import 'package:bloc/bloc.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:logger/logger.dart';
@@ -7,11 +8,14 @@ import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
 
 const LOG_TAG = "UPA -> ";
-const STREAM_URL = "http://78.155.222.238:8010/souz_radio";
+const STREAM_LOW_URL = "http://78.155.222.238:8010/souz_radio";
+const STREAM_MED_URL = "http://78.155.222.238:8010/souz_radio";
+const STREAM_HIGH_URL = "http://78.155.222.238:8010/souz_radio";
 
 class MainBloc extends Bloc<MainEvent, MainState> {
 
   final AudioPlayer _player = AudioPlayer();
+  String CURRENT_URL="";
   final Logger _logger = Logger();
 
   MainBloc() : super(MainState(
@@ -22,10 +26,9 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   }
 
   Future<void> _initPlayer() async {
-    final _source = AudioSource.uri(Uri.parse(STREAM_URL));
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration.music());
-
+    CURRENT_URL = STREAM_HIGH_URL;
     _player.playerStateStream.listen((playerState) {
       switch (playerState.processingState) {
         case ProcessingState.idle:
@@ -46,17 +49,37 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       }
     });
 
+
     _player.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
           _showError("A stream error occurred", e);
-        });
-
+          _waitForConnection();
+        }
+    );
+    _waitForConnection();
+  }
+  Future<void> _waitForConnection() async {
     try {
-      await _player.setAudioSource(_source);
+      while(await check()==false){}
+      _log("Connection restored");
+      final _newSource = AudioSource.uri(Uri.parse(CURRENT_URL));
+      await _player.setAudioSource(_newSource);
     } catch (e) {
       _showError("Stream load error happens", e);
+      _waitForConnection();
     }
   }
+
+  Future<bool> check() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile) {
+      return true;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      return true;
+    }
+    return false;
+  }
+
 
   @override
   Stream<MainState> mapEventToState(MainEvent event) async* {
@@ -65,6 +88,20 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       return;
     }
     if (event is PlayerStateChangedToBuffering) {
+
+      if(state.stateStr02.compareTo("Ready")==0){
+        _log(CURRENT_URL);
+        switch(CURRENT_URL) {
+          case STREAM_HIGH_URL:
+            CURRENT_URL = STREAM_MED_URL;
+            _log("Stream is now in medium bitrate");
+            break;
+          case STREAM_MED_URL:
+            CURRENT_URL = STREAM_LOW_URL;
+            _log("Stream is now in low bitrate");
+            break;
+        }
+      }
       yield* _mapPlayerStateChangedBufferingToState(event.isPlaying);
       return;
     }
@@ -103,7 +140,6 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       iconData
     );
   }
-
   Stream<MainState> _mapPlayerStateChangedBufferingToState(bool isPlaying) async* {
     yield MainState(
         state.stateStr01,
