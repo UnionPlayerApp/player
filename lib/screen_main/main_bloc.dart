@@ -61,12 +61,11 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   Future<void> _waitForConnection() async {
     try {
       while(await check()==false){}
-      _log("Connection restored");
       final _newSource = AudioSource.uri(Uri.parse(CURRENT_URL));
       await _player.setAudioSource(_newSource);
     } catch (e) {
       _showError("Stream load error happens", e);
-      _waitForConnection();
+      await _waitForConnection();
     }
   }
 
@@ -101,6 +100,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
             _log("Stream is now in low bitrate");
             break;
         }
+        _waitForConnection();
       }
       yield* _mapPlayerStateChangedBufferingToState(event.isPlaying);
       return;
