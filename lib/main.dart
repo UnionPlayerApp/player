@@ -1,26 +1,12 @@
 import 'package:flutter/material.dart';
-
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:union_player_app/screen_main/main_bloc.dart';
-import 'package:union_player_app/screen_main/main_page.dart';
+import 'package:koin/koin.dart';
+import 'package:union_player_app/app/app_page.dart';
+import 'package:union_player_app/di/di.dart';
 
 void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Union Radio Player',
-      theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
-      ),
-      home: BlocProvider(
-          create: (context) => MainBloc(),
-          child: MainPage(title: 'Union Player Home Page')
-      ),
-    );
-  }
+  startKoin((app) {
+    app.printLogger(level: Level.debug);
+    app.module(appModule);
+  });
+  runApp(AppPage());
 }
