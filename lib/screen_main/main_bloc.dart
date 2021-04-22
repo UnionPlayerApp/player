@@ -12,7 +12,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   late AudioPlayer _player;
 
   MainBloc(this._player, this._logger)
-      : super(MainState("Pausing", "Initialising", Icons.play_arrow_rounded)) {
+      : super(MainState("Stop", "Initialising", Icons.play_arrow_rounded)) {
     _initPlayer();
   }
 
@@ -114,10 +114,10 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   void _setPlayerMode(bool isPlaying) =>
       isPlaying ? _player.play() : _player.pause();
 
-  String _createStateStr01(bool isPlaying) => isPlaying ? "Playing" : "Pausing";
+  String _createStateStr01(bool isPlaying) => isPlaying ? "Play" : "Stop";
 
   IconData _createIconData(bool isPlaying) =>
-      isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded;
+      isPlaying ? Icons.stop_rounded : Icons.play_arrow_rounded;
 
   //TODO: нужно понять, вызывается ли этот метод автоматом,
   //TODO: или нужно сделать вызов явно

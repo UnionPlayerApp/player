@@ -82,11 +82,11 @@ class _AppPageState extends State<AppPage> {
           } else {
             homePage = getWithParam<LoadingPage, String>("App initializing...");
           }
-          return createAppPage(homePage);
+          return _createAppPage(homePage);
         },
       );
 
-  Widget createAppPage(Widget homePage) => MaterialApp(
+  Widget _createAppPage(Widget homePage) => MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Union Radio Player',
         theme: ThemeData(primarySwatch: Colors.blueGrey),

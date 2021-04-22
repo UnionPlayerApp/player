@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+const _TEXT_PADDING = 5.0;
+
 class InfoPage extends StatelessWidget {
   final List<String> strings;
 
@@ -8,8 +10,14 @@ class InfoPage extends StatelessWidget {
       : assert(strings.isNotEmpty),
         super(key: key);
 
-  Widget mapStr(BuildContext context, String str) =>
-      Text(str, style: Theme.of(context).textTheme.bodyText2);
+  Widget mapStr(BuildContext context, String str) => Padding(
+      padding: EdgeInsets.fromLTRB(
+          _TEXT_PADDING, _TEXT_PADDING, _TEXT_PADDING, _TEXT_PADDING),
+      child: Text(
+        str,
+        style: Theme.of(context).textTheme.bodyText2,
+        textAlign: TextAlign.center,
+      ));
 
   List<Widget> createChildren(BuildContext context) =>
       strings.sublist(1).map((str) => mapStr(context, str)).toList();
