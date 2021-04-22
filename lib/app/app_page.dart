@@ -18,8 +18,6 @@ class AppPage extends StatefulWidget {
 }
 
 class _AppPageState extends State<AppPage> {
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
-
   late AppLogger _logger;
   late AudioPlayer _player;
 
@@ -29,10 +27,9 @@ class _AppPageState extends State<AppPage> {
 
     _logger = get<AppLogger>();
     _player = get<AudioPlayer>();
-    _initPlayer();
   }
 
-  Future<void> _initPlayer() async {
+  Future _initPlayer() async {
     final _source = AudioSource.uri(Uri.parse(STREAM_URL));
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration.music());
@@ -40,39 +37,54 @@ class _AppPageState extends State<AppPage> {
     try {
       await _player.setAudioSource(_source);
     } catch (error) {
-      _logger.e("Audio stream load error", error);
+      _logger.logError("Audio stream load error", error);
     }
+  }
+
+  Future _initApp() async => Future.wait([
+        _initPlayer()
+            .then((v) => _logger.logDebug("init Player success"))
+            .catchError((e) => _handleInitError("init Player error", e)),
+        Firebase.initializeApp()
+            .then((v) => _logger.logDebug("init Firebase success"))
+            .catchError((e) => _handleInitError("init Firebase error", e))
+      ]);
+
+  void _handleInitError(String msg, dynamic error) {
+    _logger.logError(msg, error);
+    throw Exception("App initialisation error");
   }
 
   @override
   void dispose() {
     super.dispose();
     _player.dispose();
+    _logger.close();
   }
-
-  // @override
-  // Widget build(BuildContext context) => FutureBuilder(
-  //       future: _initialization,
-  //       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-  //         if (snapshot.hasError) {
-  //           _logger.logDebug("App initialization error: ${snapshot.error}");
-  //           return createAppPage(getWithParam<InfoPage, String>(snapshot.error.toString()));
-  //         }
-  //
-  //         if (snapshot.connectionState == ConnectionState.done) {
-  //           return createAppPage(get<MainPage>());
-  //         }
-  //
-  //         return createAppPage(get<LoadingPage>());
-  //       },
-  //     );
 
   @override
-  Widget build(BuildContext context) {
-    final strings = ["Заголовок ошибки", "Текст ошибки", "Еще один текст ошибки", "И еще один текст ошибки"];
-    final title = "Инициализация приложения";
-    return createAppPage(getWithParam<LoadingPage, String>(title));
-  }
+  Widget build(BuildContext context) => FutureBuilder(
+        future: _initApp(),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          late Widget homePage;
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
+              homePage = getWithParam<InfoPage, List<String>>([
+                "Ошибка запуска приложения",
+                "К сожалению, сейчас нет возможности запустить приложение.",
+                "Специалисты уже работают над устранением проблемы.",
+                "Попробуйте запустить приложение позже.",
+                "Приносим извинения за предоставленные неудобства!"
+              ]);
+            } else {
+              homePage = get<MainPage>();
+            }
+          } else {
+            homePage = getWithParam<LoadingPage, String>("App initializing...");
+          }
+          return createAppPage(homePage);
+        },
+      );
 
   Widget createAppPage(Widget homePage) => MaterialApp(
         debugShowCheckedModeBanner: false,

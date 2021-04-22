@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:272934751386:android:7b6ecf91ac839acf486323",
+        "mobilesdk_app_id": "1:272934751386:android:8cca5a1574cef503486323",
         "android_client_info": {
-          "package_name": "com.chplalex.inion_player_app"
+          "package_name": "com.chplalex.union_player_app"
         }
       },
       "oauth_client": [
