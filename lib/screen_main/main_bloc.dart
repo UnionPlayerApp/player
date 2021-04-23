@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:audio_session/audio_session.dart';
 import 'package:bloc/bloc.dart';
 import 'package:connectivity/connectivity.dart';
@@ -71,15 +73,18 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
   Future<bool> check() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile) {
-      return true;
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      return true;
+    if (connectivityResult == ConnectivityResult.mobile||connectivityResult == ConnectivityResult.wifi) {
+      try {
+        final result = await InternetAddress.lookup('google.com');
+        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+          return true;
+        }
+      } on SocketException catch (_) {
+        return false;
+      }
     }
     return false;
   }
-
-
   @override
   Stream<MainState> mapEventToState(MainEvent event) async* {
     if (event is PlayPauseFabPressed) {
