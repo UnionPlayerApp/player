@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:logger/logger.dart';
 import 'package:union_player_app/ui/my_app_bar.dart';
 import 'package:union_player_app/ui/my_bottom_navigation_bar.dart';
@@ -19,7 +20,7 @@ class FeedbackScreen extends StatefulWidget {
 
 class FeedbackScreenState extends State {
   final _formKey = GlobalKey<FormState>();
-  IconData _appBarIcon = Icons.play_circle_outline;
+  IconData _appBarIcon =  Icons.play_arrow_rounded;
   bool _isPlaying = false;
   int _selectedIndex = 2;
 
@@ -28,8 +29,8 @@ class FeedbackScreenState extends State {
   void _onButtonAppBarTapped(){
     _isPlaying = !_isPlaying;
     setState(() {
-      if(_isPlaying) _appBarIcon = Icons.pause_circle_outline;
-      else _appBarIcon = Icons.play_circle_outline;
+      if(_isPlaying) _appBarIcon = Icons.pause_rounded;
+      else _appBarIcon =  Icons.play_arrow_rounded;
     });
   }
 
@@ -41,71 +42,77 @@ class FeedbackScreenState extends State {
   }
 
   Widget build(BuildContext context) {
-   return new MaterialApp(
-        debugShowCheckedModeBanner: false,
-     home: new Scaffold(
-        appBar: MyAppBar(_onButtonAppBarTapped, _appBarIcon),
-        body: SingleChildScrollView(padding: EdgeInsets.all(10.0), child:
-        new Form(
-            key: _formKey,
-            child: new Column(children:
-            <Widget>[
-              new Text('Ваше имя:', style: TextStyle(fontSize: 20.0),),
-              new TextFormField(validator: (value){
-                if (value!.isEmpty) return 'Пожалуйста, введите свое имя';
-              }),
+    // Пока нет навигции между экранами и тестовый запуск экрана осуществляется через прямой вызов его в main,
+    // инициализирую ScreenUtil в билдере каждого экрана, позже достаточно будет сделать это в билдере MyApp:
+    return ScreenUtilInit(
+        designSize: Size(390, 780),
+        builder: () => MaterialApp(
+           debugShowCheckedModeBanner: false,
+           home: Scaffold(
+              appBar: MyAppBar(_onButtonAppBarTapped, _appBarIcon),
+              body: SingleChildScrollView(padding: EdgeInsets.all(10.h),
+                  child:
+                   Form(
+                      key: _formKey,
+                      child: Column(children:
+                      <Widget>[
+                        Text('Ваше имя:', style: TextStyle(fontSize: 20.0),),
+                        TextFormField(validator: (value){
+                          if (value!.isEmpty) return 'Пожалуйста, введите свое имя';
+                        }),
 
-              new SizedBox(height: 20.0),
+                        SizedBox(height: 20.h),
 
-              new Text('Контактный E-mail:', style: TextStyle(fontSize: 20.0),),
-              new TextFormField(validator: (value){
-                if (value!.isEmpty) return 'Пожалуйста, введите свой Email';
-                String p = "[a-zA-Z0-9+.\_\%-+]{1,256}@[a-zA-Z0-9][a-zA-Z0-9-]{0,64}(.[a-zA-Z0-9][a-zA-Z0-9-]{0,25})+";
-                RegExp regExp = new RegExp(p);
-                if (regExp.hasMatch(value)) return null;
-                return 'Неверно введен E-mail';
-              }),
+                        Text('Контактный E-mail:', style: TextStyle(fontSize: 20.0),),
+                        TextFormField(validator: (value){
+                          if (value!.isEmpty) return 'Пожалуйста, введите свой Email';
+                          String p = "[a-zA-Z0-9+.\_\%-+]{1,256}@[a-zA-Z0-9][a-zA-Z0-9-]{0,64}(.[a-zA-Z0-9][a-zA-Z0-9-]{0,25})+";
+                          RegExp regExp = RegExp(p);
+                          if (regExp.hasMatch(value)) return null;
+                          return 'Неверно введен E-mail';
+                        }),
 
-              new SizedBox(height: 20.0),
+                        SizedBox(height: 20.h),
 
-              new Text('Контактный телефон:', style: TextStyle(fontSize: 20.0),),
-              new TextFormField(validator: (value){
-                if (value!.isEmpty) return 'Пожалуйста, введите свой номер телефона';
-                String pattern = r'(^(?:[+0]9)?[0-9]{10,12}$)';
-                RegExp regExp = new RegExp(pattern);
-                if (regExp.hasMatch(value)) return null;
-                return 'Неверно введен номер';
-              }),
+                        Text('Контактный телефон:', style: TextStyle(fontSize: 20.0),),
+                        TextFormField(validator: (value){
+                          if (value!.isEmpty) return 'Пожалуйста, введите свой номер телефона';
+                          String pattern = r'(^(?:[+0]9)?[0-9]{10,12}$)';
+                          RegExp regExp = RegExp(pattern);
+                          if (regExp.hasMatch(value)) return null;
+                          return 'Неверно введен номер';
+                        }),
 
-              new SizedBox(height: 20.0),
+                        SizedBox(height: 20.h),
 
-              new Text('Текст обращения:', style: TextStyle(fontSize: 20.0),),
-              new TextFormField(validator: (value){
-                if (value!.isEmpty) return 'Напишите нам';
-                if (value.length <= 400) return null;
-                return 'Длина сообщения не должна превышать 400 символов';
-              }),
+                        Text('Текст обращения:', style: TextStyle(fontSize: 20.0),),
+                        TextFormField(validator: (value){
+                          if (value!.isEmpty) return 'Напишите нам';
+                          if (value.length <= 400) return null;
+                          return 'Длина сообщения не должна превышать 400 символов';
+                        }),
 
-              new SizedBox(height: 20.0),
+                        SizedBox(height: 20.h),
 
-              new RaisedButton(onPressed: () {
-                late String text;
-                late Color color;
-                if (_formKey.currentState!.validate()) {
-                  text = "Форма успешно заполнена";
-                  color = Colors.green;
-                  }
-                Scaffold.of(context).showSnackBar(
-                  SnackBar(content: Text(text), backgroundColor: color,));
-                },
-                child: Text('Отправить'), color: Colors.blue, textColor: Colors.white,
+                        RaisedButton(onPressed: () {
+                          late String text;
+                          late Color color;
+                          if (_formKey.currentState!.validate()) {
+                            text = "Форма успешно заполнена";
+                            color = Colors.green;
+                            }
+                          Scaffold.of(context).showSnackBar(
+                            SnackBar(content: Text(text), backgroundColor: color,));
+                          },
+                          child: Text('Отправить'), color: Colors.blue, textColor: Colors.white,
+                        ),
+                      ],
+                      )
+                    )
               ),
-            ],
-            )
-        )
-        ),
-       bottomNavigationBar: MyBottomNavigationBar(_selectedIndex, _onBottomMenuItemTapped),
+             bottomNavigationBar: MyBottomNavigationBar(_selectedIndex, _onBottomMenuItemTapped),
 
-     ));
+           ))
+    );
   }
 }
