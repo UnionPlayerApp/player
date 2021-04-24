@@ -1,60 +1,51 @@
 import 'package:flutter/material.dart';
-
+import 'package:koin_flutter/koin_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../my_app_bar.dart';
-import 'main_bloc.dart';
-import 'main_event.dart';
-import 'main_state.dart';
+import 'package:union_player_app/screen_main/main_bloc.dart';
+import 'package:union_player_app/screen_main/main_event.dart';
+import 'package:union_player_app/screen_main/main_state.dart';
 
 class MainPage extends StatelessWidget {
   MainPage({Key? key}) : super(key: key);
 
-  late final MainBloc mainBloc;
-  IconData _appBarIcon = Icons.play_circle_outline;
+  AppBar createAppBar() => AppBar(title: Text("Main screen"));
 
-  Text createStateRow(BuildContext context, String stateStr) =>
-      Text(
+  Text createStateRow(BuildContext context, String stateStr) => Text(
         stateStr,
-        style: Theme
-            .of(context)
-            .textTheme
-            .bodyText2,
+        style: Theme.of(context).textTheme.bodyText2,
       );
 
-  FloatingActionButton createFAB(IconData iconData) =>
+  FloatingActionButton createFAB(
+          BuildContext context, MainState mainState, MainBloc mainBloc) =>
       FloatingActionButton(
         onPressed: () => mainBloc.add(PlayPauseFabPressed()),
         tooltip: 'Play / Pause',
-        child: Icon(iconData),
+        child: Icon(mainState.iconData),
       );
 
-  void _onButtonAppBarTapped(){
-  }
+  Widget createWidget(BuildContext context, MainState mainState) => Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          createStateRow(context, mainState.stateStr01),
+          createStateRow(context, mainState.stateStr02)
+        ],
+      );
 
   @override
   Widget build(BuildContext context) {
-    mainBloc = BlocProvider.of<MainBloc>(context);
+    final mainBloc = get<MainBloc>();
     return Scaffold(
-        appBar: new MyAppBar(_onButtonAppBarTapped, _appBarIcon),
+        appBar: createAppBar(),
         body: Center(
           child: BlocBuilder<MainBloc, MainState>(
-            builder: (_, mainState) =>
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    createStateRow(context, mainState.stateStr01),
-                    createStateRow(context, mainState.stateStr02)
-                  ],
-                ),
+            builder: (context, mainState) => createWidget(context, mainState),
+            bloc: mainBloc,
           ),
         ),
         floatingActionButton: BlocBuilder<MainBloc, MainState>(
-            buildWhen: (oldState, newState) =>
-            oldState.stateStr01 != newState.stateStr01,
-            builder: (_, mainState) =>
-                createFAB(mainState.iconData)
-        )
-    );
+          builder: (context, mainState) =>
+              createFAB(context, mainState, mainBloc),
+          bloc: mainBloc,
+        ));
   }
 }
