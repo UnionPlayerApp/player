@@ -44,7 +44,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
         imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRWS-O75WhJE-wnol-9NfBr54rmbsUc0LeDA&usqp=CAU"),
     ProgramListItem("Новости",
         "Каждый из нас понимает очевидную вещь: повышение уровня гражданского сознания требует определения и уточнения соответствующих условий активизации.",
-        "17:00", imageUrl: ""),
+        "17:00"),
     ProgramListItem("Ночь оказалась долгой",
         "И по сей день в центральных регионах звучит перекатами старческий скрип Амстердама.",
         "18:00",
@@ -104,7 +104,7 @@ class ProgramListItem extends StatelessWidget {
   final String _startTime;
   late String? _imageUrl;
 
-  ProgramListItem(this._title, this._text, this._startTime, {required String? imageUrl}) {
+  ProgramListItem(this._title, this._text, this._startTime, {@required String? imageUrl}) {
     _imageUrl = imageUrl;
   }
 
