@@ -1,12 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:logger/logger.dart';
 import 'package:union_player_app/ui/my_app_bar.dart';
 import 'package:union_player_app/ui/my_bottom_navigation_bar.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:union_player_app/util/constants/constants.dart';
+import 'package:union_player_app/util/constants/dimensions.dart';
+import 'package:union_player_app/util/constants/strings.dart';
 
 
-const LOG_TAG = "UPA -> ";
 late Logger logger = Logger();
 
 class FeedbackScreen extends StatefulWidget {
@@ -39,7 +42,7 @@ class FeedbackScreenState extends State {
   void _onBottomMenuItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      logger.d("$LOG_TAG Bottom navigation selected item index: $_selectedIndex");
+      logger.d("$LOG_TAG +  Bottom navigation selected item index: $_selectedIndex");
     });
   }
 
@@ -59,7 +62,7 @@ class FeedbackScreenState extends State {
     // Пока нет навигции между экранами и тестовый запуск экрана осуществляется через прямой вызов его в main,
     // инициализирую ScreenUtil в билдере каждого экрана, позже достаточно будет сделать это в билдере MyApp:
     return ScreenUtilInit(
-        designSize: Size(390, 780),
+        designSize: Size(prototypeDeviceWidth, prototypeDeviceHeight),
         builder: () => MaterialApp(
            debugShowCheckedModeBanner: false,
            home: Scaffold(
@@ -70,7 +73,7 @@ class FeedbackScreenState extends State {
               // Подробнее: https://api.flutter.dev/flutter/material/Scaffold/of.html
               builder: (BuildContext context) {
                 return SingleChildScrollView(
-                    padding: EdgeInsets.all(10.h),
+                    padding: allSidesMargin,
                     child:
                     Form(
                         key: _formKey,
@@ -78,53 +81,49 @@ class FeedbackScreenState extends State {
                         <Widget>[
 
                           Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10.w) +
-                                  EdgeInsets.only(top: 15.h),
+                              padding: textFormFieldPadding,
                               child: _createTextFormField(
-                                  'Your name',
-                                  'Please, enter your name here',
+                                  nameFormTitle,
+                                  nameFormHint,
                                   MultiValidator([
-                                    RequiredValidator(errorText: "* Required"),
+                                    RequiredValidator(errorText: requiredHint),
                                   ])
                               )),
 
                           Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10.w) +
-                                  EdgeInsets.only(top: 15.h),
+                              padding: textFormFieldPadding,
                               child: _createTextFormField(
-                                  'Email',
-                                  'Enter valid email id as abc@gmail.com',
+                                  emailFormTitle,
+                                  emailFormHint,
                                   MultiValidator([
-                                    RequiredValidator(errorText: "* Required"),
+                                    RequiredValidator(errorText: requiredHint),
                                     EmailValidator(
-                                        errorText: "Enter valid email id"),
+                                        errorText: emailErrorText),
                                   ])
                               )),
 
                           Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10.w) +
-                                  EdgeInsets.only(top: 15.h),
+                              padding: textFormFieldPadding,
                               child: _createTextFormField(
-                                  'Your phone',
-                                  'Please, enter your phone number',
+                                  phoneFormTitle,
+                                  phoneFormHint,
                                   MultiValidator([
-                                    RequiredValidator(errorText: "* Required"),
+                                    RequiredValidator(errorText: requiredHint),
                                     PatternValidator(
-                                        r'(^(?:[+0]9)?[0-9]{10,12}$)',
-                                        errorText: "Number entered incorrectly")
+                                        phonePattern,
+                                        errorText: phoneErrorText)
                                   ])
                               )),
 
                           Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10.w) +
-                                  EdgeInsets.only(top: 15.h),
+                              padding: textFormFieldPadding,
                               child: _createTextFormField(
-                                  'Your message',
-                                  'Please, write something here',
+                                  messageFormTitle,
+                                  messageFormHint,
                                   MultiValidator([
-                                    RequiredValidator(errorText: "* Required"),
-                                    MaxLengthValidator(400,
-                                        errorText: "The length of the message cannot exceed 400 characters")
+                                    RequiredValidator(errorText: requiredHint),
+                                    MaxLengthValidator(maxMessageLength,
+                                        errorText: messageMaxLengthError)
                                   ])
                               )),
 
@@ -134,7 +133,7 @@ class FeedbackScreenState extends State {
                             RaisedButton(
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
-                                  String text = "Форма успешно заполнена";
+                                  String text = formSuccessText;
                                   Color color = Colors.green;
                                   // Для использования Scaffold.of(context) я создала внутренний BuildContext - см. коммент выше,
                                   // т.к. аргумент context не может использоваться для поиска Scaffold, если он находится "выше" в дереве виджетов.
@@ -143,7 +142,7 @@ class FeedbackScreenState extends State {
                                           backgroundColor: color));
                                 }
                               },
-                              child: Text('Отправить'),
+                              child: Text(sendButtonText),
                               color: Colors.blue,
                               textColor: Colors.white,
                             ),

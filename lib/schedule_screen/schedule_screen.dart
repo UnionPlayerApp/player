@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:union_player_app/ui/my_app_bar.dart';
+import 'package:union_player_app/util/constants/constants.dart';
+import 'package:union_player_app/util/constants/dimensions.dart';
 import '../ui/my_bottom_navigation_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-
-const LOG_TAG = "UPA -> ";
 late Logger logger = Logger();
 
 class ScheduleScreen extends StatefulWidget {
@@ -74,7 +74,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
     // Пока нет навигции между экранами и тестовый запуск экрана осуществляется через прямой вызов его в main,
     // инициализирую ScreenUtil в билдере каждого экрана, позже достаточно будет сделать это в билдере MyApp:
     return ScreenUtilInit(
-        designSize: Size(390, 780),
+        designSize: Size(prototypeDeviceWidth, prototypeDeviceHeight),
         builder: () =>
             MaterialApp(
                 debugShowCheckedModeBanner: false,
@@ -84,7 +84,7 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                         child:
                         ListView.separated(
                             separatorBuilder: (BuildContext context,
-                                int index) => Divider(height: 2.h,),
+                                int index) => Divider(height: listViewDividerHeight,),
                             itemCount: _array.length,
                             itemBuilder: (BuildContext context, int index) {
                               return _array[index];
@@ -111,29 +111,29 @@ class ProgramListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     late Image image;
-    if (_imageUrl != null && _imageUrl != '') image = Image.network(_imageUrl!, width: 100.h, height: 100.h, fit: BoxFit.cover);
-        else image = Image.asset("assets/images/union_radio_logo.png",  width: 100.h, height: 100.h, fit: BoxFit.cover);
+    if (_imageUrl != null && _imageUrl != '') image = Image.network(_imageUrl!, width: scheduleImageSide, height: scheduleImageSide, fit: BoxFit.cover);
+        else image = Image.asset(logoImage,  width: scheduleImageSide, height: scheduleImageSide, fit: BoxFit.cover);
     logger.d("$LOG_TAG Image hight: ${image.height}");
     logger.d("$LOG_TAG Image width: ${image.width}");
 
     return Container(
       color: Colors.white10,
-      margin: EdgeInsets.all(ScreenUtil().setWidth(16.w)),
-      height: 105.h,
+      margin: allSidesMargin,
+      height: scheduleItemHeight,
       child: Row(children: [
         image,
         Expanded(
             child: Container(
-                padding: EdgeInsets.only(left: 10.w),
+                padding: programTextLeftPadding,
                 child: Column(children: [
                   Row(children: [
-                    Expanded(child: Text(_title, style: TextStyle(fontSize: 16.0), softWrap: true, textAlign: TextAlign.start, maxLines: 1, overflow: TextOverflow.ellipsis,)),
-                    Text(_startTime,  style: TextStyle(fontSize: 16.0), overflow: TextOverflow.ellipsis),
+                    Expanded(child: Text(_title, style: TextStyle(fontSize: titleFontSize), softWrap: true, textAlign: TextAlign.start, maxLines: 1, overflow: TextOverflow.ellipsis,)),
+                    Text(_startTime,  style: TextStyle(fontSize: titleFontSize), overflow: TextOverflow.ellipsis),
                   ]),
                   Container(
-                      padding: EdgeInsets.only(top: 10.h),
+                      padding: programBodyTopPadding,
                       alignment: Alignment.centerLeft,
-                      child: Text(_text, style: TextStyle(fontSize: 13.0), softWrap: true, textAlign: TextAlign.start, overflow: TextOverflow.ellipsis, maxLines: 3,))
+                      child: Text(_text, style: TextStyle(fontSize: bodyFontSize), softWrap: true, textAlign: TextAlign.start, overflow: TextOverflow.ellipsis, maxLines: 3,))
                 ])
             )
         )

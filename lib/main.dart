@@ -9,7 +9,7 @@ import 'package:union_player_app/screen_main/main_page.dart';
 import 'feedback_screen/feedback_screen.dart';
 
 void main() {
-  runApp(ScheduleScreen(isPlaying: false));
+  runApp(FeedbackScreen(isPlaying: false));
 }
 
 class MyApp extends StatelessWidget {
