@@ -10,27 +10,29 @@ import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
 
 const LOG_TAG = "UPA -> ";
-const STREAM_LOW_URL = "http://78.155.222.238:8010/souz_radio";
-const STREAM_MED_URL = "http://78.155.222.238:8010/souz_radio";
-const STREAM_HIGH_URL = "http://78.155.222.238:8010/souz_radio";
+const STREAM_LOW_URL = "http://78.155.222.238:8010/souz_radio_64.mp3";
+const STREAM_MED_URL = "http://78.155.222.238:8010/souz_radio_128.mp3";
+const STREAM_HIGH_URL = "http://78.155.222.238:8010/souz_radio_192.mp3";
 
 class MainBloc extends Bloc<MainEvent, MainState> {
-
   final AudioPlayer _player = AudioPlayer();
-  String CURRENT_URL="";
+
+  //TODO: капсом принято писать только константы. В данном случае это переменная, поэтому принт lowerCamelCase (с маленькой и без _) - currentUrl. П поскольку поле, наверное, должно быть приватным, то и _currentUrl
+  //String CURRENT_URL="";
+  String _currentUrl = "";
   final Logger _logger = Logger();
 
-  MainBloc() : super(MainState(
-        "Pausing",
-        "Initialising",
-        Icons.play_arrow_rounded)) {
+  MainBloc()
+      : super(MainState("Pausing", "Initialising", Icons.play_arrow_rounded)) {
     _initPlayer();
   }
 
   Future<void> _initPlayer() async {
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration.music());
-    CURRENT_URL = STREAM_HIGH_URL;
+
+    _currentUrl = STREAM_HIGH_URL;
+
     _player.playerStateStream.listen((playerState) {
       switch (playerState.processingState) {
         case ProcessingState.idle:
@@ -51,57 +53,94 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       }
     });
 
-
     _player.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
-          _showError("A stream error occurred", e);
-          _waitForConnection();
-        }
-    );
+      _showError("A stream error occurred", e);
+      _waitForConnection();
+    });
+
     _waitForConnection();
   }
+
   Future<void> _waitForConnection() async {
     try {
-      while(await check()==false){}
-      final _newSource = AudioSource.uri(Uri.parse(CURRENT_URL));
+      //TODO: хотя ты и делаешь проверку асинхронно, но в случае false после проверки ты обратно вылетаешь на проверку.
+      //TODO: по-хорошему, нужно давать ресурсам какое то время и на иные задачи
+      //TODO: поэтому лучше добавить какой то тайм-аут между проверками. Допустим, 1 сек.
+      //while(await check() == false) {}
+
+      while (await internetConnectionCheck() == false) {
+        Future.delayed(Duration(seconds: 1));
+      }
+
+      final _newSource = AudioSource.uri(Uri.parse(_currentUrl));
       await _player.setAudioSource(_newSource);
     } catch (e) {
       _showError("Stream load error happens", e);
+      //TODO: в случае, если открытие потока будет генерировать ошибку (допустим, если поток прекратил свое существование по какой то причина)
+      //TODO: ты влетишь в бесконечный цикл, т.к. _waitForConnection() будет все время вызывать саму себя.
+      //TODO: так делать, конечно же, нельзя
       await _waitForConnection();
     }
   }
 
-  Future<bool> check() async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile||connectivityResult == ConnectivityResult.wifi) {
-      try {
-        final result = await InternetAddress.lookup('google.com');
-        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-          return true;
-        }
-      } on SocketException catch (_) {
-        return false;
-      }
+  //TODO: лучше давать более осмысленные именования функциям. Если просто check() - непонятно, что именно проверяется.
+  Future<bool> internetConnectionCheck() async {
+    //TODO: лучше использовать final
+    //var connectivityResult = await (Connectivity().checkConnectivity());
+    final connectivityResult = await (Connectivity().checkConnectivity());
+
+    //TODO: так код будет нагляднее
+    if (connectivityResult != ConnectivityResult.mobile &&
+        connectivityResult != ConnectivityResult.wifi) {
+      return false;
     }
-    return false;
+
+    try {
+      final result = await InternetAddress.lookup('google.com');
+
+      //TODO: в данном случае, можно написать компактнее
+      // if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      //   return true;
+      // }
+      return (result.isNotEmpty && result[0].rawAddress.isNotEmpty);
+    } on SocketException catch (_) {
+      return false;
+    }
   }
+
   @override
   Stream<MainState> mapEventToState(MainEvent event) async* {
     if (event is PlayPauseFabPressed) {
       yield* _mapPlayPauseFabPressedToState();
       return;
     }
+    /* TODO:
+    * К сожалению, такая логика не применима. У тебя получается, что если плеер перешел в состоние буферизации,
+    * то он будет переключен на поток меньшего битрейда. Но это не совсем правильно.
+    * В буфферизации нет ничего плохого. В реальных условиях соединение может "подтормаживать"
+    * по самым разным причинам. И если это явление кратковременное, то внутренний буфер
+    * не даст радиостанции замолчать. И если подкачка пройдет нормально, то нет причины
+    * переключать плеер на меньшее качество.
+    * В идеале логика должна быть чуть более изощренной.
+    * Например, мы устанавливаем какой то уровень "заполняемости" буфера. Ну, допустим, 30%.
+    * Задаем это значение констартой или, впоследствии, в настройках.
+    * Мы должны постоянно контролировать процент заполения буфера. Допустим, 1 раз в секунду.
+    * Если заполнение буфера меньше 30% - переключамся на меньший поток.
+    * Если выше 30% - то на больший.
+    * В итоге мы должны контролировать не изменение статуса плеера, а состояние буффера.
+    * Попробуй поискать такую возможность
+    * */
     if (event is PlayerStateChangedToBuffering) {
-
-      if(state.stateStr02.compareTo("Ready")==0){
-        _log(CURRENT_URL);
-        switch(CURRENT_URL) {
+      if (state.stateStr02.compareTo("Ready") == 0) {
+        _log(_currentUrl);
+        switch (_currentUrl) {
           case STREAM_HIGH_URL:
-            CURRENT_URL = STREAM_MED_URL;
+            _currentUrl = STREAM_MED_URL;
             _log("Stream is now in medium bitrate");
             break;
           case STREAM_MED_URL:
-            CURRENT_URL = STREAM_LOW_URL;
+            _currentUrl = STREAM_LOW_URL;
             _log("Stream is now in low bitrate");
             break;
         }
@@ -139,57 +178,36 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       _setPlayerMode(!_player.playing);
     }
 
-    yield MainState(
-      stateStr01,
-      state.stateStr02,
-      iconData
-    );
-  }
-  Stream<MainState> _mapPlayerStateChangedBufferingToState(bool isPlaying) async* {
-    yield MainState(
-        state.stateStr01,
-        "Buffering",
-        _createIconData(isPlaying)
-    );
+    yield MainState(stateStr01, state.stateStr02, iconData);
   }
 
-  Stream<MainState> _mapPlayerStateChangedCompletedToState(bool isPlaying) async* {
-    yield MainState(
-        state.stateStr01,
-        "Completed",
-        _createIconData(isPlaying)
-    );
+  Stream<MainState> _mapPlayerStateChangedBufferingToState(
+      bool isPlaying) async* {
+    yield MainState(state.stateStr01, "Buffering", _createIconData(isPlaying));
   }
 
-  Stream<MainState> _mapPlayerStateChangedLoadingToState(bool isPlaying) async* {
-    yield MainState(
-        state.stateStr01,
-        "Loading",
-        _createIconData(isPlaying)
-    );
+  Stream<MainState> _mapPlayerStateChangedCompletedToState(
+      bool isPlaying) async* {
+    yield MainState(state.stateStr01, "Completed", _createIconData(isPlaying));
+  }
+
+  Stream<MainState> _mapPlayerStateChangedLoadingToState(
+      bool isPlaying) async* {
+    yield MainState(state.stateStr01, "Loading", _createIconData(isPlaying));
   }
 
   Stream<MainState> _mapPlayerStateChangedIdleToState(bool isPlaying) async* {
-    yield MainState(
-        state.stateStr01,
-        "Idle",
-        _createIconData(isPlaying)
-    );
+    yield MainState(state.stateStr01, "Idle", _createIconData(isPlaying));
   }
 
   Stream<MainState> _mapPlayerStateChangedReadyToState(bool isPlaying) async* {
-    yield MainState(
-        state.stateStr01,
-        "Ready",
-        _createIconData(isPlaying)
-    );
+    yield MainState(state.stateStr01, "Ready", _createIconData(isPlaying));
   }
 
   void _setPlayerMode(bool isPlaying) =>
       isPlaying ? _player.play() : _player.pause();
 
-  String _createStateStr01(bool isPlaying) =>
-      isPlaying ? "Playing" : "Pausing";
+  String _createStateStr01(bool isPlaying) => isPlaying ? "Playing" : "Pausing";
 
   IconData _createIconData(bool isPlaying) =>
       isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded;
