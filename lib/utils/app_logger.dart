@@ -9,7 +9,7 @@ class AppLogger extends Logger {
     d("$_LOG_TAG $msg");
   }
 
-  void logError(String msg, Error error) {
+  void logError(String msg, dynamic error) {
     e("$_LOG_TAG $msg: $error");
   }
 }

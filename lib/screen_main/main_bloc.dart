@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
-import 'package:union_player_app/utils/AppLogger.dart';
+import 'package:union_player_app/utils/app_logger.dart';
 
-const STREAM_URL = "http://78.155.222.238:8010/souz_radio";
+const STREAM_URL = "http://78.155.222.238:8010/souz_radio_128.mp3";
 
 class MainBloc extends Bloc<MainEvent, MainState> {
   late AppLogger _logger;
   late AudioPlayer _player;
 
   MainBloc(this._player, this._logger)
-      : super(MainState("Pausing", "Initialising", Icons.play_arrow_rounded)) {
+      : super(MainState("Stop", "Initialising", Icons.play_arrow_rounded)) {
     _initPlayer();
   }
 
@@ -114,10 +114,10 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   void _setPlayerMode(bool isPlaying) =>
       isPlaying ? _player.play() : _player.pause();
 
-  String _createStateStr01(bool isPlaying) => isPlaying ? "Playing" : "Pausing";
+  String _createStateStr01(bool isPlaying) => isPlaying ? "Play" : "Stop";
 
   IconData _createIconData(bool isPlaying) =>
-      isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded;
+      isPlaying ? Icons.stop_rounded : Icons.play_arrow_rounded;
 
   //TODO: нужно понять, вызывается ли этот метод автоматом,
   //TODO: или нужно сделать вызов явно

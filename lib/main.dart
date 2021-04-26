@@ -8,5 +8,6 @@ void main() {
     app.printLogger(level: Level.debug);
     app.module(appModule);
   });
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(AppPage());
 }
