@@ -5,7 +5,7 @@ import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
 import 'package:union_player_app/utils/app_logger.dart';
 
-const STREAM_URL = "http://78.155.222.238:8010/souz_radio";
+const STREAM_URL = "http://78.155.222.238:8010/souz_radio_128.mp3";
 
 class MainBloc extends Bloc<MainEvent, MainState> {
   late AppLogger _logger;
