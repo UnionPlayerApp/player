@@ -1,6 +1,4 @@
 // Asset Constants
-import 'package:union_player_app/feedback_screen/feedback_screen.dart';
-
 const appBarLogoImage = "assets/images/union_radio_logo_1.png";
 const logoImage = "assets/images/union_radio_logo.png";
 
