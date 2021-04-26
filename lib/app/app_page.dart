@@ -80,8 +80,10 @@ class _AppPageState extends State<AppPage> {
                 "Приносим извинения за предоставленные неудобства!"
               ]);
             } else {
-              //homePage = get<MainPage>();
-              homePage = get<AppScreen>();
+               homePage = BlocProvider(
+                   create: (context) => get<BottomNavigationBloc>(),
+                   child: get<AppScreen>());
+              //homePage = get<AppScreen>();
             }
           } else {
             homePage = getWithParam<LoadingPage, String>("App initializing...");
@@ -90,17 +92,10 @@ class _AppPageState extends State<AppPage> {
         },
       );
 
-  Widget _createAppPage(Widget homePage) {
-    final bottomNavigationBloc = get<BottomNavigationBloc>();
-
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Union Radio Player',
-      theme: ThemeData(primarySwatch: Colors.blueGrey),
-      home: BlocProvider(
-        create: (context) => bottomNavigationBloc,
-          child: homePage
-      ),
-    );
-  }
+  Widget _createAppPage(Widget homePage) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Union Radio Player',
+        theme: ThemeData(primarySwatch: Colors.blueGrey),
+        home: homePage,
+      );
 }
