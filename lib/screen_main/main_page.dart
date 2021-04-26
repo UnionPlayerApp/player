@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:koin_flutter/koin_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:koin_flutter/koin_flutter.dart';
+import 'package:union_player_app/app//my_app_bar.dart';
 import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
@@ -8,7 +9,11 @@ import 'package:union_player_app/screen_main/main_state.dart';
 class MainPage extends StatelessWidget {
   MainPage({Key? key}) : super(key: key);
 
-  AppBar createAppBar() => AppBar(title: Text("Main screen"));
+  IconData _appBarIcon = Icons.play_circle_outline;
+  // AppBar createAppBar() => AppBar(title: Text("Main screen"));
+
+  void _onButtonAppBarTapped(){
+  }
 
   Text createStateRow(BuildContext context, String stateStr) => Text(
         stateStr,
@@ -19,7 +24,7 @@ class MainPage extends StatelessWidget {
           BuildContext context, MainState mainState, MainBloc mainBloc) =>
       FloatingActionButton(
         onPressed: () => mainBloc.add(PlayPauseFabPressed()),
-        tooltip: 'Play / Pause',
+        tooltip: 'Play / Stop',
         child: Icon(mainState.iconData),
       );
 
@@ -35,7 +40,8 @@ class MainPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final mainBloc = get<MainBloc>();
     return Scaffold(
-        appBar: createAppBar(),
+        // appBar: createAppBar(),
+        appBar: MyAppBar(_onButtonAppBarTapped, _appBarIcon),
         body: Center(
           child: BlocBuilder<MainBloc, MainState>(
             builder: (context, mainState) => createWidget(context, mainState),

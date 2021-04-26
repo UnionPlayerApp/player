@@ -114,7 +114,8 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   void _setPlayerMode(bool isPlaying) =>
       isPlaying ? _player.play() : _player.pause();
 
-  String _createStateStr01(bool isPlaying) => isPlaying ? "Play" : "Stop";
+  String _createStateStr01(bool isPlaying) =>
+      isPlaying ? "Play" : "Stop";
 
   IconData _createIconData(bool isPlaying) =>
       isPlaying ? Icons.stop_rounded : Icons.play_arrow_rounded;

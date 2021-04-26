@@ -183,7 +183,7 @@ packages:
       name: koin_bloc
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.0-nullsafety.0"
+    version: "0.2.0-nullsafety.1"
   koin_flutter:
     dependency: "direct main"
     description:

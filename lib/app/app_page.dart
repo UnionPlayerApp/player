@@ -2,13 +2,15 @@ import 'package:audio_session/audio_session.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:koin_flutter/koin_flutter.dart';
+import 'package:union_player_app/navigation/bottom_navigation_bloc.dart';
+import 'package:union_player_app/navigation/bottom_navigation_page.dart';
 import 'package:union_player_app/screen_main/main_bloc.dart';
-import 'package:union_player_app/screen_main/main_page.dart';
 import 'package:union_player_app/utils/app_logger.dart';
-import 'package:union_player_app/utils/loading_page.dart';
 import 'package:union_player_app/utils/info_page.dart';
+import 'package:union_player_app/utils/loading_page.dart';
 
 class AppPage extends StatefulWidget {
   AppPage({Key? key}) : super(key: key);
@@ -77,7 +79,10 @@ class _AppPageState extends State<AppPage> {
                 "Приносим извинения за предоставленные неудобства!"
               ]);
             } else {
-              homePage = get<MainPage>();
+               homePage = BlocProvider(
+                   create: (context) => get<BottomNavigationBloc>(),
+                   child: get<BottomNavigationPage>());
+              //homePage = get<AppScreen>();
             }
           } else {
             homePage = getWithParam<LoadingPage, String>("App initializing...");
