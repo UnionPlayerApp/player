@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:union_player_app/util/localizations/string_translation.dart';
 
 class MyBottomNavigationBar extends StatelessWidget{
   late int currentIndex;
@@ -12,18 +13,18 @@ class MyBottomNavigationBar extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.radio),
-            label: 'Home',
+            label: translate(StringKeys.home, context),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.list_alt),
-            label: 'Schedule',
+            label: translate(StringKeys.schedule, context),
          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.markunread_mailbox_outlined),
-            label: 'Feedback',
+            label: translate(StringKeys.feedback, context),
           ),
         ],
 

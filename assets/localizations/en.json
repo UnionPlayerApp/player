@@ -1,0 +1,25 @@
+{
+  "requiredErrorText": "* Required",
+
+  "nameFormTitle" : "Your name",
+  "nameFormHint" : "Please, enter your name here",
+
+  "emailFormTitle" : "Email",
+  "emailFormHint" : "Enter valid email id as abc@gmail.com",
+  "emailErrorText" : "Enter valid email id",
+
+  "phoneFormTitle" : "Your phone",
+  "phoneFormHint" : "Please, enter your phone number",
+  "phoneErrorText" : "Number entered incorrectly",
+
+  "messageFormTitle" : "Your message",
+  "messageFormHint" : "Please, write something here",
+  "messageMaxLengthError" : "The length of the message cannot exceed 400 characters",
+
+  "formSuccessText" : "Your message has been sent",
+  "sendButtonText": "Send",
+
+  "home" : "Home",
+  "schedule" : "Schedule",
+  "feedback" : "Feedback"
+}

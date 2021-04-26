@@ -1,13 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:logger/logger.dart';
 import 'package:union_player_app/ui/my_app_bar.dart';
 import 'package:union_player_app/ui/my_bottom_navigation_bar.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:union_player_app/util/constants/constants.dart';
-import 'package:union_player_app/util/constants/dimensions.dart';
-import 'package:union_player_app/util/constants/strings.dart';
+import 'file:///C:/Users/lenak/AndroidStudioProjects/GeekBrainsProjects/player-master/lib/util/dimensions/dimensions.dart';
+import 'package:union_player_app/util/localizations/app_localizations_delegate.dart';
+import 'package:union_player_app/util/localizations/string_translation.dart';
 
 
 late Logger logger = Logger();
@@ -65,7 +67,27 @@ class FeedbackScreenState extends State {
         designSize: Size(prototypeDeviceWidth, prototypeDeviceHeight),
         builder: () => MaterialApp(
            debugShowCheckedModeBanner: false,
-           home: Scaffold(
+            // Пока нет навигции между экранами и тестовый запуск экрана осуществляется через прямой вызов его в main,
+            // прописываю параметры локализации в билдере каждого экрана, потом достаточно сделать это в билдере MyApp:
+            localizationsDelegates: [
+              const AppLocalizationsDelegate(),
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: [
+              const Locale('en', 'US'),
+              const Locale('ru', 'RU'),
+            ],
+            localeResolutionCallback: (Locale? locale, Iterable<Locale> supportedLocales) {
+              for (Locale supportedLocale in supportedLocales) {
+                if (supportedLocale.languageCode == locale?.languageCode || supportedLocale.countryCode == locale?.countryCode) {
+                  return supportedLocale;
+                }
+              }
+              return supportedLocales.first;
+            },
+            home: Scaffold(
               appBar: MyAppBar(_onButtonAppBarTapped, _appBarIcon),
               body: Builder(
               // Создает внутренний BuildContext, чтобы в методе onPressed
@@ -83,47 +105,47 @@ class FeedbackScreenState extends State {
                           Padding(
                               padding: textFormFieldPadding,
                               child: _createTextFormField(
-                                  nameFormTitle,
-                                  nameFormHint,
+                                  translate(StringKeys.nameFormTitle, context),
+                                  translate(StringKeys.nameFormHint, context),
                                   MultiValidator([
-                                    RequiredValidator(errorText: requiredHint),
+                                    RequiredValidator(errorText: translate(StringKeys.requiredErrorText, context)),
                                   ])
                               )),
 
                           Padding(
                               padding: textFormFieldPadding,
                               child: _createTextFormField(
-                                  emailFormTitle,
-                                  emailFormHint,
+                                  translate(StringKeys.emailFormTitle, context),
+                                  translate(StringKeys.emailFormHint, context),
                                   MultiValidator([
-                                    RequiredValidator(errorText: requiredHint),
+                                    RequiredValidator(errorText: translate(StringKeys.requiredErrorText, context)),
                                     EmailValidator(
-                                        errorText: emailErrorText),
+                                        errorText: translate(StringKeys.emailErrorText, context)),
                                   ])
                               )),
 
                           Padding(
                               padding: textFormFieldPadding,
                               child: _createTextFormField(
-                                  phoneFormTitle,
-                                  phoneFormHint,
+                                  translate(StringKeys.phoneFormTitle, context),
+                                  translate(StringKeys.phoneFormHint, context),
                                   MultiValidator([
-                                    RequiredValidator(errorText: requiredHint),
+                                    RequiredValidator(errorText: translate(StringKeys.requiredErrorText, context)),
                                     PatternValidator(
                                         phonePattern,
-                                        errorText: phoneErrorText)
+                                        errorText: translate(StringKeys.phoneErrorText, context))
                                   ])
                               )),
 
                           Padding(
                               padding: textFormFieldPadding,
                               child: _createTextFormField(
-                                  messageFormTitle,
-                                  messageFormHint,
+                                  translate(StringKeys.messageFormTitle, context),
+                                  translate(StringKeys.messageFormHint, context),
                                   MultiValidator([
-                                    RequiredValidator(errorText: requiredHint),
+                                    RequiredValidator(errorText: translate(StringKeys.requiredErrorText, context)),
                                     MaxLengthValidator(maxMessageLength,
-                                        errorText: messageMaxLengthError)
+                                        errorText: translate(StringKeys.messageMaxLengthError, context))
                                   ])
                               )),
 
@@ -133,7 +155,7 @@ class FeedbackScreenState extends State {
                             RaisedButton(
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
-                                  String text = formSuccessText;
+                                  String text = translate(StringKeys.formSuccessText, context);
                                   Color color = Colors.green;
                                   // Для использования Scaffold.of(context) я создала внутренний BuildContext - см. коммент выше,
                                   // т.к. аргумент context не может использоваться для поиска Scaffold, если он находится "выше" в дереве виджетов.
@@ -142,7 +164,7 @@ class FeedbackScreenState extends State {
                                           backgroundColor: color));
                                 }
                               },
-                              child: Text(sendButtonText),
+                              child: Text(translate(StringKeys.sendButtonText, context)),
                               color: Colors.blue,
                               textColor: Colors.white,
                             ),

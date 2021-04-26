@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:logger/logger.dart';
 import 'package:union_player_app/ui/my_app_bar.dart';
 import 'package:union_player_app/util/constants/constants.dart';
-import 'package:union_player_app/util/constants/dimensions.dart';
+import 'package:union_player_app/util/localizations/app_localizations_delegate.dart';
+import 'file:///C:/Users/lenak/AndroidStudioProjects/GeekBrainsProjects/player-master/lib/util/dimensions/dimensions.dart';
 import '../ui/my_bottom_navigation_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -78,6 +80,26 @@ class ScheduleScreenState extends State<ScheduleScreen> {
         builder: () =>
             MaterialApp(
                 debugShowCheckedModeBanner: false,
+                // Пока нет навигции между экранами и тестовый запуск экрана осуществляется через прямой вызов его в main,
+                // прописываю параметры локализации в билдере каждого экрана, потом достаточно сделать это в билдере MyApp:
+                localizationsDelegates: [
+                  const AppLocalizationsDelegate(),
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: [
+                  const Locale('en', 'US'),
+                  const Locale('ru', 'RU'),
+                ],
+                localeResolutionCallback: (Locale? locale, Iterable<Locale> supportedLocales) {
+                  for (Locale supportedLocale in supportedLocales) {
+                    if (supportedLocale.languageCode == locale?.languageCode || supportedLocale.countryCode == locale?.countryCode) {
+                      return supportedLocale;
+                    }
+                  }
+                  return supportedLocales.first;
+                },
                 home: Scaffold(
                     appBar: MyAppBar(_onButtonAppBarTapped, _appBarIcon),
                     body: Center(

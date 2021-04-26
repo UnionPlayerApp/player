@@ -12,7 +12,6 @@ final EdgeInsets allSidesMargin = EdgeInsets.all(16.w);
 // ScheduleScreen
 // Разделитель
 final double listViewDividerHeight = 2.h;
-
 // Элемент списка
 final double scheduleItemHeight = 105.h;
 final double scheduleImageSide = 100.h;
