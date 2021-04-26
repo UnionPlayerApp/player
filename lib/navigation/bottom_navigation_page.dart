@@ -7,7 +7,7 @@ import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/screen_main/main_page.dart';
 import 'package:union_player_app/screen_schedule/schedule_screen.dart';
 
-class AppScreen extends StatelessWidget {
+class BottomNavigationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,25 +24,6 @@ class AppScreen extends StatelessWidget {
             default:
               return Container();
           }
-          // if (state is PageLoading) {
-          //   return Center(child: CircularProgressIndicator());
-          // }
-          // if (state is MainPageLoaded) {
-          //   return BlocProvider(
-          //       create: (context) => get<MainBloc>(),
-          //       child: get<MainPage>(),
-          //   );
-          // }
-          // if (state is SchedulePageLoaded) {
-          //   return ScheduleScreen(
-          //     isPlaying: true,
-          //   );
-          // }
-          // if (state is FeedbackPageLoaded) {
-          //   return FeedbackScreen(
-          //     isPlaying: true,
-          //   );
-          // }
         },
       ),
       bottomNavigationBar:
@@ -72,28 +53,5 @@ class AppScreen extends StatelessWidget {
                     },
                   )),
     );
-    //   return BottomNavigationBar(
-    //     currentIndex:
-    //         context.select((BottomNavigationBloc bloc) => bloc.currentIndex),
-    //     items: const <BottomNavigationBarItem>[
-    //       BottomNavigationBarItem(
-    //         icon: Icon(Icons.radio, color: Colors.black),
-    //         label: 'Home',
-    //       ),
-    //       BottomNavigationBarItem(
-    //         icon: Icon(Icons.list_alt, color: Colors.black),
-    //         label: 'Schedule',
-    //       ),
-    //       BottomNavigationBarItem(
-    //         icon:
-    //             Icon(Icons.markunread_mailbox_outlined, color: Colors.black),
-    //         label: 'Feedback',
-    //       ),
-    //     ],
-    //     onTap: (index) => context
-    //         .read<BottomNavigationBloc>()
-    //         .add(PageTapped(index: index)),
-    //   );
-    // }),
   }
 }
