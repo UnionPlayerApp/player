@@ -17,13 +17,16 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       : super(MainState("Stop", "Initialising"));
 
 
+
   @override
   Stream<MainState> mapEventToState(MainEvent event) async* {
     if (event is PlayPauseFabPressed) {
       yield* _mapPlayPauseFabPressedToState();
       return;
     }
+
     if (event is PlayerStateChangedToBuffering) {
+
       yield* _mapPlayerStateChangedBufferingToState(event.isPlaying);
       return;
     }
@@ -84,4 +87,3 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
   String _createStateStr01(bool isPlaying) =>
       isPlaying ? "Play" : "Stop";
-}
