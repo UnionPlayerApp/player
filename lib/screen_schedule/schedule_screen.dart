@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:union_player_app/ui/my_app_bar.dart';
+import 'package:union_player_app/app/my_app_bar.dart';
 
 const LOG_TAG = "UPA -> ";
 late Logger logger = Logger();

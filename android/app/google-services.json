@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "272934751386",
+    "project_id": "union-player-22857",
+    "storage_bucket": "union-player-22857.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:272934751386:android:8cca5a1574cef503486323",
+        "android_client_info": {
+          "package_name": "com.chplalex.union_player_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "272934751386-0dkf4uu9hflvsgg3qpl5bopbd9qg063i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhblIe4qqGPr-OyoxgZWdenstv0FShZB4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "272934751386-0dkf4uu9hflvsgg3qpl5bopbd9qg063i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

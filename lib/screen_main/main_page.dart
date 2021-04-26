@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:koin_flutter/koin_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../my_app_bar.dart';
-import 'main_bloc.dart';
-import 'main_event.dart';
-import 'main_state.dart';
+import 'package:koin_flutter/koin_flutter.dart';
+import 'package:union_player_app/app//my_app_bar.dart';
+import 'package:union_player_app/screen_main/main_bloc.dart';
+import 'package:union_player_app/screen_main/main_event.dart';
+import 'package:union_player_app/screen_main/main_state.dart';
 
 class MainPage extends StatelessWidget {
   MainPage({Key? key}) : super(key: key);

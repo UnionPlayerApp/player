@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:union_player_app/blocs/bottom_navigation/bottom_navigation_bloc.dart';
 import 'package:koin_flutter/koin_flutter.dart';
-import 'package:union_player_app/ui/pages/feedback_page.dart';
-import 'package:union_player_app/ui/pages/schedule_screen.dart';
-import 'package:union_player_app/ui/pages/screen_main/main_bloc.dart';
-import 'package:union_player_app/ui/pages/screen_main/main_page.dart';
+import 'package:union_player_app/navigation/bottom_navigation_bloc.dart';
+import 'package:union_player_app/screen_feedback/feedback_page.dart';
+import 'package:union_player_app/screen_main/main_bloc.dart';
+import 'package:union_player_app/screen_main/main_page.dart';
+import 'package:union_player_app/screen_schedule/schedule_screen.dart';
 
 class AppScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mainBloc = get<MainBloc>();
     return Scaffold(
       body: BlocBuilder<BottomNavigationBloc, BottomNavigationState>(
         builder: (BuildContext context, BottomNavigationState state) {
@@ -20,7 +19,7 @@ class AppScreen extends StatelessWidget {
           }
           if (state is MainPageLoaded) {
             return BlocProvider(
-                create: (context) => mainBloc,
+                create: (context) => get<MainBloc>(),
                 child: get<MainPage>(),
             );
           }
@@ -34,7 +33,6 @@ class AppScreen extends StatelessWidget {
               isPlaying: true,
             );
           }
-
           return Container();
         },
       ),
