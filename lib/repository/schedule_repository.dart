@@ -34,7 +34,7 @@ class ScheduleRepository implements Repository{
 
 
   @override
-  Future<List<ProgramItem>> get() async{
+  List<ProgramItem> get() {
     return _programList;
   }
 

@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
-import 'package:union_player_app/util/localizations/app_localizations.dart';
+
+import 'app_localizations.dart';
 
 String translate(StringKeys key, BuildContext context){
   String stringKey = key.toString().substring(11, key.toString().length); // Здесь 11 - это кол-во символов в "StringKeys."
-  String? translatedString = AppLocalizations.of(context).translate(stringKey);
+  String? translatedString = AppLocalizations.of(context)?.translate(stringKey);
   if (translatedString != null) { return translatedString; }
-  else { return ""; }
+  else { return "NOT FOUND"; }
 }
 
 enum  StringKeys{

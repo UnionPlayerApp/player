@@ -5,13 +5,17 @@ abstract class MainEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class UserPressEvent extends MainEvent {}
+abstract class UserPressEvent extends MainEvent {}
+
 class PlayPauseFabPressed extends UserPressEvent {}
 
-class PlayerStateChangedEvent extends MainEvent {
+abstract class PlayerStateChangedEvent extends MainEvent {
    final bool isPlaying;
 
    PlayerStateChangedEvent(this.isPlaying);
+
+   @override
+   List<Object?> get props => [isPlaying];
 }
 
 class PlayerStateChangedToBuffering extends PlayerStateChangedEvent {

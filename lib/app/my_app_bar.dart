@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:union_player_app/util/constants/constants.dart';
+import 'package:union_player_app/utils/constants/constants.dart';
 
 class MyAppBar extends AppBar{
   late Color backgroundColor;

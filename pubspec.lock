@@ -99,6 +99,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.1.0"
+  firebase_core:
+    dependency: "direct main"
+    description:
+      name: firebase_core
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.4"
+  firebase_core_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_core_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.0"
+  firebase_core_web:
+    dependency: transitive
+    description:
+      name: firebase_core_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -175,6 +196,34 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.1"
+  koin:
+    dependency: transitive
+    description:
+      name: koin
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.15.0-nullsafety.0"
+  koin_bloc:
+    dependency: "direct main"
+    description:
+      name: koin_bloc
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0-nullsafety.1"
+  koin_flutter:
+    dependency: "direct main"
+    description:
+      name: koin_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.11.0-nullsafety.0"
+  kt_dart:
+    dependency: transitive
+    description:
+      name: kt_dart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.9.0"
   logger:
     dependency: "direct main"
     description:
