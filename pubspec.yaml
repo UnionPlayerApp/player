@@ -20,14 +20,23 @@ dependencies:
   koin_bloc:
   koin_flutter: ^0.11.0-nullsafety.0
   logger:
+  flutter_screenutil: ^5.0.0
+  form_field_validator: ^1.1.0
+  flutter_localizations:
+    sdk: flutter
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
 flutter:
+  assets:
+    - assets/images/
+    - assets/localizations/en.json
+    - assets/localizations/ru.json
+
+
 
   uses-material-design: true
 
-  assets:
-    - assets/images/

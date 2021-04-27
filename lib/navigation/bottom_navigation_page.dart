@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/navigation/bottom_navigation_bloc.dart';
-import 'package:union_player_app/screen_feedback/feedback_page.dart';
+import 'package:union_player_app/repository/schedule_repository.dart';
+import 'package:union_player_app/screen_feedback/feedback_screen.dart';
 import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/screen_main/main_page.dart';
 import 'package:union_player_app/screen_schedule/schedule_screen.dart';
+import 'package:union_player_app/utils/localizations/string_translation.dart';
 
 class BottomNavigationPage extends StatelessWidget {
   @override
@@ -18,7 +20,7 @@ class BottomNavigationPage extends StatelessWidget {
               return BlocProvider(
                   create: (context) => get<MainBloc>(), child: get<MainPage>());
             case 1:
-              return ScheduleScreen(isPlaying: true);
+              return ScheduleScreen(ScheduleRepository(), true);
             case 2:
               return FeedbackScreen(isPlaying: true);
             default:
@@ -31,19 +33,19 @@ class BottomNavigationPage extends StatelessWidget {
               builder: (BuildContext context, BottomNavigationState state) =>
                   BottomNavigationBar(
                     currentIndex: state.currentIndex,
-                    items: const <BottomNavigationBarItem>[
+                    selectedItemColor: Colors.red[800],
+                    items: <BottomNavigationBarItem>[
                       BottomNavigationBarItem(
-                        icon: Icon(Icons.radio, color: Colors.black),
-                        label: 'Home',
+                        icon: Icon(Icons.radio),
+                        label: translate(StringKeys.home, context),
                       ),
                       BottomNavigationBarItem(
-                        icon: Icon(Icons.list_alt, color: Colors.black),
-                        label: 'Schedule',
+                        icon: Icon(Icons.list_alt),
+                        label: translate(StringKeys.schedule, context),
                       ),
                       BottomNavigationBarItem(
-                        icon: Icon(Icons.markunread_mailbox_outlined,
-                            color: Colors.black),
-                        label: 'Feedback',
+                        icon: Icon(Icons.markunread_mailbox_outlined),
+                        label:  translate(StringKeys.feedback, context),
                       ),
                     ],
                     onTap: (index) {

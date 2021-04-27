@@ -3,14 +3,18 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/navigation/bottom_navigation_bloc.dart';
 import 'package:union_player_app/navigation/bottom_navigation_page.dart';
 import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/utils/app_logger.dart';
+import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/info_page.dart';
 import 'package:union_player_app/utils/loading_page.dart';
+import 'package:union_player_app/utils/localizations/app_localizations_delegate.dart';
 
 class AppPage extends StatefulWidget {
   AppPage({Key? key}) : super(key: key);
@@ -91,10 +95,34 @@ class _AppPageState extends State<AppPage> {
         },
       );
 
-  Widget _createAppPage(Widget homePage) => MaterialApp(
+  Widget _createAppPage(Widget homePage) {
+   return ScreenUtilInit(
+      designSize: Size(prototypeDeviceWidth, prototypeDeviceHeight),
+      builder: () =>
+        MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Union Radio Player',
-        theme: ThemeData(primarySwatch: Colors.blueGrey),
-        home: homePage,
-      );
+        localizationsDelegates: [
+          const AppLocalizationsDelegate(),
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: [
+          const Locale('en', 'US'),
+          const Locale('ru', 'RU'),
+        ],
+        localeResolutionCallback: (Locale? locale, Iterable<Locale> supportedLocales) {
+          for (Locale supportedLocale in supportedLocales) {
+           if (supportedLocale.languageCode == locale?.languageCode || supportedLocale.countryCode == locale?.countryCode) {
+            return supportedLocale;
+           }
+         }
+          return supportedLocales.first;
+        },
+          title: 'Union Radio Player',
+          theme: ThemeData(primarySwatch: Colors.blueGrey),
+          home: homePage,
+    )
+   );
+  }
 }

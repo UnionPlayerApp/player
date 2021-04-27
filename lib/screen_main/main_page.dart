@@ -9,11 +9,9 @@ import 'package:union_player_app/screen_main/main_state.dart';
 class MainPage extends StatelessWidget {
   MainPage({Key? key}) : super(key: key);
 
-  IconData _appBarIcon = Icons.play_circle_outline;
-  // AppBar createAppBar() => AppBar(title: Text("Main screen"));
+  IconData _appBarIcon =  Icons.play_arrow_rounded;
 
-  void _onButtonAppBarTapped(){
-  }
+  void _onButtonAppBarTapped(){}
 
   Text createStateRow(BuildContext context, String stateStr) => Text(
         stateStr,
