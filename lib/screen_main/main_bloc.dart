@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:audio_session/audio_session.dart';
@@ -16,14 +17,12 @@ const STREAM_HIGH_URL = "http://78.155.222.238:8010/souz_radio_192.mp3";
 
 class MainBloc extends Bloc<MainEvent, MainState> {
   final AudioPlayer _player = AudioPlayer();
-
-  //TODO: капсом принято писать только константы. В данном случае это переменная, поэтому принт lowerCamelCase (с маленькой и без _) - currentUrl. П поскольку поле, наверное, должно быть приватным, то и _currentUrl
-  //String CURRENT_URL="";
   String _currentUrl = "";
   final Logger _logger = Logger();
 
   MainBloc()
       : super(MainState("Pausing", "Initialising", Icons.play_arrow_rounded)) {
+    Timer.periodic(Duration(seconds: 2), (Timer t) => _checkForBufferLoading());
     _initPlayer();
   }
 
@@ -31,7 +30,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration.music());
 
-    _currentUrl = STREAM_HIGH_URL;
+    _currentUrl = STREAM_LOW_URL;
 
     _player.playerStateStream.listen((playerState) {
       switch (playerState.processingState) {
@@ -60,6 +59,48 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     });
 
     _waitForConnection();
+  }
+  Future<void> _checkForBufferLoading() async {
+    //TODO:теоретически эт работает, нужно только добавить проверку на воспроизведение поскольку после переключения каналов плеер перестаёт подгружать в буффер данные во время паузы и заполненность буффера всегда равна нулю
+    if(await internetConnectionCheck()){
+      if(_player.bufferedPosition.inSeconds - _player.position.inSeconds>15){
+        switch (_currentUrl) {
+          case STREAM_LOW_URL:
+            _currentUrl = STREAM_MED_URL;
+            _log(_player.bufferedPosition.inSeconds.toString());
+            _log(_player.position.inSeconds.toString());
+            _log("Stream is now in medium bitrate");
+            _waitForConnection();
+            break;
+          case STREAM_MED_URL:
+            _currentUrl = STREAM_HIGH_URL;
+            _log(_player.bufferedPosition.inSeconds.toString());
+            _log(_player.position.inSeconds.toString());
+            _log("Stream is now in high bitrate");
+            _waitForConnection();
+            break;
+        }
+      }
+      else if(_player.bufferedPosition.inSeconds - _player.position.inSeconds<2){
+        switch (_currentUrl) {
+        case STREAM_HIGH_URL:
+          _currentUrl = STREAM_MED_URL;
+          _log(_player.bufferedPosition.inSeconds.toString());
+          _log(_player.position.inSeconds.toString());
+          _log("Stream is now in medium bitrate");
+          _waitForConnection();
+          break;
+        case STREAM_MED_URL:
+          _currentUrl = STREAM_LOW_URL;
+          _log(_player.bufferedPosition.inSeconds.toString());
+          _log(_player.position.inSeconds.toString());
+          _log("Stream is now in low bitrate");
+          _waitForConnection();
+          break;
+      }
+
+      }
+    }
   }
 
   Future<void> _waitForConnection() async {
@@ -131,21 +172,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     * В итоге мы должны контролировать не изменение статуса плеера, а состояние буффера.
     * Попробуй поискать такую возможность
     * */
-    if (event is PlayerStateChangedToBuffering) {
-      if (state.stateStr02.compareTo("Ready") == 0) {
-        _log(_currentUrl);
-        switch (_currentUrl) {
-          case STREAM_HIGH_URL:
-            _currentUrl = STREAM_MED_URL;
-            _log("Stream is now in medium bitrate");
-            break;
-          case STREAM_MED_URL:
-            _currentUrl = STREAM_LOW_URL;
-            _log("Stream is now in low bitrate");
-            break;
-        }
-        _waitForConnection();
-      }
+    if (event is PlayerStateChangedToBuffering) { 
       yield* _mapPlayerStateChangedBufferingToState(event.isPlaying);
       return;
     }
