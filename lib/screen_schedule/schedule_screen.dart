@@ -7,8 +7,8 @@ import 'package:union_player_app/repository/repository.dart';
 import 'package:union_player_app/repository/schedule_repository.dart';
 import 'package:union_player_app/ui/my_app_bar.dart';
 import 'package:union_player_app/util/constants/constants.dart';
+import 'package:union_player_app/util/dimensions/dimensions.dart';
 import 'package:union_player_app/util/localizations/app_localizations_delegate.dart';
-import 'file:///C:/Users/lenak/AndroidStudioProjects/GeekBrainsProjects/player-master/lib/util/dimensions/dimensions.dart';
 import '../ui/my_bottom_navigation_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
