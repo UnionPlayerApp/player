@@ -1,3 +1,6 @@
-abstract class Repository{
-  get();
+
+class Repository{
+
+  get(){}
+
 }

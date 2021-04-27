@@ -1,10 +1,10 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:logger/logger.dart';
 import 'package:union_player_app/model/program_item.dart';
 import 'package:union_player_app/repository/repository.dart';
+import 'package:union_player_app/repository/schedule_repository.dart';
 import 'package:union_player_app/ui/my_app_bar.dart';
 import 'package:union_player_app/util/constants/constants.dart';
 import 'package:union_player_app/util/localizations/app_localizations_delegate.dart';
@@ -14,12 +14,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 late Logger logger = Logger();
 
+void main() {
+  runApp(ScheduleScreen(ScheduleRepository(), true));
+}
+
 class ScheduleScreen extends StatefulWidget {
   late bool _isPlaying;
   late Repository _repository;
 
   //При переходе на экран расписания передаем информацию, играет ли радио, чтобы отобразить правильный значок в аппбаре:
-  ScheduleScreen(repository, bool isPlaying) {
+  ScheduleScreen(Repository repository, bool isPlaying) {
     _repository = repository;
     _isPlaying = isPlaying;
   }

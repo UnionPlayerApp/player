@@ -2,7 +2,7 @@
 import 'package:union_player_app/model/program_item.dart';
 import 'package:union_player_app/repository/repository.dart';
 
-class ScheduleRepository extends Repository{
+class ScheduleRepository implements Repository{
 
   ScheduleRepository();
 

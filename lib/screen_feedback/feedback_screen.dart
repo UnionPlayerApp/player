@@ -14,6 +14,10 @@ import 'package:union_player_app/util/localizations/string_translation.dart';
 
 late Logger logger = Logger();
 
+void main() {
+  runApp(FeedbackScreen(isPlaying: true));
+}
+
 class FeedbackScreen extends StatefulWidget {
   bool _isPlaying;
 
