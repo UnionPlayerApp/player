@@ -5,44 +5,12 @@ import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
 import 'package:union_player_app/utils/app_logger.dart';
 
-const STREAM_URL = "http://78.155.222.238:8010/souz_radio_128.mp3";
-
-
 class MainBloc extends Bloc<MainEvent, MainState> {
-  late AppLogger _logger;
-  late AudioPlayer _player;
+  final AppLogger _logger;
+  final AudioPlayer _player;
 
   MainBloc(this._player, this._logger)
-      : super(MainState("Stop", "Initialising", Icons.play_arrow_rounded)) {
-    _initPlayer();
-  }
-
-  Future<void> _initPlayer() async {
-    _player.playerStateStream.listen((playerState) {
-      switch (playerState.processingState) {
-        case ProcessingState.idle:
-          add(PlayerStateChangedToIdle(playerState.playing));
-          break;
-        case ProcessingState.loading:
-          add(PlayerStateChangedToLoading(playerState.playing));
-          break;
-        case ProcessingState.buffering:
-          add(PlayerStateChangedToBuffering(playerState.playing));
-          break;
-        case ProcessingState.ready:
-          add(PlayerStateChangedToReady(playerState.playing));
-          break;
-        case ProcessingState.completed:
-          add(PlayerStateChangedToCompleted(playerState.playing));
-          break;
-      }
-    });
-
-    _player.playbackEventStream.listen((event) {},
-        onError: (Object e, StackTrace stackTrace) {
-      _showError("Audio stream error: $e", Error());
-    });
-  }
+      : super(MainState("Stop", "Initialising"));
 
   @override
   Stream<MainState> mapEventToState(MainEvent event) async* {
@@ -78,60 +46,37 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
   Stream<MainState> _mapPlayPauseFabPressedToState() async* {
     String stateStr01 = state.stateStr01;
-    IconData iconData = state.iconData;
 
     if (_player.processingState == ProcessingState.ready) {
       stateStr01 = _createStateStr01(!_player.playing);
-      iconData = _createIconData(!_player.playing);
-      _setPlayerMode(!_player.playing);
     }
 
-    yield MainState(stateStr01, state.stateStr02, iconData);
+    yield MainState(stateStr01, state.stateStr02);
   }
 
   Stream<MainState> _mapPlayerStateChangedBufferingToState(
       bool isPlaying) async* {
-    yield MainState(state.stateStr01, "Buffering", _createIconData(isPlaying));
+    yield MainState(state.stateStr01, "Buffering");
   }
 
   Stream<MainState> _mapPlayerStateChangedCompletedToState(
       bool isPlaying) async* {
-    yield MainState(state.stateStr01, "Completed", _createIconData(isPlaying));
+    yield MainState(state.stateStr01, "Completed");
   }
 
   Stream<MainState> _mapPlayerStateChangedLoadingToState(
       bool isPlaying) async* {
-    yield MainState(state.stateStr01, "Loading", _createIconData(isPlaying));
+    yield MainState(state.stateStr01, "Loading");
   }
 
   Stream<MainState> _mapPlayerStateChangedIdleToState(bool isPlaying) async* {
-    yield MainState(state.stateStr01, "Idle", _createIconData(isPlaying));
+    yield MainState(state.stateStr01, "Idle");
   }
 
   Stream<MainState> _mapPlayerStateChangedReadyToState(bool isPlaying) async* {
-    yield MainState(state.stateStr01, "Ready", _createIconData(isPlaying));
+    yield MainState(state.stateStr01, "Ready");
   }
-
-  void _setPlayerMode(bool isPlaying) =>
-      isPlaying ? _player.play() : _player.pause();
 
   String _createStateStr01(bool isPlaying) =>
       isPlaying ? "Play" : "Stop";
-
-  IconData _createIconData(bool isPlaying) =>
-      isPlaying ? Icons.stop_rounded : Icons.play_arrow_rounded;
-
-  //TODO: нужно понять, вызывается ли этот метод автоматом,
-  //TODO: или нужно сделать вызов явно
-  @override
-  Future<void> close() async {
-    _player.playbackEventStream.listen(null);
-    _player.playerStateStream.listen(null);
-    super.close();
-  }
-
-  //TODO: нужно сделать отображение ошибок на экране
-  void _showError(String msg, Error error) {
-    _logger.logError(msg, error);
-  }
 }

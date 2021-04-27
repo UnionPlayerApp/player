@@ -34,6 +34,7 @@ enum  StringKeys{
   // BottomNavigationBar
   home,
   schedule,
-  feedback
+  feedback,
+  settings
 }
 

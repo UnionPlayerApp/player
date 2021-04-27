@@ -21,5 +21,6 @@
 
   "home" : "Home",
   "schedule" : "Schedule",
-  "feedback" : "Feedback"
+  "feedback" : "Feedback",
+  "settings" : "Settings"
 }

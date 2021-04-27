@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:koin/koin.dart';
-import 'package:union_player_app/app/app_page.dart';
 import 'package:union_player_app/di/di.dart';
-
+import 'package:union_player_app/screen_init/init_page.dart';
 
 void main() {
   startKoin((app) {
@@ -10,5 +9,5 @@ void main() {
     app.module(appModule);
   });
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(AppPage());
+  runApp(InitPage());
 }
