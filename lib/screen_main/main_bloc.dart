@@ -66,8 +66,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   }
 
   Future<void> _checkForBufferLoading() async {
-    if (await internetConnectionCheck() && _player.playing &&
-        _player.position.inSeconds > 5) {
+    if (await internetConnectionCheck() && _player.playing && _player.position.inSeconds > 5) {
       if (_player.bufferedPosition.inSeconds - _player.position.inSeconds > 15) {
         switch (_currentUrl) {
           case STREAM_LOW_URL:
