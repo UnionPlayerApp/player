@@ -25,6 +25,10 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   MainBloc(this._player, this._logger)
       : super(MainState("Stop", "Initialising")) {
     Timer.periodic(Duration(seconds: 3), (Timer t) => _checkForBufferLoading());
+    _player.playbackEventStream.listen((event) {},
+        onError: (Object e, StackTrace stackTrace) {
+          _waitForConnection();
+        });
   }
 
 
