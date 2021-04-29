@@ -1,11 +1,7 @@
-
 import 'dart:async';
 import 'dart:io';
-
-import 'package:audio_session/audio_session.dart';
 import 'package:bloc/bloc.dart';
 import 'package:connectivity/connectivity.dart';
-import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
