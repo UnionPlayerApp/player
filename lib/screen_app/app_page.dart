@@ -5,6 +5,7 @@ import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_feedback/feedback_page.dart';
 import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/screen_main/main_page.dart';
+import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/info_page.dart';
@@ -51,7 +52,8 @@ class AppPage extends StatelessWidget {
         return BlocProvider(
             create: (context) => get<MainBloc>(), child: get<MainPage>());
       case 1:
-        return get<SchedulePage>();
+        return BlocProvider(
+            create: (context) => get<ScheduleBloc>(), child: get<SchedulePage>());
       case 2:
         return get<FeedbackPage>();
       default:

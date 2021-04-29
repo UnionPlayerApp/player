@@ -32,9 +32,8 @@ class ScheduleRepository implements Repository{
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoydUqpTZ-TQ2h-IDrwIwuQjtWd44w2IXPWQ&usqp=CAU")
   ];
 
-
   @override
-  List<ProgramItem> get() {
+  Future<List<ProgramItem>> get() async {
     return _programList;
   }
 

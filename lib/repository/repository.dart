@@ -1,6 +1,6 @@
 
-class Repository{
+class Repository {
 
-  get(){}
+  Future get() async {}
 
 }
