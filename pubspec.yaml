@@ -13,6 +13,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   equatable:
   firebase_core:
+  flutter_bloc:
+  just_audio:
   flutter:
     sdk: flutter
   connectivity: ^3.0.3
