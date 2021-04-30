@@ -93,6 +93,6 @@ class AppPage extends StatelessWidget {
         onPressed: () => context.read<AppBloc>().add(AppFabPressedEvent()),
         tooltip: 'Play / Stop',
         child: Icon(
-            state.isPlaying ? Icons.play_arrow_rounded : Icons.stop_rounded),
+            state.playingState ? Icons.stop_rounded : Icons.play_arrow_rounded),
       );
 }

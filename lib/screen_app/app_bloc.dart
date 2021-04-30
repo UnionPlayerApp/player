@@ -15,14 +15,21 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   final AudioPlayer _player;
   final AppLogger _logger;
 
-  AppBloc(this._player, this._logger) : super(AppState(0, false)) {
+  AppBloc(this._player, this._logger)
+      : super(AppState(0, false, ProcessingState.idle)) {
     Timer.periodic(Duration(seconds: PLAYER_BUFFER_CHECK_DURATION),
         (Timer t) => _checkForBufferLoading());
 
-    _player.playbackEventStream.listen((event) {},
-        onError: (Object e, StackTrace stackTrace) {
+    _player.playbackEventStream.listen((event) {
+      // nothing
+    }, onError: (Object e, StackTrace stackTrace) {
       _logger.logError("Audio player playback error", e);
       _waitForConnection();
+    });
+
+    _player.playerStateStream.listen((playerState) {
+      add(AppPlayerStateEvent(
+          playerState.playing, playerState.processingState));
     });
   }
 
@@ -30,12 +37,14 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   @override
   Stream<AppState> mapEventToState(AppEvent event) async* {
-    if (event is AppNavPressedEvent) {
-      yield AppState(event.navIndex, state.isPlaying);
-    }
     if (event is AppFabPressedEvent) {
-      state.isPlaying ? _player.play() : _player.pause();
-      yield AppState(state.navIndex, !state.isPlaying);
+      _player.playing ? _player.pause() : _player.play();
+    }
+    if (event is AppNavPressedEvent) {
+      yield AppState(event.navIndex, state.playingState, state.processingState);
+    }
+    if (event is AppPlayerStateEvent) {
+      yield AppState(state.navIndex, event.playingState, event.processingState);
     }
   }
 

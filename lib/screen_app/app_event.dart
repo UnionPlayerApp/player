@@ -16,4 +16,12 @@ class AppNavPressedEvent extends AppEvent {
   List<Object> get props => [navIndex];
 }
 
+class AppPlayerStateEvent extends AppEvent {
+  final bool playingState;
+  final ProcessingState processingState;
 
+  AppPlayerStateEvent(this.playingState, this.processingState);
+
+  @override
+  List<Object?> get props => [playingState, processingState];
+}
