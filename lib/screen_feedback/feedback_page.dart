@@ -108,6 +108,5 @@ class FeedbackPageState extends State {
                 ),
               ],
             )));
-    ;
   }
 }

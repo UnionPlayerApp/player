@@ -1,39 +1,12 @@
 import 'package:equatable/equatable.dart';
+import 'package:just_audio/just_audio.dart';
 
-abstract class MainEvent extends Equatable {
+class MainEvent extends Equatable {
+  final bool playingState;
+  final ProcessingState processingState;
+
+  MainEvent(this.playingState, this.processingState);
+
   @override
-  List<Object?> get props => [];
-}
-
-abstract class UserPressEvent extends MainEvent {}
-
-class PlayPauseFabPressed extends UserPressEvent {}
-
-abstract class PlayerStateChangedEvent extends MainEvent {
-   final bool isPlaying;
-
-   PlayerStateChangedEvent(this.isPlaying);
-
-   @override
-   List<Object?> get props => [isPlaying];
-}
-
-class PlayerStateChangedToBuffering extends PlayerStateChangedEvent {
-  PlayerStateChangedToBuffering(bool isPlaying) : super(isPlaying);
-}
-
-class PlayerStateChangedToCompleted extends PlayerStateChangedEvent {
-  PlayerStateChangedToCompleted(bool isPlaying) : super(isPlaying);
-}
-
-class PlayerStateChangedToIdle extends PlayerStateChangedEvent {
-  PlayerStateChangedToIdle(bool isPlaying) : super(isPlaying);
-}
-
-class PlayerStateChangedToLoading extends PlayerStateChangedEvent {
-  PlayerStateChangedToLoading(bool isPlaying) : super(isPlaying);
-}
-
-class PlayerStateChangedToReady extends PlayerStateChangedEvent {
-  PlayerStateChangedToReady(bool isPlaying) : super(isPlaying);
+  List<Object?> get props => [playingState, processingState];
 }
