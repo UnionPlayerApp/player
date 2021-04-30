@@ -10,12 +10,11 @@ import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_app/app_page.dart';
 import 'package:union_player_app/utils/app_logger.dart';
+import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/info_page.dart';
 import 'package:union_player_app/utils/loading_page.dart';
 import 'package:union_player_app/utils/localizations/app_localizations_delegate.dart';
-
-const STREAM_URL = "http://78.155.222.238:8010/souz_radio_128.mp3";
 
 class InitPage extends StatefulWidget {
   InitPage({Key? key}) : super(key: key);
@@ -37,10 +36,10 @@ class _InitPageState extends State<InitPage> {
   }
 
   Future _initPlayer() async {
-    final _source = AudioSource.uri(Uri.parse(STREAM_URL));
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration.music());
 
+    final _source = AudioSource.uri(Uri.parse(STREAM_MED_URL));
     try {
       await _player.setAudioSource(_source);
     } catch (error) {

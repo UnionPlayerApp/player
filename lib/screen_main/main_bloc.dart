@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
@@ -18,6 +18,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       yield* _mapPlayPauseFabPressedToState();
       return;
     }
+
     if (event is PlayerStateChangedToBuffering) {
       yield* _mapPlayerStateChangedBufferingToState(event.isPlaying);
       return;

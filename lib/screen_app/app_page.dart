@@ -11,6 +11,7 @@ import 'package:union_player_app/utils/info_page.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 
 class AppPage extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

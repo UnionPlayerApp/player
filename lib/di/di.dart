@@ -14,7 +14,7 @@ import 'package:union_player_app/utils/loading_page.dart';
 final appModule = Module()
   ..single((scope) => AudioPlayer())
   ..single((scope) => AppLogger())
-  ..single((scope) => AppBloc(scope.get()))
+  ..single((scope) => AppBloc(scope.get(), scope.get()))
   ..single((scope) => AppPage())
   ..single((scope) => MainBloc(scope.get(), scope.get()))
   ..single((scope) => MainPage())
