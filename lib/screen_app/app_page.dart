@@ -11,24 +11,16 @@ import 'package:union_player_app/utils/info_page.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 
 class AppPage extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _createAppBar(),
-      body: BlocBuilder<AppBloc, AppState>(
-        builder: (BuildContext context, AppState state) =>
-            _createPage(context, state),
-      ),
-      bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
-          builder: (BuildContext context, AppState state) =>
-              _createBottomNavigationBar(context, state)),
-      floatingActionButton: BlocBuilder<AppBloc, AppState>(
-        builder: (context, state) => createFAB(context, state),
-        bloc: get<AppBloc>(),
-      ),
-      //floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-    );
+    return BlocBuilder<AppBloc, AppState>(
+        builder: (BuildContext context, AppState state) => Scaffold(
+              appBar: _createAppBar(),
+              body: _createPage(context, state),
+              floatingActionButton: createFAB(context, state),
+            ));
+    //   //floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+    // );
   }
 
   AppBar _createAppBar() => AppBar(
