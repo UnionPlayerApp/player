@@ -1,6 +1,3 @@
-
-class IScheduleRepository {
-
+abstract class IScheduleRepository {
   Future getScheduleList() async {}
-
 }

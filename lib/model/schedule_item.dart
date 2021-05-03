@@ -5,6 +5,5 @@ class ScheduleItem {
   final String startTime;
   final String? imageUrl;
 
-  ScheduleItem(this.title, this.text, this.startTime, this.imageUrl );
-
+  ScheduleItem(this.title, this.text, this.startTime, this.imageUrl);
 }

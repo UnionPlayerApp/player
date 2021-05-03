@@ -15,7 +15,6 @@ class ScheduleLoadSuccessState extends ScheduleState {
 
   @override
   List<Object> get props => [items];
-
 }
 
 class ScheduleLoadErrorState extends ScheduleState {
@@ -25,5 +24,4 @@ class ScheduleLoadErrorState extends ScheduleState {
 
   @override
   List<Object> get props => [errorMessage];
-
 }

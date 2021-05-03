@@ -7,7 +7,6 @@ import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 
-
 class SchedulePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
