@@ -5,6 +5,7 @@ import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_feedback/feedback_page.dart';
 import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/screen_main/main_page.dart';
+import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/info_page.dart';
@@ -14,8 +15,7 @@ class AppPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
-        builder: (BuildContext context, AppState state) =>
-            Scaffold(
+        builder: (BuildContext context, AppState state) => Scaffold(
               appBar: _createAppBar(context, state),
               body: _createPage(context, state),
               floatingActionButton: _createFAB(context, state),
@@ -25,8 +25,7 @@ class AppPage extends StatelessWidget {
     // );
   }
 
-  AppBar _createAppBar(BuildContext context, AppState state) =>
-      AppBar(
+  AppBar _createAppBar(BuildContext context, AppState state) => AppBar(
         // backgroundColor: Colors.white,
         title: _createTitle(context, state),
         leading: Container(
@@ -54,9 +53,12 @@ class AppPage extends StatelessWidget {
     switch (state.navIndex) {
       case 0:
         return BlocProvider(
-            create: (context) => get<MainBloc>(), child: get<MainPage>());
+            create: (context) => get<MainBloc>(),
+            child: get<MainPage>());
       case 1:
-        return get<SchedulePage>();
+        return BlocProvider(
+            create: (context) => get<ScheduleBloc>(),
+            child: get<SchedulePage>());
       case 2:
         return get<FeedbackPage>();
       default:
@@ -65,8 +67,8 @@ class AppPage extends StatelessWidget {
     }
   }
 
-  BottomNavigationBar _createBottomNavigationBar(BuildContext context,
-      AppState state) =>
+  BottomNavigationBar _createBottomNavigationBar(
+          BuildContext context, AppState state) =>
       BottomNavigationBar(
         currentIndex: state.navIndex,
         selectedItemColor: Colors.red[800],

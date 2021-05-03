@@ -35,6 +35,8 @@ enum  StringKeys{
   home,
   schedule,
   feedback,
-  settings
+  settings,
+
+  loading_error
 }
 
