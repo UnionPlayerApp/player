@@ -6,6 +6,7 @@ import 'package:union_player_app/screen_app/app_page.dart';
 import 'package:union_player_app/screen_feedback/feedback_page.dart';
 import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/screen_main/main_page.dart';
+import 'package:union_player_app/screen_settings/settings_page.dart';
 import 'package:union_player_app/screen_schedule/schedule_page.dart';
 import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/info_page.dart';
@@ -19,7 +20,9 @@ final appModule = Module()
   ..single((scope) => MainBloc(scope.get()))
   ..single((scope) => MainPage())
   ..single((scope) => FeedbackPage())
+  ..single((scope) => SettingsPage())
   ..single((scope) => ScheduleRepository())
   ..single((scope) => SchedulePage(scope.get<ScheduleRepository>()))
   ..factoryWithParam((scope, String title) => LoadingPage(title: title))
   ..factoryWithParam((scope, List<String> strings) => InfoPage(strings: strings));
+
