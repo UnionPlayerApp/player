@@ -1,62 +1,69 @@
 import 'package:flutter/material.dart';
-import 'package:union_player_app/model/program_item.dart';
-import 'package:union_player_app/repository/repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
+import 'package:union_player_app/screen_schedule/schedule_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
+import 'package:koin_flutter/koin_flutter.dart';
+import 'package:union_player_app/utils/localizations/string_translation.dart';
 
-class SchedulePage extends StatefulWidget {
-  final Repository _repository;
-
-  //При переходе на экран расписания передаем информацию, играет ли радио, чтобы отобразить правильный значок в аппбаре:
-  SchedulePage(this._repository);
-
-  @override
-  createState() => SchedulePageState(_repository);
-}
-
-class SchedulePageState extends State<SchedulePage> {
-  final Repository _repository;
-  late List<ProgramListItem> programListItems;
-
-  SchedulePageState(this._repository) {
-    getList();
-  }
-
-  void getList() {
-    List<ProgramItem> programItems = _repository.get();
-    // Mapping:
-    programListItems = [
-      for (var mapEntry in programItems)
-        ProgramListItem(mapEntry.title, mapEntry.text, mapEntry.startTime,
-            mapEntry.imageUrl)
-    ];
-  }
-
-  @override
-  Widget build(BuildContext context) => Center(
-      child: ListView.separated(
-          separatorBuilder: (BuildContext context, int index) => Divider(
-                height: listViewDividerHeight,
-              ),
-          itemCount: programListItems.length,
-          itemBuilder: (BuildContext context, int index) {
-            return programListItems[index];
-          }));
-}
-
-class ProgramListItem extends StatelessWidget {
-  final String title;
-  final String text;
-  final String startTime;
-  final String? imageUrl;
-
-  ProgramListItem(this.title, this.text, this.startTime, this.imageUrl);
-
+class SchedulePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<ScheduleBloc, ScheduleState>
+      (builder: (BuildContext context, ScheduleState state){
+      if (state is ScheduleLoadAwaitState){
+        return _loadAwaitPage();
+      }
+      if (state is ScheduleLoadSuccessState) {
+        return _loadSuccessPage(context, state);
+      }
+      if (state is ScheduleLoadErrorState) {
+        return _loadErrorPage(context, state);
+      }
+      else {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+    },
+    bloc: get<ScheduleBloc>(),
+    );
+  }
+
+  Widget _loadAwaitPage(){
+    return Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Widget _loadErrorPage(BuildContext context, ScheduleLoadErrorState state) {
+    return Center(
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text("${translate(StringKeys.loading_error, context)}"),
+            Text(state.errorMessage),
+          ]
+      )
+    );
+  }
+
+  Widget _loadSuccessPage(context, state) {
+    return
+      ListView.separated(
+        separatorBuilder: (BuildContext context, int index) => Divider(
+        height: listViewDividerHeight),
+          itemCount: state.items.length,
+          itemBuilder: (BuildContext context, int index) {
+          return _programElement(state.items[index]);
+          });
+  }
+
+  _programElement(element){
     late Image image;
-    if (imageUrl != null && imageUrl != '') {
-      image = Image.network(imageUrl!,
+    if (element.imageUrl != null && element.imageUrl != '') {
+      image = Image.network(element.imageUrl!,
           width: scheduleImageSide,
           height: scheduleImageSide,
           fit: BoxFit.cover);
@@ -66,7 +73,6 @@ class ProgramListItem extends StatelessWidget {
           height: scheduleImageSide,
           fit: BoxFit.cover);
     }
-
     return Container(
         color: Colors.white10,
         margin: allSidesMargin,
@@ -80,14 +86,14 @@ class ProgramListItem extends StatelessWidget {
                     Row(children: [
                       Expanded(
                           child: Text(
-                        title,
+                        element.title,
                         style: TextStyle(fontSize: titleFontSize),
                         softWrap: true,
                         textAlign: TextAlign.start,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       )),
-                      Text(startTime,
+                      Text(element.startTime,
                           style: TextStyle(fontSize: titleFontSize),
                           overflow: TextOverflow.ellipsis),
                     ]),
@@ -95,7 +101,7 @@ class ProgramListItem extends StatelessWidget {
                         padding: programBodyTopPadding,
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          text,
+                          element.text,
                           style: TextStyle(fontSize: bodyFontSize),
                           softWrap: true,
                           textAlign: TextAlign.start,
@@ -105,4 +111,5 @@ class ProgramListItem extends StatelessWidget {
                   ])))
         ]));
   }
+
 }
