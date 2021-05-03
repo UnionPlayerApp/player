@@ -1,10 +1,10 @@
-class ProgramItem {
+class ScheduleItem {
 
   final String title;
   final String text;
   final String startTime;
   final String? imageUrl;
 
-  ProgramItem(this.title, this.text, this.startTime, this.imageUrl );
+  ScheduleItem(this.title, this.text, this.startTime, this.imageUrl );
 
 }

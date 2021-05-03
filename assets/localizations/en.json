@@ -22,5 +22,7 @@
   "home" : "Home",
   "schedule" : "Schedule",
   "feedback" : "Feedback",
-  "settings" : "Settings"
+  "settings" : "Settings",
+
+  "loading_error" : "Loading error"
 }

@@ -5,5 +5,5 @@ abstract class ScheduleEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class ScheduleInitialEvent extends ScheduleEvent {}
+class ScheduleLoadEvent extends ScheduleEvent {}
 

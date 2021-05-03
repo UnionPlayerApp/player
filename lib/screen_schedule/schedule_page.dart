@@ -5,6 +5,7 @@ import 'package:union_player_app/screen_schedule/schedule_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:koin_flutter/koin_flutter.dart';
+import 'package:union_player_app/utils/localizations/string_translation.dart';
 
 
 class SchedulePage extends StatelessWidget {
@@ -12,13 +13,14 @@ class SchedulePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ScheduleBloc, ScheduleState>
       (builder: (BuildContext context, ScheduleState state){
-      if (state is ScheduleInitialState){
-        return Center(
-         child: CircularProgressIndicator(),
-        );
+      if (state is ScheduleLoadAwaitState){
+        return _loadAwaitPage();
       }
-      if (state is ScheduleLoadedState) {
-        return _listView(context, state);
+      if (state is ScheduleLoadSuccessState) {
+        return _loadSuccessPage(context, state);
+      }
+      if (state is ScheduleLoadErrorState) {
+        return _loadErrorPage(context, state);
       }
       else {
         return Center(
@@ -30,7 +32,25 @@ class SchedulePage extends StatelessWidget {
     );
   }
 
-  _listView(context, state) {
+  Widget _loadAwaitPage(){
+    return Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Widget _loadErrorPage(BuildContext context, ScheduleLoadErrorState state) {
+    return Center(
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text("${translate(StringKeys.loading_error, context)}"),
+            Text(state.errorMessage),
+          ]
+      )
+    );
+  }
+
+  Widget _loadSuccessPage(context, state) {
     return
       ListView.separated(
         separatorBuilder: (BuildContext context, int index) => Divider(
@@ -92,4 +112,5 @@ class SchedulePage extends StatelessWidget {
                   ])))
         ]));
   }
+
 }

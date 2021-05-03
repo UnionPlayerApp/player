@@ -1,19 +1,29 @@
 import 'package:equatable/equatable.dart';
-import 'package:union_player_app/model/program_item.dart';
+import 'package:union_player_app/model/schedule_item.dart';
 
 abstract class ScheduleState extends Equatable {
   @override
   List<Object> get props => [];
 }
 
-class ScheduleInitialState extends ScheduleState {}
+class ScheduleLoadAwaitState extends ScheduleState {}
 
-class ScheduleLoadedState extends ScheduleState {
-  final List<ProgramItem> items;
+class ScheduleLoadSuccessState extends ScheduleState {
+  final List<ScheduleItem> items;
 
-  ScheduleLoadedState(this.items);
+  ScheduleLoadSuccessState(this.items);
 
   @override
   List<Object> get props => [items];
+
+}
+
+class ScheduleLoadErrorState extends ScheduleState {
+  final String errorMessage;
+
+  ScheduleLoadErrorState(this.errorMessage);
+
+  @override
+  List<Object> get props => [errorMessage];
 
 }
