@@ -14,37 +14,42 @@ import 'package:union_player_app/utils/localizations/string_translation.dart';
 class AppPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _createAppBar(),
-      body: BlocBuilder<AppBloc, AppState>(
+    return BlocBuilder<AppBloc, AppState>(
         builder: (BuildContext context, AppState state) =>
-            _createPage(context, state),
-      ),
-      bottomNavigationBar: BlocBuilder<AppBloc, AppState>(
-          builder: (BuildContext context, AppState state) =>
-              _createBottomNavigationBar(context, state)),
-      floatingActionButton: BlocBuilder<AppBloc, AppState>(
-        builder: (context, state) => createFAB(context, state),
-        bloc: get<AppBloc>(),
-      ),
-      //floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-    );
+            Scaffold(
+              appBar: _createAppBar(context, state),
+              body: _createPage(context, state),
+              floatingActionButton: _createFAB(context, state),
+              bottomNavigationBar: _createBottomNavigationBar(context, state),
+            ));
+    //   //floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+    // );
   }
 
-  AppBar _createAppBar() => AppBar(
+  AppBar _createAppBar(BuildContext context, AppState state) =>
+      AppBar(
         // backgroundColor: Colors.white,
-        title: BlocBuilder<AppBloc, AppState>(
-          builder: (BuildContext context, AppState state) =>
-              _createTitle(context, state),
-        ),
+        title: _createTitle(context, state),
         leading: Container(
             padding: EdgeInsets.all(10.0),
             child: Image.asset(APP_BAR_LOGO_IMAGE, fit: BoxFit.fill)),
       );
 
-  Widget _createTitle(BuildContext context, AppState state) => Text(
-        "Выбран пункт ${state.navIndex}",
-      );
+  Widget _createTitle(BuildContext context, AppState state) {
+    String data = "Unknown navigation index";
+    switch (state.navIndex) {
+      case 0:
+        data = "Main page";
+        break;
+      case 1:
+        data = "Schedule page";
+        break;
+      case 2:
+        data = "Feedback page";
+        break;
+    }
+    return Text(data);
+  }
 
   Widget _createPage(BuildContext context, AppState state) {
     switch (state.navIndex) {
@@ -62,8 +67,8 @@ class AppPage extends StatelessWidget {
     }
   }
 
-  BottomNavigationBar _createBottomNavigationBar(
-          BuildContext context, AppState state) =>
+  BottomNavigationBar _createBottomNavigationBar(BuildContext context,
+      AppState state) =>
       BottomNavigationBar(
         currentIndex: state.navIndex,
         selectedItemColor: Colors.red[800],
@@ -89,11 +94,11 @@ class AppPage extends StatelessWidget {
             context.read<AppBloc>().add(AppNavPressedEvent(navIndex)),
       );
 
-  FloatingActionButton createFAB(BuildContext context, AppState state) =>
+  FloatingActionButton _createFAB(BuildContext context, AppState state) =>
       FloatingActionButton(
         onPressed: () => context.read<AppBloc>().add(AppFabPressedEvent()),
         tooltip: 'Play / Stop',
         child: Icon(
-            state.isPlaying ? Icons.play_arrow_rounded : Icons.stop_rounded),
+            state.playingState ? Icons.stop_rounded : Icons.play_arrow_rounded),
       );
 }
