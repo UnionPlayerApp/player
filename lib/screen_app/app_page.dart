@@ -7,26 +7,46 @@ import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/screen_main/main_page.dart';
 import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_page.dart';
+import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/info_page.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
+import 'package:union_player_app/utils/snack_bar.dart';
 
-class AppPage extends StatelessWidget {
+class AppPage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _AppState();
+}
+
+class _AppState extends State<AppPage> {
+  DateTime? _backPressTime;
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
-        builder: (BuildContext context, AppState state) => Scaffold(
+        builder: (BuildContext context, AppState state) => WillPopScope(
+            onWillPop: _onWillPop,
+            child: Scaffold(
               appBar: _createAppBar(context, state),
               body: _createPage(context, state),
               floatingActionButton: _createFAB(context, state),
               bottomNavigationBar: _createBottomNavigationBar(context, state),
-            ));
-    //   //floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-    // );
+            )));
+  }
+
+  Future<bool> _onWillPop() {
+    final DateTime now = DateTime.now();
+    final duration = Duration(seconds: 2);
+    if (_backPressTime == null ||
+        now.difference(_backPressTime!) > duration) {
+      _backPressTime = now;
+      showSnackBar(context, "Press one more time for exit", duration: duration);
+      return Future.value(false);
+    }
+    return Future.value(true);
   }
 
   AppBar _createAppBar(BuildContext context, AppState state) => AppBar(
-        // backgroundColor: Colors.white,
         title: _createTitle(context, state),
         leading: Container(
             padding: EdgeInsets.all(10.0),
@@ -53,8 +73,7 @@ class AppPage extends StatelessWidget {
     switch (state.navIndex) {
       case 0:
         return BlocProvider(
-            create: (context) => get<MainBloc>(),
-            child: get<MainPage>());
+            create: (context) => get<MainBloc>(), child: get<MainPage>());
       case 1:
         return BlocProvider(
             create: (context) => get<ScheduleBloc>(),
@@ -85,10 +104,6 @@ class AppPage extends StatelessWidget {
             icon: Icon(Icons.markunread_mailbox_outlined),
             label: translate(StringKeys.feedback, context),
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.settings_rounded),
-          //   label: translate(StringKeys.settings, context),
-          // ),
         ],
         onTap: (navIndex) =>
             context.read<AppBloc>().add(AppNavPressedEvent(navIndex)),
