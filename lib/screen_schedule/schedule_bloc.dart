@@ -18,10 +18,11 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
       _logger.logDebug("schedule loading...");
       yield ScheduleLoadAwaitState();
       yield await _fetchScheduleList();
+      _logger.logDebug("schedule loading completed");
     }
   }
 
   Future<ScheduleState> _fetchScheduleList() async {
-    return await _repository.getScheduleList();
+      return await _repository.getScheduleList();
   }
 }
