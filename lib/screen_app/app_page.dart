@@ -73,28 +73,28 @@ class _AppState extends State<AppPage> {
 
   MaterialButton materialButton(BuildContext context, AppState state, int itemTab, IconData iconTab, StringKeys nameTab ) {
     return MaterialButton(
-                  minWidth: 40,
-                  onPressed: () {
-                    setState(() {
-                      context.read<AppBloc>().add(AppNavPressedEvent(itemTab));
-                    });
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        iconTab,
-                        color: state.navIndex == itemTab ? Colors.red[800] : Colors.grey,
-                      ),
-                      Text(
-                        translate(nameTab, context),
-                        style: TextStyle(
-                            color: state.navIndex == itemTab ? Colors.red[800] : Colors.grey,
-                        ),
-                      )
-                    ],
-                  ),
-                );
+      minWidth: 40,
+      onPressed: () {
+        setState(() {
+          context.read<AppBloc>().add(AppNavPressedEvent(itemTab));
+        });
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            iconTab,
+            color: state.navIndex == itemTab ? Colors.red[800] : Colors.grey,
+          ),
+          Text(
+            translate(nameTab, context),
+            style: TextStyle(
+                color: state.navIndex == itemTab ? Colors.red[800] : Colors.grey,
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   Future<bool> _onWillPop() {
