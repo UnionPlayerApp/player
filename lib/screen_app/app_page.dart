@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
@@ -7,12 +9,12 @@ import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/screen_main/main_page.dart';
 import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_page.dart';
-import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/screen_settings/settings_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/info_page.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/snack_bar.dart';
+
 
 class AppPage extends StatefulWidget {
   @override
@@ -31,8 +33,68 @@ class _AppState extends State<AppPage> {
               appBar: _createAppBar(context, state),
               body: _createPage(context, state),
               floatingActionButton: _createFAB(context, state),
+              floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
               bottomNavigationBar: _createBottomNavigationBar(context, state),
-            )));
+            ),
+        )
+    );
+  }
+
+  BottomAppBar _createBottomNavigationBar(
+      BuildContext context, AppState state) =>
+     BottomAppBar(
+       shape: CircularNotchedRectangle(),
+        notchMargin: 10,
+        child: Container(
+          height: 60,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget> [
+              //Left Tab Bar Icons
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  materialButton(context, state, 0, Icons.radio, StringKeys.home),
+                  materialButton(context, state, 1, Icons.list_alt, StringKeys.schedule),
+                ],
+              ),
+              //Right Tab Bar Icons
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  materialButton(context, state, 2, Icons.markunread_mailbox_outlined, StringKeys.feedback),
+                  materialButton(context, state, 3, Icons.settings_rounded, StringKeys.settings),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+
+  MaterialButton materialButton(BuildContext context, AppState state, int itemTab, IconData iconTab, StringKeys nameTab ) {
+    return MaterialButton(
+                  minWidth: 40,
+                  onPressed: () {
+                    setState(() {
+                      context.read<AppBloc>().add(AppNavPressedEvent(itemTab));
+                    });
+                  },
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        iconTab,
+                        color: state.navIndex == itemTab ? Colors.red[800] : Colors.grey,
+                      ),
+                      Text(
+                        translate(nameTab, context),
+                        style: TextStyle(
+                            color: state.navIndex == itemTab ? Colors.red[800] : Colors.grey,
+                        ),
+                      )
+                    ],
+                  ),
+                );
   }
 
   Future<bool> _onWillPop() {
@@ -92,34 +154,6 @@ class _AppState extends State<AppPage> {
             ["Ошибка навигации", "Экран не создан?"]);
     }
   }
-
-  BottomNavigationBar _createBottomNavigationBar(
-          BuildContext context, AppState state) =>
-      BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: state.navIndex,
-        selectedItemColor: Colors.red[800],
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.radio),
-            label: translate(StringKeys.home, context),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list_alt),
-            label: translate(StringKeys.schedule, context),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.markunread_mailbox_outlined),
-            label: translate(StringKeys.feedback, context),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_rounded),
-            label: translate(StringKeys.settings, context),
-          ),
-        ],
-        onTap: (navIndex) =>
-            context.read<AppBloc>().add(AppNavPressedEvent(navIndex)),
-      );
 
   FloatingActionButton _createFAB(BuildContext context, AppState state) =>
       FloatingActionButton(
