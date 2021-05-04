@@ -7,28 +7,47 @@ import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/screen_main/main_page.dart';
 import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_page.dart';
+import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/screen_settings/settings_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/info_page.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
+import 'package:union_player_app/utils/snack_bar.dart';
 
-class AppPage extends StatelessWidget {
+class AppPage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _AppState();
+}
+
+class _AppState extends State<AppPage> {
+  DateTime? _backPressTime;
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
-        builder: (BuildContext context, AppState state) => Scaffold(
+        builder: (BuildContext context, AppState state) => WillPopScope(
+            onWillPop: _onWillPop,
+            child: Scaffold(
               appBar: _createAppBar(context, state),
               body: _createPage(context, state),
-              floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
               floatingActionButton: _createFAB(context, state),
               bottomNavigationBar: _createBottomNavigationBar(context, state),
-            ));
-    //   //floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-    // );
+            )));
+  }
+
+  Future<bool> _onWillPop() {
+    final DateTime now = DateTime.now();
+    final duration = Duration(seconds: 2);
+    if (_backPressTime == null ||
+        now.difference(_backPressTime!) > duration) {
+      _backPressTime = now;
+      showSnackBar(context, "Press one more time for exit", duration: duration);
+      return Future.value(false);
+    }
+    return Future.value(true);
   }
 
   AppBar _createAppBar(BuildContext context, AppState state) => AppBar(
-        // backgroundColor: Colors.white,
         title: _createTitle(context, state),
         leading: Container(
             padding: EdgeInsets.all(10.0),
@@ -89,7 +108,6 @@ class AppPage extends StatelessWidget {
             icon: Icon(Icons.list_alt),
             label: translate(StringKeys.schedule, context),
           ),
-        // SizedBox(width: 40),
           BottomNavigationBarItem(
             icon: Icon(Icons.markunread_mailbox_outlined),
             label: translate(StringKeys.feedback, context),
@@ -109,6 +127,5 @@ class AppPage extends StatelessWidget {
         tooltip: 'Play / Stop',
         child: Icon(
             state.playingState ? Icons.stop_rounded : Icons.play_arrow_rounded),
-          elevation: 2.0
       );
 }
