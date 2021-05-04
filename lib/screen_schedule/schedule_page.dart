@@ -12,8 +12,8 @@ class SchedulePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ScheduleBloc, ScheduleState>(
-      builder: (BuildContext context, ScheduleState state){
-        if (state is ScheduleLoadAwaitState){
+      builder: (BuildContext context, ScheduleState state) {
+        if (state is ScheduleLoadAwaitState) {
           return _loadAwaitPage();
         }
         if (state is ScheduleLoadSuccessState) {
@@ -21,18 +21,17 @@ class SchedulePage extends StatelessWidget {
         }
         if (state is ScheduleLoadErrorState) {
           return _loadErrorPage(context, state);
-        }
-        else {
+        } else {
           return Center(
             child: CircularProgressIndicator(),
           );
         }
       },
-    bloc: get<ScheduleBloc>(),
+      bloc: get<ScheduleBloc>(),
     );
   }
 
-  Widget _loadAwaitPage(){
+  Widget _loadAwaitPage() {
     return Center(
       child: CircularProgressIndicator(),
     );
@@ -40,33 +39,30 @@ class SchedulePage extends StatelessWidget {
 
   Widget _loadErrorPage(BuildContext context, ScheduleLoadErrorState state) {
     return Center(
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text("${translate(StringKeys.loading_error, context)}"),
-            Text(state.errorMessage),
-          ]
-      )
-    );
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+          Text("${translate(StringKeys.loading_error, context)}"),
+          Text(state.errorMessage),
+        ]));
   }
 
-  Widget _loadSuccessPage(BuildContext context, ScheduleLoadSuccessState state) {
-    return  RefreshIndicator(
-        onRefresh: () async{
+  Widget _loadSuccessPage(
+      BuildContext context, ScheduleLoadSuccessState state) {
+    return RefreshIndicator(
+        onRefresh: () async {
           return context.read<ScheduleBloc>().add(ScheduleLoadEvent());
         },
-        child:
-        ListView.separated(
-            separatorBuilder: (BuildContext context, int index) => Divider(
-            height: listViewDividerHeight),
+        child: ListView.separated(
+            separatorBuilder: (BuildContext context, int index) =>
+                Divider(height: listViewDividerHeight),
             itemCount: state.items.length,
             itemBuilder: (BuildContext context, int index) {
               return _programElement(state.items[index]);
-            })
-    );
+            }));
   }
 
-  _programElement(element){
+  _programElement(element) {
     late Image image;
     if (element.imageUrl != null && element.imageUrl != '') {
       image = Image.network(element.imageUrl!,
@@ -117,5 +113,4 @@ class SchedulePage extends StatelessWidget {
                   ])))
         ]));
   }
-
 }
