@@ -1,11 +1,17 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:logger/logger.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
+
 
 late Logger logger = Logger();
 
@@ -18,6 +24,7 @@ class FeedbackPage extends StatefulWidget {
 
 class FeedbackPageState extends State {
   final _formKey = GlobalKey<FormState>();
+  final _webViewKey = UniqueKey();
 
   _createTextFormField(
       String label, String hint, FieldValidator formValidator) {
@@ -29,6 +36,69 @@ class FeedbackPageState extends State {
         //Normal textInputField will be displayed
         maxLines: 5,
         validator: formValidator);
+  }
+
+  _aboutButtonPressed() async {
+    String _url = await _getUrlFromAssets();
+    // For testing:
+    // String _url = "https://stackoverflow.com/questions/52414629/how-to-update-state-of-a-modalbottomsheet-in-flutter";
+    int indexedStackPosition = 1 ;
+
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) {
+          Set<Factory<OneSequenceGestureRecognizer>> _gestureRecognizers = [Factory(() => EagerGestureRecognizer())].toSet();
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState ) {
+                return IndexedStack(
+                  index: indexedStackPosition,
+                  children: <Widget>[
+                    WebView(
+                      key: _webViewKey,
+                      initialUrl: _url,
+                      javascriptMode: JavascriptMode.unrestricted,
+                      gestureRecognizers: _gestureRecognizers,
+                      onPageStarted: (value){
+                        print("page started");
+                        setState(() {
+                          indexedStackPosition = 1;
+                        });},
+                      onPageFinished: (value){
+                        print("page finished");
+                        setState(() {
+                          indexedStackPosition = 0;
+                        });},
+                    ),
+                    Container(
+                      child: Center(
+                          child: CircularProgressIndicator()),
+                    ),
+                  ]);
+        });
+        });
+  }
+
+  Future<String> _getUrlFromAssets()  async {
+    String fileText = await rootBundle.loadString('assets/about_us_page/test_page.html');
+    String url = Uri.dataFromString(
+    fileText,
+    mimeType: 'text/html',
+    encoding: Encoding.getByName('utf-8')).toString();
+    return url;
+  }
+
+
+  _sendButtonPressed(){
+    if (_formKey.currentState!.validate()) {
+      String text =
+      translate(StringKeys.formSuccessText, context);
+      Color color = Colors.green;
+      // Для использования Scaffold.of(context) я создала внутренний BuildContext - см. коммент выше,
+      // т.к. аргумент context не может использоваться для поиска Scaffold, если он находится "выше" в дереве виджетов.
+      Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text(text), backgroundColor: color));
+    }
   }
 
   Widget build(BuildContext context) {
@@ -88,23 +158,25 @@ class FeedbackPageState extends State {
                                   StringKeys.messageMaxLengthError, context))
                         ]))),
                 Padding(
-                  padding: EdgeInsets.only(top: 15.h),
-                  child: RaisedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        String text =
-                            translate(StringKeys.formSuccessText, context);
-                        Color color = Colors.green;
-                        // Для использования Scaffold.of(context) я создала внутренний BuildContext - см. коммент выше,
-                        // т.к. аргумент context не может использоваться для поиска Scaffold, если он находится "выше" в дереве виджетов.
-                        Scaffold.of(context).showSnackBar(SnackBar(
-                            content: Text(text), backgroundColor: color));
-                      }
-                    },
-                    child: Text(translate(StringKeys.sendButtonText, context)),
-                    color: Colors.blue,
-                    textColor: Colors.white,
-                  ),
+                  padding: EdgeInsets.only(top: 15.h, right: 10.w),
+                  child:
+                     Row(
+                       mainAxisAlignment: MainAxisAlignment.center,
+                       children: [
+                         TextButton(
+                             onPressed: _aboutButtonPressed,
+                             child: Text(translate(StringKeys.aboutButtonText, context)),
+                         ),
+                         Padding(
+                           padding: EdgeInsets.only(left: 15.w),
+                           child:
+                           ElevatedButton(
+                            onPressed: _sendButtonPressed,
+                            child: Text(translate(StringKeys.sendButtonText, context)),
+                          )
+                         ),
+                      ],
+                     ),
                 ),
               ],
             )));

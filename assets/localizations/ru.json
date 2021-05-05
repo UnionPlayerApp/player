@@ -17,7 +17,9 @@
   "messageMaxLengthError" : "Длина сообщения не может превышать 400 символов",
 
   "formSuccessText" : "Ваше сообщение отправлено",
-  "sendButtonText": "Отправить",
+  "sendButtonText": "ОТПРАВИТЬ",
+  "aboutButtonText": "О НАС",
+
 
   "home" : "Главная",
   "schedule" : "Расписание",

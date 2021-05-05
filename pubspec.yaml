@@ -25,6 +25,7 @@ dependencies:
   form_field_validator: ^1.1.0
   flutter_localizations:
     sdk: flutter
+  webview_flutter:
 
 
 dev_dependencies:
@@ -36,8 +37,7 @@ flutter:
     - assets/images/
     - assets/localizations/en.json
     - assets/localizations/ru.json
-
-
+    - assets/about_us_page/test_page.html
 
   uses-material-design: true
 

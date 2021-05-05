@@ -17,7 +17,9 @@
   "messageMaxLengthError" : "The length of the message cannot exceed 400 characters",
 
   "formSuccessText" : "Your message has been sent",
-  "sendButtonText": "Send",
+  "sendButtonText": "SEND",
+  "aboutButtonText": "ABOUT US",
+
 
   "home" : "Home",
   "schedule" : "Schedule",
