@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:union_player_app/utils/app_logger.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -13,18 +14,23 @@ import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 
 
-late Logger logger = Logger();
-
 class FeedbackPage extends StatefulWidget {
+  final AppLogger _logger;
+
+  FeedbackPage(this._logger);
+
   @override
   State<StatefulWidget> createState() {
-    return FeedbackPageState();
+    return FeedbackPageState(_logger);
   }
 }
 
 class FeedbackPageState extends State {
   final _formKey = GlobalKey<FormState>();
   final _webViewKey = UniqueKey();
+  final AppLogger _logger;
+
+  FeedbackPageState(this._logger);
 
   _createTextFormField(
       String label, String hint, FieldValidator formValidator) {
@@ -49,32 +55,36 @@ class FeedbackPageState extends State {
         isScrollControlled: true,
         builder: (context) {
           Set<Factory<OneSequenceGestureRecognizer>> _gestureRecognizers = [Factory(() => EagerGestureRecognizer())].toSet();
+          // Use StatefulBuilder in order to change state of bottomSheet:
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState ) {
-                return IndexedStack(
-                  index: indexedStackPosition,
-                  children: <Widget>[
-                    WebView(
-                      key: _webViewKey,
-                      initialUrl: _url,
-                      javascriptMode: JavascriptMode.unrestricted,
-                      gestureRecognizers: _gestureRecognizers,
-                      onPageStarted: (value){
-                        print("page started");
-                        setState(() {
-                          indexedStackPosition = 1;
-                        });},
-                      onPageFinished: (value){
-                        print("page finished");
-                        setState(() {
-                          indexedStackPosition = 0;
-                        });},
-                    ),
-                    Container(
-                      child: Center(
-                          child: CircularProgressIndicator()),
-                    ),
-                  ]);
+                return
+                  IndexedStack(
+                      index: indexedStackPosition,
+                      children: <Widget>[
+                        WebView(
+                          key: _webViewKey,
+                          initialUrl: _url,
+                          javascriptMode: JavascriptMode.unrestricted,
+                          gestureRecognizers: _gestureRecognizers,
+                          onPageStarted: (value){
+                            _logger.logDebug("Loading about_page started...");
+                            setState(() {
+                              indexedStackPosition = 1;
+                            });},
+                          onPageFinished: (value) {
+                            _logger.logDebug("Loading about_page finished!");
+                            // Hide loading indicator:
+                            setState(() {
+                              indexedStackPosition = 0;
+                            });
+                          },
+                        ),
+                        Container(
+                          child: Center(
+                              child: CircularProgressIndicator()),
+                        ),
+                    ]);
         });
         });
   }
