@@ -30,6 +30,7 @@ enum  StringKeys{
 
   formSuccessText,
   sendButtonText,
+  aboutButtonText,
 
   // BottomNavigationBar
   home,
