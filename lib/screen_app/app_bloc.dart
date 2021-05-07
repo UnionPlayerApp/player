@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:equatable/equatable.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:union_player_app/model/system_data/system_data.dart';
 import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 
@@ -14,8 +15,10 @@ part 'app_state.dart';
 class AppBloc extends Bloc<AppEvent, AppState> {
   final AudioPlayer _player;
   final AppLogger _logger;
+  final SystemData _systemData;
+  late String _currentUrl;
 
-  AppBloc(this._player, this._logger)
+  AppBloc(this._player, this._logger, this._systemData)
       : super(AppState(0, false, ProcessingState.idle)) {
     Timer.periodic(Duration(seconds: PLAYER_BUFFER_CHECK_DURATION),
         (Timer t) => _checkForBufferLoading());
@@ -31,9 +34,9 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       add(AppPlayerStateEvent(
           playerState.playing, playerState.processingState));
     });
-  }
 
-  String _currentUrl = STREAM_MED_URL;
+    _currentUrl = _systemData.streamData.streamMiddle;
+  }
 
   @override
   Stream<AppState> mapEventToState(AppEvent event) async* {
@@ -59,30 +62,32 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         _player.bufferedPosition.inSeconds - _player.position.inSeconds;
 
     if (_bufferCapacity > PLAYER_BUFFER_HIGH_CAPACITY) {
-      switch (_currentUrl) {
-        case STREAM_LOW_URL:
-          _switchStream(STREAM_MED_URL);
-          break;
-        case STREAM_MED_URL:
-          _switchStream(STREAM_HIGH_URL);
-          break;
+      if (_currentUrl == _systemData.streamData.streamLow) {
+        _switchStream(_systemData.streamData.streamMiddle);
+        return;
+      }
+      if (_currentUrl == _systemData.streamData.streamMiddle) {
+        _switchStream(_systemData.streamData.streamHi);
+        return;
       }
       return;
     }
 
     if (_bufferCapacity < PLAYER_BUFFER_LOW_CAPACITY) {
-      switch (_currentUrl) {
-        case STREAM_HIGH_URL:
-          _switchStream(STREAM_MED_URL);
-          break;
-        case STREAM_MED_URL:
-          _switchStream(STREAM_LOW_URL);
-          break;
+      if (_currentUrl == _systemData.streamData.streamHi) {
+        _switchStream(_systemData.streamData.streamMiddle);
+        return;
       }
+      if (_currentUrl == _systemData.streamData.streamMiddle) {
+        _switchStream(_systemData.streamData.streamLow);
+        return;
+      }
+      return;
     }
   }
 
   _switchStream(String newStreamUrl) {
+    _logger.logDebug("switch stream to $newStreamUrl");
     _currentUrl = newStreamUrl;
     _waitForConnection();
   }
