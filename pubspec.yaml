@@ -10,23 +10,23 @@ environment:
 
 dependencies:
   audio_session:
+  cloud_firestore:
+  connectivity: ^3.0.3
   cupertino_icons: ^1.0.2
   equatable:
   firebase_core:
   flutter:
     sdk: flutter
-  connectivity: ^3.0.3
   flutter_bloc:
+  flutter_localizations:
+    sdk: flutter
+  flutter_screenutil: ^5.0.0
+  form_field_validator: ^1.1.0
   just_audio:
   koin_bloc:
   koin_flutter: ^0.11.0-nullsafety.0
   logger:
-  move_to_background:
-  flutter_screenutil: ^5.0.0
-  form_field_validator: ^1.1.0
-  flutter_localizations:
-    sdk: flutter
-
+  shared_preferences:
 
 dev_dependencies:
   flutter_launcher_icons:
