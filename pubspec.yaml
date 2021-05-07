@@ -21,16 +21,19 @@ dependencies:
   koin_bloc:
   koin_flutter: ^0.11.0-nullsafety.0
   logger:
+  move_to_background:
   flutter_screenutil: ^5.0.0
   form_field_validator: ^1.1.0
   flutter_localizations:
     sdk: flutter
-  webview_flutter:
 
 
 dev_dependencies:
+  flutter_launcher_icons:
   flutter_test:
     sdk: flutter
+  webview_flutter:
+
 
 flutter:
   assets:
@@ -38,6 +41,10 @@ flutter:
     - assets/localizations/en.json
     - assets/localizations/ru.json
     - assets/about_us_page/test_page.html
-
   uses-material-design: true
 
+flutter_icons:
+  ios: true
+  android: true
+  image_path_ios: "assets/images/union_radio_logo_1.png"
+  image_path_android: "assets/images/union_radio_logo_1.png"
