@@ -3,7 +3,7 @@ description: A Union Player Flutter application.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+1
+version: 1.0.1
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -27,13 +27,12 @@ dependencies:
   koin_flutter: ^0.11.0-nullsafety.0
   logger:
   shared_preferences:
+  webview_flutter:
 
 dev_dependencies:
   flutter_launcher_icons:
   flutter_test:
     sdk: flutter
-  webview_flutter:
-
 
 flutter:
   assets:
