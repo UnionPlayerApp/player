@@ -55,8 +55,8 @@ class _AppState extends State<AppPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    buttonAppBar(context, state, 0, Icons.radio, StringKeys.home),
-                    buttonAppBar(context, state, 1, Icons.list_alt, StringKeys.schedule),
+                    _buttonAppBar(context, state, 0, Icons.radio, StringKeys.home),
+                    _buttonAppBar(context, state, 1, Icons.list_alt, StringKeys.schedule),
                   ],
                 ),
               ),
@@ -65,8 +65,8 @@ class _AppState extends State<AppPage> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    buttonAppBar(context, state, 2, Icons.markunread_mailbox_outlined, StringKeys.feedback),
-                    buttonAppBar(context, state, 3, Icons.settings_rounded, StringKeys.settings),
+                    _buttonAppBar(context, state, 2, Icons.markunread_mailbox_outlined, StringKeys.feedback),
+                    _buttonAppBar(context, state, 3, Icons.settings_rounded, StringKeys.settings),
                   ],
                 ),
               ),
@@ -75,7 +75,7 @@ class _AppState extends State<AppPage> {
         ),
       );
 
-  Expanded buttonAppBar(BuildContext context, AppState state, int itemTab, IconData iconTab, StringKeys nameTab ) {
+  Expanded _buttonAppBar(BuildContext context, AppState state, int itemTab, IconData iconTab, StringKeys nameTab ) {
     return Expanded(
       child: MaterialButton(
         padding: EdgeInsets.all(0),
