@@ -9,6 +9,7 @@ import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/screen_main/main_page.dart';
 import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_page.dart';
+import 'package:union_player_app/screen_settings/settings_page.dart';
 import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/info_page.dart';
 import 'package:union_player_app/utils/loading_page.dart';
@@ -26,4 +27,5 @@ final appModule = Module()
   ..single((scope) => ScheduleBloc(scope.get<ScheduleRepositoryImpl>(), scope.get()))
   ..single((scope) => SchedulePage())
   ..single((scope) => ScheduleRepositoryImpl())
+  ..single((scope) => SettingsPage())
   ..single((scope) => SystemData());
