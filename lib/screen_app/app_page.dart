@@ -10,7 +10,6 @@ import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/screen_main/main_page.dart';
 import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_page.dart';
-import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/screen_settings/settings_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/info_page.dart';
@@ -46,113 +45,28 @@ class _AppState extends State<AppPage> {
       BuildContext context, AppState state) =>
       BottomAppBar(
         shape: CircularNotchedRectangle(),
-        notchMargin: 8,
+        notchMargin: 7,
         child: Container(
           height: 60,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               //Left Tab Bar Icons
               Expanded(
-                flex: 1,
                 child: Row(
-                  // crossAxisAlignment: CrossAxisAlignment.start,
-                  // mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    MaterialButton(
-                      minWidth: 40,
-                      // maxWidth: 100,
-                      onPressed: () {
-                          context.read<AppBloc>().add(AppNavPressedEvent(0));
-                      },
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.radio,
-                            color: state.navIndex == 0 ? Colors.red[800] : Colors.grey,
-                          ),
-                          Text(
-                            translate(StringKeys.home, context),
-                            style: TextStyle(
-                              color: state.navIndex == 0 ? Colors.red[800] : Colors.grey,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    MaterialButton(
-                      minWidth: 40,
-                      onPressed: () {
-                          context.read<AppBloc>().add(AppNavPressedEvent(1));
-                      },
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.list_alt,
-                            color: state.navIndex == 1 ? Colors.red[800] : Colors.grey,
-                          ),
-                          Text(
-                            translate(StringKeys.schedule, context),
-                            style: TextStyle(
-                              color: state.navIndex == 1 ? Colors.red[800] : Colors.grey,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
+                    buttonAppBar(context, state, 0, Icons.radio, StringKeys.home),
+                    buttonAppBar(context, state, 1, Icons.list_alt, StringKeys.schedule),
                   ],
                 ),
               ),
-              //Right Tab Bar Icons
+              // Right Tab Bar Icons
               Expanded(
-                flex: 1,
                 child: Row(
-                  // crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    MaterialButton(
-                      minWidth: 40,
-                      onPressed: () {
-                          context.read<AppBloc>().add(AppNavPressedEvent(2));
-                      },
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.markunread_mailbox_outlined,
-                            color: state.navIndex == 2 ? Colors.red[800] : Colors.grey,
-                          ),
-                          Text(
-                            translate(StringKeys.feedback, context),
-                            style: TextStyle(
-                              color: state.navIndex == 2 ? Colors.red[800] : Colors.grey,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    MaterialButton(
-                      minWidth: 40,
-                      onPressed: () {
-                          context.read<AppBloc>().add(AppNavPressedEvent(3));
-                      },
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.settings_rounded,
-                            color: state.navIndex == 3 ? Colors.red[800] : Colors.grey,
-                          ),
-                          Text(
-                            translate(StringKeys.settings, context),
-                            style: TextStyle(
-                              color: state.navIndex == 3 ? Colors.red[800] : Colors.grey,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
+                    buttonAppBar(context, state, 2, Icons.markunread_mailbox_outlined, StringKeys.feedback),
+                    buttonAppBar(context, state, 3, Icons.settings_rounded, StringKeys.settings),
                   ],
                 ),
               ),
@@ -160,6 +74,33 @@ class _AppState extends State<AppPage> {
           ),
         ),
       );
+
+  Expanded buttonAppBar(BuildContext context, AppState state, int itemTab, IconData iconTab, StringKeys nameTab ) {
+    return Expanded(
+      child: MaterialButton(
+        padding: EdgeInsets.all(0),
+        minWidth: 0,
+        onPressed: () {
+          context.read<AppBloc>().add(AppNavPressedEvent(itemTab));
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              iconTab,
+              color: state.navIndex == itemTab ? Colors.red[800] : Colors.grey,
+            ),
+            Text(
+              translate(nameTab, context),
+              style: TextStyle(
+                color: state.navIndex == itemTab ? Colors.red[800] : Colors.grey,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Future<bool> _onWillPop() {
     final DateTime now = DateTime.now();
