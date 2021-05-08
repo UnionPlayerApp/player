@@ -6,7 +6,7 @@
 
     <application
         android:icon="@mipmap/ic_launcher"
-        android:label="union_player_app"
+        android:label="Union Radio 1"
         android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
