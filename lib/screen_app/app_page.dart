@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
+import 'package:union_player_app/screen_feedback/feedback_bloc.dart';
 import 'package:union_player_app/screen_feedback/feedback_page.dart';
 import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/screen_main/main_page.dart';
@@ -119,6 +120,7 @@ class _AppState extends State<AppPage> {
     leading: Container(
         padding: EdgeInsets.all(10.0),
         child: Image.asset(APP_BAR_LOGO_IMAGE, fit: BoxFit.fill)),
+    actions: _createActions(context, state),
   );
 
   Widget _createTitle(BuildContext context, AppState state) {
@@ -140,6 +142,23 @@ class _AppState extends State<AppPage> {
     return Text(data);
   }
 
+  List<Widget>? _createActions(BuildContext context, AppState state){
+    List <Widget>? actions;
+    switch (state.navIndex) {
+      case 2:
+        actions =  [
+          IconButton(
+            icon: Icon(Icons.mail_rounded),
+            onPressed: () {
+              // OPEN MAIL CLIENT
+            },
+          )
+        ];
+        break;
+    }
+    return actions;
+  }
+
   Widget _createPage(BuildContext context, AppState state) {
     switch (state.navIndex) {
       case 0:
@@ -151,7 +170,9 @@ class _AppState extends State<AppPage> {
             create: (context) => get<ScheduleBloc>(),
             child: get<SchedulePage>());
       case 2:
-        return get<FeedbackPage>();
+        return BlocProvider(
+            create: (context) => get<FeedbackBloc>(),
+            child: get<FeedbackPage>());
       case 3:
         return get<SettingsPage>();
       default:

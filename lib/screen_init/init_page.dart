@@ -113,7 +113,7 @@ class _InitPageState extends State<InitPage> {
 
   FutureOr<Null> _handleInitError(String msg, dynamic error) {
     _logger.logError(msg, error);
-    throw Exception("App initialisation error");
+    // throw Exception("App initialisation error");
   }
 
   @override

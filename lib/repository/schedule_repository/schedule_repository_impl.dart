@@ -1,5 +1,5 @@
 import 'package:union_player_app/model/schedule_item.dart';
-import 'package:union_player_app/repository/i_schedule_repository.dart';
+import 'package:union_player_app/repository/schedule_repository/i_schedule_repository.dart';
 import 'package:union_player_app/screen_schedule/schedule_state.dart';
 
 class ScheduleRepositoryImpl implements IScheduleRepository{

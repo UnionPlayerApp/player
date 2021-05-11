@@ -11,26 +11,9 @@ String translate(StringKeys key, BuildContext context){
 
 enum  StringKeys{
   // FeedbackScreen
-  requiredErrorText,
-
-  nameFormTitle,
-  nameFormHint,
-
-  emailFormTitle,
-  emailFormHint,
-  emailErrorText,
-
-  phoneFormTitle,
-  phoneFormHint,
-  phoneErrorText,
-
-  messageFormTitle,
-  messageFormHint,
-  messageMaxLengthError,
-
-  formSuccessText,
-  sendButtonText,
-  aboutButtonText,
+  message_us,
+  write,
+  hide,
 
   // BottomNavigationBar
   home,
