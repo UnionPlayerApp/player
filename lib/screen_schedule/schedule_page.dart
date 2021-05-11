@@ -51,7 +51,8 @@ class SchedulePage extends StatelessWidget {
       BuildContext context, ScheduleLoadSuccessState state) {
     return RefreshIndicator(
         onRefresh: () async {
-          return context.read<ScheduleBloc>().add(ScheduleLoadEvent());
+          //TODO: отправить событие на принудительную загрзку данных
+          //context.read<ScheduleBloc>().add();
         },
         child: ListView.separated(
             separatorBuilder: (BuildContext context, int index) =>

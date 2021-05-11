@@ -9,7 +9,7 @@ class ScheduleRepositoryLoadSuccessState extends ScheduleRepositoryState {
 }
 
 class ScheduleRepositoryLoadErrorState extends ScheduleRepositoryState {
-  final String errorMessage;
+  final String error;
 
-  ScheduleRepositoryLoadErrorState(this.errorMessage);
+  ScheduleRepositoryLoadErrorState(this.error);
 }
