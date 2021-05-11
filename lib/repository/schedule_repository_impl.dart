@@ -61,7 +61,7 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
   @override
   Stream<ScheduleRepositoryState> stream() async* {
     while (_isOpen) {
-      Future.delayed(Duration(seconds: SCHEDULE_CHECK_INTERVAL));
+      await Future.delayed(Duration(seconds: SCHEDULE_CHECK_INTERVAL));
 
       if (!_firstItemIsCurrent()) {
         yield await _load();
@@ -80,7 +80,9 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
   }
 
   Future<ScheduleRepositoryState> _load() async {
-    return ScheduleRepositoryLoadSuccessState(_testItemsRaw);
+    _itemsRaw.clear();
+    _itemsRaw.addAll(_testItemsRaw);
+    return ScheduleRepositoryLoadSuccessState(_itemsRaw);
   }
 
   @override
