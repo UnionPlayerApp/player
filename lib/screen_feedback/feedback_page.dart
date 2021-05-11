@@ -1,13 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/screen_feedback/feedback_bloc.dart';
 import 'package:union_player_app/screen_feedback/feedback_state.dart';
-import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:webview_flutter/webview_flutter.dart';

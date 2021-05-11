@@ -71,6 +71,13 @@ class _InitPageState extends State<InitPage> {
     }
 
     try {
+      DocumentSnapshot doc = await collection.doc("about_data").get();
+      _systemData.setAboutData(doc);
+    } catch (error) {
+      throw Exception("About data read error: $error");
+    }
+
+    try {
       DocumentSnapshot doc = await collection.doc("stream_data").get();
       _systemData.setStreamData(doc);
     } catch (error) {
@@ -92,15 +99,6 @@ class _InitPageState extends State<InitPage> {
       _logger.logError("Audio stream load error", error);
     }
   }
-
-  Future _initApp_() async => Future.wait([
-        _initSystemData()
-            .then((v) => _logger.logDebug("init System data success"))
-            .catchError((e) => _handleInitError("init System data error", e)),
-        _initPlayer()
-            .then((v) => _logger.logDebug("init Player success"))
-            .catchError((e) => _handleInitError("init Player error", e)),
-      ]);
 
   Future _initApp() async => Future.wait([_initSystemData()])
       .then((v) {
