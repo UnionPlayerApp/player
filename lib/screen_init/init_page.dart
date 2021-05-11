@@ -93,15 +93,6 @@ class _InitPageState extends State<InitPage> {
     }
   }
 
-  Future _initApp_() async => Future.wait([
-        _initSystemData()
-            .then((v) => _logger.logDebug("init System data success"))
-            .catchError((e) => _handleInitError("init System data error", e)),
-        _initPlayer()
-            .then((v) => _logger.logDebug("init Player success"))
-            .catchError((e) => _handleInitError("init Player error", e)),
-      ]);
-
   Future _initApp() async => Future.wait([_initSystemData()])
       .then((v) {
         _logger.logDebug("init System data success");

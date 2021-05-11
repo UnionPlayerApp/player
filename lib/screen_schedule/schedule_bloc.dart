@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:union_player_app/repository/i_schedule_repository.dart';
+import 'package:union_player_app/repository/schedule_repository_state.dart';
 import 'package:union_player_app/screen_schedule/schedule_event.dart';
+import 'package:union_player_app/screen_schedule/schedule_item_view.dart';
 import 'package:union_player_app/screen_schedule/schedule_state.dart';
 import 'package:union_player_app/utils/app_logger.dart';
 
@@ -23,6 +25,17 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
   }
 
   Future<ScheduleState> _fetchScheduleList() async {
-      return await _repository.getScheduleList();
+    final state = await _repository.getScheduleList();
+
+    if (state is ScheduleRepositoryLoadErrorState) {
+      return ScheduleLoadErrorState(state.errorMessage);
+    }
+
+    if (state is ScheduleRepositoryLoadSuccessState) {
+      final items = state.items.map((itemRaw) => ScheduleItemView(itemRaw)).toList();
+      return ScheduleLoadSuccessState(items);
+    }
+
+    return ScheduleLoadUnknownState();
   }
 }

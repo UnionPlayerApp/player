@@ -95,7 +95,7 @@ class SchedulePage extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       )),
-                      Text(element.startTime,
+                      Text(element.start,
                           style: TextStyle(fontSize: titleFontSize),
                           overflow: TextOverflow.ellipsis),
                     ]),
@@ -103,7 +103,7 @@ class SchedulePage extends StatelessWidget {
                         padding: programBodyTopPadding,
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          element.text,
+                          element.artist,
                           style: TextStyle(fontSize: bodyFontSize),
                           softWrap: true,
                           textAlign: TextAlign.start,
