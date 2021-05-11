@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:union_player_app/repository/i_schedule_repository.dart';
+import 'package:union_player_app/repository/schedule_repository_interface.dart';
 import 'package:union_player_app/repository/schedule_repository_state.dart';
 import 'package:union_player_app/screen_schedule/schedule_event.dart';
 import 'package:union_player_app/screen_schedule/schedule_item_view.dart';

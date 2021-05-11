@@ -26,8 +26,10 @@ dependencies:
   koin_bloc:
   koin_flutter: ^0.11.0-nullsafety.0
   logger:
+  path_provider:
   shared_preferences:
   webview_flutter:
+  xml:
 
 dev_dependencies:
   flutter_launcher_icons:
