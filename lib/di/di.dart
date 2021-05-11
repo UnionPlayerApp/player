@@ -1,7 +1,6 @@
 import 'package:just_audio/just_audio.dart';
 import 'package:koin/koin.dart';
 import 'package:union_player_app/model/system_data/system_data.dart';
-import 'package:union_player_app/repository/feedback_repository/feedback_repository_impl.dart';
 import 'package:union_player_app/repository/schedule_repository/schedule_repository_impl.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_app/app_page.dart';
@@ -23,7 +22,6 @@ final appModule = Module()
   ..single((scope) => AppLogger())
   ..single((scope) => AppPage())
   ..single((scope) => AudioPlayer())
-  ..single((scope) => FeedbackRepositoryImpl())
   ..single((scope) => FeedbackBloc(scope.get(), scope.get()))
   ..single((scope) => FeedbackPage(scope.get()))
   ..single((scope) => MainBloc(scope.get()))
