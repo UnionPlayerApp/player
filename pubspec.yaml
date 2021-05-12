@@ -39,6 +39,7 @@ flutter:
     - assets/images/
     - assets/localizations/en.json
     - assets/localizations/ru.json
+    - assets/localizations/be.json
     - assets/about_us_page/test_page.html
   uses-material-design: true
 

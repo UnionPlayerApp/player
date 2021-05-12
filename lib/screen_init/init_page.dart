@@ -160,6 +160,7 @@ class _InitPageState extends State<InitPage> {
               supportedLocales: [
                 const Locale('en', 'US'),
                 const Locale('ru', 'RU'),
+                const Locale('be', 'BY'),
               ],
               localeResolutionCallback:
                   (Locale? locale, Iterable<Locale> supportedLocales) {

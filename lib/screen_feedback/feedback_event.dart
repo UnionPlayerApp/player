@@ -7,6 +7,15 @@ abstract class FeedbackEvent extends Equatable {
 
 class AboutInfoLoadEvent extends FeedbackEvent {}
 
+class GotCurrentLocaleEvent extends FeedbackEvent {
+  final String locale;
+
+  GotCurrentLocaleEvent(this.locale);
+
+  @override
+  List<Object?> get props => [locale];
+}
+
 class WriteEmailButtonPressedEvent extends FeedbackEvent {}
 
 class HideBannerButtonPressedEvent extends FeedbackEvent {}

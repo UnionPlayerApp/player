@@ -20,12 +20,3 @@ class AboutInfoLoadSuccessState extends FeedbackState{
   @override
   List<Object> get props => [url, hasBanner];
 }
-
-class AboutInfoLoadErrorState extends FeedbackState {
-  final String errorMessage;
-
-  AboutInfoLoadErrorState(this.errorMessage);
-
-  @override
-  List<Object> get props => [errorMessage, hasBanner];
-}

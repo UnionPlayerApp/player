@@ -75,16 +75,21 @@ class FeedbackPage extends StatelessWidget {
     context.read<FeedbackBloc>().add(WriteEmailButtonPressedEvent());
   }
 
+  void _getCurrentLocale(BuildContext context) async{
+    _logger.logDebug("Locale = ${Localizations.localeOf(context).toString()}");
+    Locale currentLocale = Localizations.localeOf(context);
+    context.read<FeedbackBloc>().add(GotCurrentLocaleEvent(currentLocale.toString()));
+  }
+
   _getCurrentStateWidget(BuildContext context, FeedbackState state){
     if (state is AboutInfoLoadAwaitState) {
+      _getCurrentLocale(context);
       return _loadAboutInfoAwaitWidget();
     }
     if (state is AboutInfoLoadSuccessState){
       return _loadAboutInfoSuccessWidget(context, state);
     }
-    if (state is AboutInfoLoadErrorState){
-      return _loadAboutInfoErrorWidget(context, state);
-    } else {
+     else {
       return Center(
         child: CircularProgressIndicator(),
       );
@@ -95,16 +100,6 @@ class FeedbackPage extends StatelessWidget {
     return Center(
       child: CircularProgressIndicator(),
     );
-  }
-
-  Widget _loadAboutInfoErrorWidget(BuildContext context, AboutInfoLoadErrorState state) {
-    return Center(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text("${translate(StringKeys.loading_error, context)}"),
-              Text(state.errorMessage),
-            ]));
   }
 
   Widget _loadAboutInfoSuccessWidget(BuildContext context, AboutInfoLoadSuccessState state) {
