@@ -15,3 +15,6 @@ const LOG_TAG = "UPA -> ";
 // FeedbackScreen
 const String PHONE_PATTERN =  r'(^(?:[+0]9)?[0-9]{10,12}$)';
 const int MAX_MESSAGE_LENGTH = 400;
+
+// Периодичность проверки первого элемента расписания на завершение, сек
+const SCHEDULE_CHECK_INTERVAL = 5;
