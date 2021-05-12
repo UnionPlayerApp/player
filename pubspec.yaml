@@ -22,6 +22,7 @@ dependencies:
     sdk: flutter
   flutter_screenutil: ^5.0.0
   form_field_validator: ^1.1.0
+  intl:
   just_audio:
   koin_bloc:
   koin_flutter: ^0.11.0-nullsafety.0
