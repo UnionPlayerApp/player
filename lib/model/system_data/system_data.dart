@@ -3,10 +3,21 @@ import 'package:union_player_app/model/system_data/email_data.dart';
 import 'package:union_player_app/model/system_data/stream_data.dart';
 import 'package:union_player_app/model/system_data/xml_data.dart';
 
+import 'about_data.dart';
+
 class SystemData {
+  AboutData aboutData = AboutData();
   EmailData emailData = EmailData();
   StreamData streamData = StreamData();
   XmlData xmlData = XmlData();
+
+  void setAboutData(DocumentSnapshot<Object?> doc) {
+    try {
+      aboutData.setData(doc);
+    } catch (error) {
+      throw Exception(error.toString());
+    }
+  }
 
   void setEmailData(DocumentSnapshot<Object?> doc) {
     try {

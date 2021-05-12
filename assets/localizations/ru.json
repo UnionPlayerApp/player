@@ -1,25 +1,7 @@
 {
-  "requiredErrorText": "* Обязательное поле",
-
-  "nameFormTitle" : "Ваше имя",
-  "nameFormHint" : "Пожалуйста, введите ваше имя",
-
-  "emailFormTitle" : "Email",
-  "emailFormHint" : "Введите ваш email",
-  "emailErrorText" : "Некорректный email.",
-
-  "phoneFormTitle" : "Ваш телефон",
-  "phoneFormHint" : "Пожалуйста, введите ваш номер телефона",
-  "phoneErrorText" : "Некорректный номер",
-
-  "messageFormTitle" : "Ваше сообщение",
-  "messageFormHint" : "Напишите нам что-нибудь",
-  "messageMaxLengthError" : "Длина сообщения не может превышать 400 символов",
-
-  "formSuccessText" : "Ваше сообщение отправлено",
-  "sendButtonText": "ОТПРАВИТЬ",
-  "aboutButtonText": "О НАС",
-
+  "message_us" : "Напишите нам",
+  "write" : "НАПИСАТЬ",
+  "hide" : "СКРЫТЬ",
 
   "home" : "Главная",
   "schedule" : "Расписание",

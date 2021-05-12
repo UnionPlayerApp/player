@@ -70,6 +70,13 @@ class _InitPageState extends State<InitPage> {
     }
 
     try {
+      DocumentSnapshot doc = await collection.doc("about_data").get();
+      _systemData.setAboutData(doc);
+    } catch (error) {
+      throw Exception("About data read error: $error");
+    }
+
+    try {
       DocumentSnapshot doc = await collection.doc("stream_data").get();
       _systemData.setStreamData(doc);
     } catch (error) {
@@ -103,7 +110,7 @@ class _InitPageState extends State<InitPage> {
 
   FutureOr<Null> _handleInitError(String msg, dynamic error) {
     _logger.logError(msg, error);
-    throw Exception("App initialisation error");
+    // throw Exception("App initialisation error");
   }
 
   @override
@@ -152,6 +159,7 @@ class _InitPageState extends State<InitPage> {
               supportedLocales: [
                 const Locale('en', 'US'),
                 const Locale('ru', 'RU'),
+                const Locale('be', 'BY'),
               ],
               localeResolutionCallback:
                   (Locale? locale, Iterable<Locale> supportedLocales) {
