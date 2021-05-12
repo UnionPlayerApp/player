@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:union_player_app/model/schedule_item.dart';
+import 'package:union_player_app/screen_schedule/schedule_item_view.dart';
 
 abstract class ScheduleState extends Equatable {
   @override
@@ -9,7 +9,7 @@ abstract class ScheduleState extends Equatable {
 class ScheduleLoadAwaitState extends ScheduleState {}
 
 class ScheduleLoadSuccessState extends ScheduleState {
-  final List<ScheduleItem> items;
+  final List<ScheduleItemView> items;
 
   ScheduleLoadSuccessState(this.items);
 
@@ -25,3 +25,5 @@ class ScheduleLoadErrorState extends ScheduleState {
   @override
   List<Object> get props => [errorMessage];
 }
+
+class ScheduleLoadUnknownState extends ScheduleState {}

@@ -26,6 +26,6 @@ final appModule = Module()
   ..single((scope) => MainPage())
   ..single((scope) => ScheduleBloc(scope.get<ScheduleRepositoryImpl>(), scope.get()))
   ..single((scope) => SchedulePage())
-  ..single((scope) => ScheduleRepositoryImpl())
+  ..single((scope) => ScheduleRepositoryImpl(scope.get(), scope.get()))
   ..single((scope) => SettingsPage())
   ..single((scope) => SystemData());

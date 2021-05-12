@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
-import 'package:union_player_app/screen_schedule/schedule_event.dart';
 import 'package:union_player_app/screen_schedule/schedule_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
@@ -51,7 +50,8 @@ class SchedulePage extends StatelessWidget {
       BuildContext context, ScheduleLoadSuccessState state) {
     return RefreshIndicator(
         onRefresh: () async {
-          return context.read<ScheduleBloc>().add(ScheduleLoadEvent());
+          //TODO: отправить событие на принудительную загрзку данных
+          //context.read<ScheduleBloc>().add();
         },
         child: ListView.separated(
             separatorBuilder: (BuildContext context, int index) =>
@@ -95,7 +95,7 @@ class SchedulePage extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       )),
-                      Text(element.startTime,
+                      Text(element.start,
                           style: TextStyle(fontSize: titleFontSize),
                           overflow: TextOverflow.ellipsis),
                     ]),
@@ -103,7 +103,7 @@ class SchedulePage extends StatelessWidget {
                         padding: programBodyTopPadding,
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          element.text,
+                          element.artist,
                           style: TextStyle(fontSize: bodyFontSize),
                           softWrap: true,
                           textAlign: TextAlign.start,
