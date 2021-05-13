@@ -18,7 +18,7 @@ import 'package:union_player_app/utils/widgets/loading_page.dart';
 final appModule = Module()
   ..factoryWithParam((scope, List<String> strings) => InfoPage(strings: strings))
   ..factoryWithParam((scope, String title) => LoadingPage(title: title))
-  ..single((scope) => AppBloc(scope.get(), scope.get(), scope.get()))
+  ..single((scope) => AppBloc(scope.get<ScheduleRepositoryImpl>(), scope.get(), scope.get(), scope.get()))
   ..single((scope) => AppLogger())
   ..single((scope) => AppPage())
   ..single((scope) => AudioPlayer())

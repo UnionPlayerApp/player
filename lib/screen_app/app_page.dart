@@ -82,7 +82,7 @@ class _AppState extends State<AppPage> {
         padding: EdgeInsets.all(0),
         minWidth: 0,
         onPressed: () {
-          context.read<AppBloc>().add(AppNavPressedEvent(itemTab));
+          context.read<AppBloc>().add(AppNavEvent(itemTab));
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -124,21 +124,7 @@ class _AppState extends State<AppPage> {
   );
 
   Widget _createTitle(BuildContext context, AppState state) {
-    String data = "Unknown navigation index";
-    switch (state.navIndex) {
-      case 0:
-        data = "Main page";
-        break;
-      case 1:
-        data = "Schedule page";
-        break;
-      case 2:
-        data = "Feedback page";
-        break;
-      case 3:
-        data = "Settings page";
-        break;
-    }
+    String data = state.title ?? translate(StringKeys.loading_error, context);
     return Text(data);
   }
 
@@ -183,7 +169,7 @@ class _AppState extends State<AppPage> {
 
   FloatingActionButton _createFAB(BuildContext context, AppState state) =>
       FloatingActionButton(
-        onPressed: () => context.read<AppBloc>().add(AppFabPressedEvent()),
+        onPressed: () => context.read<AppBloc>().add(AppFabEvent()),
         tooltip: 'Play / Stop',
         child: Icon(
             state.playingState ? Icons.stop_rounded : Icons.play_arrow_rounded),
