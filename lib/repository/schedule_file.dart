@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:union_player_app/repository/schedule_item_raw.dart';
 import 'package:union_player_app/repository/schedule_item_type.dart';
+import 'package:union_player_app/utils/core/date_time.dart';
+import 'package:union_player_app/utils/core/duration.dart';
 import 'package:xml/xml.dart';
 
 Future<File> loadScheduleFile(String url) async {
@@ -44,7 +46,7 @@ List<ScheduleItemRaw> parseScheduleFile(File file) {
       final title = _createTitle(element);
       final artist = _createArtist(element);
 
-      final item = ScheduleItemRaw(start, duration, type, title, artist, imageUrl: _randomUrl());
+      final item = ScheduleItemRaw(thisStart, duration, type, title, artist, imageUrl: _randomUrl());
       newList.add(item);
     });
     return newList;
@@ -77,7 +79,7 @@ DateTime? _createStart(XmlElement element, DateTime start) {
   if (eStartDate == null || eStartTime == null) return start;
 
   try {
-    return _parseDateTime(eStartDate.innerText, eStartTime.innerText);
+    return parseDateTime(eStartDate.innerText, eStartTime.innerText);
   } catch (error) {
     return null;
   }
@@ -88,7 +90,7 @@ Duration? _createDuration(XmlElement element) {
   if (eDuration == null) return null;
 
   try {
-    return _parseTime(eDuration.innerText);
+    return parseDuration(eDuration.innerText);
   } catch (error) {
     return null;
   }
@@ -102,36 +104,6 @@ String _createArtist(XmlElement element) {
 String _createTitle(XmlElement element) {
   final eName = element.getElement("NAME");
   return eName == null ? "" : eName.innerText;
-}
-
-Duration _parseTime(String time) {
-  final parts = time.split(':');
-  try {
-    final hours = int.parse(parts[2]);
-    final minutes = int.parse(parts[1]);
-    final seconds = int.parse(parts[0]);
-    return Duration(hours: hours, minutes: minutes, seconds: seconds);
-  } catch (error) {
-    throw FormatException('Invalid duration element format');
-  }
-}
-
-DateTime _parseDateTime(String date, String time) {
-  try {
-    final timeParts = time.split(':');
-    final hours = int.parse(timeParts[2]);
-    final minutes = int.parse(timeParts[1]);
-    final seconds = int.parse(timeParts[0]);
-
-    final dateParts = time.split('-');
-    final year = int.parse(dateParts[2]);
-    final month = int.parse(dateParts[1]);
-    final day = int.parse(dateParts[0]);
-
-    return DateTime(year, month, day, hours, minutes, seconds);
-  } catch (error) {
-    throw FormatException('Invalid start date or time format');
-  }
 }
 
 String _randomUrl() {

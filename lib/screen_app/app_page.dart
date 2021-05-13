@@ -12,9 +12,9 @@ import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_page.dart';
 import 'package:union_player_app/screen_settings/settings_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/info_page.dart';
+import 'package:union_player_app/utils/widgets/info_page.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
-import 'package:union_player_app/utils/snack_bar.dart';
+import 'package:union_player_app/utils/widgets/snack_bar.dart';
 
 
 class AppPage extends StatefulWidget {

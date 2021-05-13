@@ -15,9 +15,9 @@ import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_app/app_page.dart';
 import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
-import 'package:union_player_app/utils/info_page.dart';
-import 'package:union_player_app/utils/loading_page.dart';
+import 'package:union_player_app/utils/widgets/info_page.dart';
 import 'package:union_player_app/utils/localizations/app_localizations_delegate.dart';
+import 'package:union_player_app/utils/widgets/loading_page.dart';
 
 class InitPage extends StatefulWidget {
   InitPage({Key? key}) : super(key: key);
