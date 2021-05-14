@@ -14,7 +14,9 @@ enum  StringKeys{
   message_us,
   write,
   hide,
-
+  // AppBar
+  presentArticle,
+  nextArticle,
   // BottomNavigationBar
   home,
   schedule,

@@ -4,14 +4,20 @@ class AppState extends Equatable {
   final int navIndex;
   final bool playingState;
   final ProcessingState processingState;
-  final String? title;
-  final bool _scheduleLoaded;
+  final String? presentTitle;
+  final String? presentArtist;
+  final String? nextTitle;
+  final String? nextArtist;
+  final bool scheduleLoaded;
 
   const AppState(this.navIndex, this.playingState, this.processingState,
-      {this.title})
-      : _scheduleLoaded = title != null;
+      {this.presentTitle, this.presentArtist, this.nextTitle, this.nextArtist})
+      : scheduleLoaded = presentTitle != null &&
+            presentArtist != null &&
+            nextTitle != null &&
+            nextArtist != null;
 
   @override
   List<Object> get props =>
-      [navIndex, playingState, processingState, _scheduleLoaded];
+      [navIndex, playingState, processingState, scheduleLoaded];
 }

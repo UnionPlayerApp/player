@@ -10,7 +10,6 @@ import 'package:union_player_app/repository/schedule_repository_interface.dart';
 import 'package:union_player_app/repository/schedule_repository_state.dart';
 import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/localizations/string_translation.dart';
 
 part 'app_event.dart';
 
@@ -69,22 +68,27 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
     if (event is AppNavEvent) {
       yield AppState(event.navIndex, state.playingState, state.processingState,
-          title: state.title);
+          presentTitle: state.presentTitle);
     }
 
     if (event is AppPlayerEvent) {
       yield AppState(state.navIndex, event.playingState, event.processingState,
-          title: state.title);
+          presentTitle: state.presentTitle);
     }
 
     if (event is AppScheduleEvent) {
-      if (event.items == null || event.items!.isEmpty) {
+      if (event.items == null || event.items!.length < 2) {
         yield AppState(
             state.navIndex, state.playingState, state.processingState);
       } else {
+        final presentItem = event.items![0];
+        final nextItem = event.items![1];
         yield AppState(
             state.navIndex, state.playingState, state.processingState,
-            title: event.items![0].title);
+            presentArtist: presentItem.artist,
+            presentTitle: presentItem.title,
+            nextArtist: nextItem.artist,
+            nextTitle: nextItem.title);
       }
     }
   }

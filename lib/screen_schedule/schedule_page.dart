@@ -88,7 +88,7 @@ class SchedulePage extends StatelessWidget {
                     Row(children: [
                       Expanded(
                           child: Text(
-                        element.title,
+                        element.presentTitle,
                         style: TextStyle(fontSize: titleFontSize),
                         softWrap: true,
                         textAlign: TextAlign.start,

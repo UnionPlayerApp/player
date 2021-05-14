@@ -8,5 +8,8 @@
   "feedback" : "Feedback",
   "settings" : "Settings",
 
+  "preset" : "NOW is",
+  "next" : "NEXT will",
+
   "loading_error" : "Loading error"
 }

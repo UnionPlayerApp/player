@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:koin_flutter/koin_flutter.dart';
+import 'package:marquee/marquee.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_feedback/feedback_bloc.dart';
 import 'package:union_player_app/screen_feedback/feedback_page.dart';
@@ -17,7 +18,6 @@ import 'package:union_player_app/utils/widgets/info_page.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/widgets/snack_bar.dart';
 
-
 class AppPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _AppState();
@@ -30,20 +30,19 @@ class _AppState extends State<AppPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
         builder: (BuildContext context, AppState state) => WillPopScope(
-          onWillPop: _onWillPop,
-          child: Scaffold(
-            appBar: _createAppBar(context, state),
-            body: _createPage(context, state),
-            floatingActionButton: _createFAB(context, state),
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-            bottomNavigationBar: _createBottomNavigationBar(context, state),
-          ),
-        )
-    );
+              onWillPop: _onWillPop,
+              child: Scaffold(
+                appBar: _createAppBar(state),
+                body: _createPage(state),
+                floatingActionButton: _createFAB(state),
+                floatingActionButtonLocation:
+                    FloatingActionButtonLocation.centerDocked,
+                bottomNavigationBar: _createBottomNavigationBar(state),
+              ),
+            ));
   }
 
-  BottomAppBar _createBottomNavigationBar(
-      BuildContext context, AppState state) =>
+  BottomAppBar _createBottomNavigationBar(AppState state) =>
       BottomAppBar(
         shape: CircularNotchedRectangle(),
         notchMargin: 7,
@@ -56,8 +55,10 @@ class _AppState extends State<AppPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buttonAppBar(context, state, 0, Icons.radio, StringKeys.home),
-                    _buttonAppBar(context, state, 1, Icons.list_alt, StringKeys.schedule),
+                    _buttonAppBar(
+                        context, state, 0, Icons.radio, StringKeys.home),
+                    _buttonAppBar(
+                        context, state, 1, Icons.list_alt, StringKeys.schedule),
                   ],
                 ),
               ),
@@ -66,8 +67,10 @@ class _AppState extends State<AppPage> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buttonAppBar(context, state, 2, Icons.markunread_mailbox_outlined, StringKeys.feedback),
-                    _buttonAppBar(context, state, 3, Icons.settings_rounded, StringKeys.settings),
+                    _buttonAppBar(context, state, 2,
+                        Icons.markunread_mailbox_outlined, StringKeys.feedback),
+                    _buttonAppBar(context, state, 3, Icons.settings_rounded,
+                        StringKeys.settings),
                   ],
                 ),
               ),
@@ -76,7 +79,8 @@ class _AppState extends State<AppPage> {
         ),
       );
 
-  Expanded _buttonAppBar(BuildContext context, AppState state, int itemTab, IconData iconTab, StringKeys nameTab ) {
+  Expanded _buttonAppBar(BuildContext context, AppState state, int itemTab,
+      IconData iconTab, StringKeys nameTab) {
     return Expanded(
       child: MaterialButton(
         padding: EdgeInsets.all(0),
@@ -94,7 +98,8 @@ class _AppState extends State<AppPage> {
             Text(
               translate(nameTab, context),
               style: TextStyle(
-                color: state.navIndex == itemTab ? Colors.red[800] : Colors.grey,
+                color:
+                    state.navIndex == itemTab ? Colors.red[800] : Colors.grey,
               ),
             ),
           ],
@@ -106,8 +111,7 @@ class _AppState extends State<AppPage> {
   Future<bool> _onWillPop() {
     final DateTime now = DateTime.now();
     final duration = Duration(seconds: 2);
-    if (_backPressTime == null ||
-        now.difference(_backPressTime!) > duration) {
+    if (_backPressTime == null || now.difference(_backPressTime!) > duration) {
       _backPressTime = now;
       showSnackBar(context, "Press one more time for exit", duration: duration);
       return Future.value(false);
@@ -115,24 +119,49 @@ class _AppState extends State<AppPage> {
     return Future.value(true);
   }
 
-  AppBar _createAppBar(BuildContext context, AppState state) => AppBar(
-    title: _createTitle(context, state),
-    leading: Container(
-        padding: EdgeInsets.all(10.0),
-        child: Image.asset(APP_BAR_LOGO_IMAGE, fit: BoxFit.fill)),
-    actions: _createActions(context, state),
-  );
+  AppBar _createAppBar(AppState state) => AppBar(
+        title: _createTitle(state),
+        leading: _createLeading(),
+        actions: _createActions(state),
+//        toolbarHeight: kToolbarHeight,
+      );
 
-  Widget _createTitle(BuildContext context, AppState state) {
-    String data = state.title ?? translate(StringKeys.loading_error, context);
-    return Text(data);
+  Widget _createTitle(AppState state) {
+    final title = state.scheduleLoaded ? _loadedTitle(state) : _errorTitle();
+    return Text(title);
+    // return Expanded(
+    //     child: SizedBox(
+    //         child: Marquee(text: title),
+    //         height: kToolbarHeight
+    //     )
+    // );
   }
 
-  List<Widget>? _createActions(BuildContext context, AppState state){
-    List <Widget>? actions;
+  String _loadedTitle(AppState state) {
+    final presentArticle = translate(StringKeys.presentArticle, context);
+    final presentArtist = state.presentArtist!;
+    final presentTitle = state.presentTitle!;
+    final nextArticle = translate(StringKeys.nextArticle, context);
+    final nextArtist = state.nextArtist!;
+    final nextTitle = state.nextTitle!;
+    return "$presentArticle: $presentArtist - $presentTitle. $nextArticle: $nextArtist - $nextTitle";
+  }
+
+  String _errorTitle() {
+    return translate(StringKeys.loading_error, context);
+  }
+
+  Widget _createLeading() {
+    return Container(
+        padding: const EdgeInsets.all(10.0),
+        child: CircleAvatar(backgroundImage: AssetImage(APP_BAR_LOGO_IMAGE)));
+  }
+
+  List<Widget>? _createActions(AppState state) {
+    List<Widget>? actions;
     switch (state.navIndex) {
       case 2:
-        actions =  [
+        actions = [
           IconButton(
             icon: Icon(Icons.mail_rounded),
             onPressed: () {
@@ -145,12 +174,11 @@ class _AppState extends State<AppPage> {
     return actions;
   }
 
-  Widget _createPage(BuildContext context, AppState state) {
+  Widget _createPage(AppState state) {
     switch (state.navIndex) {
       case 0:
         return BlocProvider(
-            create: (context) => get<MainBloc>(),
-            child: get<MainPage>());
+            create: (context) => get<MainBloc>(), child: get<MainPage>());
       case 1:
         return BlocProvider(
             create: (context) => get<ScheduleBloc>(),
@@ -167,7 +195,7 @@ class _AppState extends State<AppPage> {
     }
   }
 
-  FloatingActionButton _createFAB(BuildContext context, AppState state) =>
+  FloatingActionButton _createFAB(AppState state) =>
       FloatingActionButton(
         onPressed: () => context.read<AppBloc>().add(AppFabEvent()),
         tooltip: 'Play / Stop',
