@@ -4,13 +4,16 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/screen_feedback/feedback_bloc.dart';
 import 'package:union_player_app/screen_feedback/feedback_state.dart';
 import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
+import 'package:union_player_app/utils/no_divider_banner.dart';
+import 'package:webview_flutter/platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:koin_flutter/koin_flutter.dart';
 import 'feedback_event.dart';
 
 class FeedbackPage extends StatelessWidget {
@@ -18,7 +21,6 @@ class FeedbackPage extends StatelessWidget {
   final AppLogger _logger;
 
   FeedbackPage(this._logger);
-
 
   @override
   Widget build(BuildContext context) {
@@ -41,34 +43,60 @@ class FeedbackPage extends StatelessWidget {
   Widget _createBannerIfNotHidden(BuildContext context, FeedbackState state) {
     Widget widget;
     if (state.hasBanner) {
-      _logger.logDebug("Has banner? - ${state.hasBanner}");
       widget =
-        MaterialBanner(
-          content: Text(translate(StringKeys.message_us, context)),
-          leading: CircleAvatar(child: Icon(Icons.mail_rounded)),
-          actions: [
-            TextButton(
-              child: Text(translate(StringKeys.hide, context)),
-              onPressed: () {
-                _hideBanner(context);
-              },
-            ),
-            TextButton(
-              child: Text(translate(StringKeys.write, context)),
-              onPressed: () {
-                _writeEmailBottomPressed(context);
-              },
-            ),
-          ],
-        );
+          Column(
+            children: [
+              Container(
+                decoration: new BoxDecoration(
+                  color: Colors.lightBlue,
+                  borderRadius: new BorderRadius.only(
+                    bottomLeft: Radius.circular(12.w),
+                    bottomRight: Radius.circular(12.w),
+                  ),
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                        color: Colors.black54,
+                        blurRadius: 5.h,
+                    )
+                  ],
+                ),
+                child:
+              // _logger.logDebug("Has banner? - ${state.hasBanner}");
+              // widget =
+                  NoDividerBanner(
+                    Colors.transparent,
+                    Text(translate(StringKeys.message_us, context)),
+                    CircleAvatar(child: Icon(Icons.mail_rounded)),
+                  [
+                    TextButton(
+                      child: Text(translate(StringKeys.hide, context)),
+                      onPressed: () {
+                        _hideBanner(context, state);
+                      },
+                    ),
+                    TextButton(
+                      child: Text(translate(StringKeys.write, context)),
+                      onPressed: () {
+                        _writeEmailBottomPressed(context);
+                      },
+                    ),
+                  ],
+                )),
+              SizedBox(height: 15.h),
+            ]
+          );
     } else {
       widget = Container();
     }
     return widget;
   }
 
-  void _hideBanner(BuildContext context){
-    context.read<FeedbackBloc>().add(HideBannerButtonPressedEvent());
+  void _hideBanner(BuildContext context, FeedbackState state){
+    // context.read<FeedbackBloc>().add(HideBannerButtonPressedEvent(state));
+    BlocProvider.of<FeedbackBloc>(context).add(HideBannerButtonPressedEvent(state));
+    _logger.logDebug("hideBanner button pressed,"
+        " \n State: ${state.runtimeType},"
+        " \n Bloc: ${context.read<FeedbackBloc>().toString()}");
   }
 
   void _writeEmailBottomPressed(BuildContext context){
@@ -82,42 +110,92 @@ class FeedbackPage extends StatelessWidget {
   }
 
   _getCurrentStateWidget(BuildContext context, FeedbackState state){
-    if (state is AboutInfoLoadAwaitState) {
+    if (state is WebViewLoadSuccessState) {
+      return _loadAboutInfoWidget(context, state);
+    }
+    else if(state is WebViewLoadErrorState){
+      _logger.logDebug("State is WebViewLoadErrorState, load error Widget.");
+      return _loadErrorWidget(context, state);
+    }
+    else if (state is AboutInfoUrlLoadAwaitState) {
       _getCurrentLocale(context);
-      return _loadAboutInfoAwaitWidget();
+      return _loadAwaitWidget();
     }
-    if (state is AboutInfoLoadSuccessState){
-      return _loadAboutInfoSuccessWidget(context, state);
+    else if (state is WebViewLoadAwaitState) {
+      return _loadAboutInfoWidget(context, state);
     }
-     else {
+    else {
       return Center(
         child: CircularProgressIndicator(),
       );
     }
   }
 
-  Widget _loadAboutInfoAwaitWidget(){
+  Widget _loadAwaitWidget(){
     return Center(
       child: CircularProgressIndicator(),
     );
   }
 
-  Widget _loadAboutInfoSuccessWidget(BuildContext context, AboutInfoLoadSuccessState state) {
+  Widget _loadErrorWidget(BuildContext context, WebViewLoadErrorState state){
+    return Center(
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text("${translate(StringKeys.loading_error, context)}"),
+              Text(state.errorType),
+            ]));
+  }
+
+  Widget _loadAboutInfoWidget(BuildContext context, WebViewState state) {
     return _createWebView(context, state);
   }
 
-  WebView _createWebView(BuildContext context, AboutInfoLoadSuccessState state){
+  Widget _createWebView(BuildContext context, WebViewState state){
+    if (state.hasBanner) {
+      return ClipRRect(
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(12.w), topRight: Radius.circular(12.w)) ,
+          child: _createStackWithWebView(context, state),
+      );
+    } else return _createStackWithWebView(context, state);
+  }
+
+  _createStackWithWebView(BuildContext context, WebViewState state){
     Set<Factory<OneSequenceGestureRecognizer>> _gestureRecognizers =
     [Factory(() => EagerGestureRecognizer())].toSet();
+    bool loadWithError = false;
     return
-      WebView(
-      key: _webViewKey,
-      initialUrl: state.url,
-      javascriptMode: JavascriptMode.unrestricted,
-      gestureRecognizers: _gestureRecognizers,
-      onPageStarted: (value) {},
-      onPageFinished: (value) {},
-    );
+      IndexedStack(
+        index: state.indexedStackPosition,
+        children: <Widget>[
+          WebView(
+            key: _webViewKey,
+            initialUrl: state.url,
+            javascriptMode: JavascriptMode.unrestricted,
+            gestureRecognizers: _gestureRecognizers,
+            onPageStarted: (value) {
+              _logger.logDebug("Loading about_page started...");
+              context.read<FeedbackBloc>().add(WebViewLoadStartedEvent(state.url));
+            },
+            onPageFinished: (value) {
+              _logger.logDebug("Loading about_page successfully finished!");
+              // Hide loading indicator:
+              if(!loadWithError) context.read<FeedbackBloc>().add(WebViewLoadSuccessEvent(state.url));
+            },
+            onWebResourceError: (WebResourceError error){
+              _logger.logDebug("Loading about_page error! Type: ${error.errorType.toString()}");
+              loadWithError = true;
+              context.read<FeedbackBloc>().add(WebViewLoadErrorEvent(error.description.toString()));
+              return;
+            },
+            onWebViewCreated: (WebViewController controller){
+              // controller.
+            },
+          ),
+          Container(
+            child: Center(child: CircularProgressIndicator()),
+          ),
+        ]);
   }
 }
 
