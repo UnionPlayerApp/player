@@ -8,8 +8,9 @@
   "feedback": "Напісаць",
   "settings": "Настройкі",
 
-  "present": "Зараз у эфіры",
-  "next": "Потым у эфіры",
+  "present_article": "Зараз у эфіры",
+  "next_article": "Потым у эфіры",
+  "information_not_loaded": "Інфармацыя не загружана",
 
-  "loading_error": "Ошибка загрузки"
+  "loading_error": "Памылка загрузкі"
 }

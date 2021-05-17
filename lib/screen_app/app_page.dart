@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -42,8 +44,7 @@ class _AppState extends State<AppPage> {
             ));
   }
 
-  BottomAppBar _createBottomNavigationBar(AppState state) =>
-      BottomAppBar(
+  BottomAppBar _createBottomNavigationBar(AppState state) => BottomAppBar(
         shape: CircularNotchedRectangle(),
         notchMargin: 7,
         child: Container(
@@ -81,9 +82,10 @@ class _AppState extends State<AppPage> {
 
   Expanded _buttonAppBar(BuildContext context, AppState state, int itemTab,
       IconData iconTab, StringKeys nameTab) {
+    final color = state.navIndex == itemTab ? Colors.red[800] : Colors.grey;
     return Expanded(
       child: MaterialButton(
-        padding: EdgeInsets.all(0),
+        padding: const EdgeInsets.all(0),
         minWidth: 0,
         onPressed: () {
           context.read<AppBloc>().add(AppNavEvent(itemTab));
@@ -91,17 +93,8 @@ class _AppState extends State<AppPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              iconTab,
-              color: state.navIndex == itemTab ? Colors.red[800] : Colors.grey,
-            ),
-            Text(
-              translate(nameTab, context),
-              style: TextStyle(
-                color:
-                    state.navIndex == itemTab ? Colors.red[800] : Colors.grey,
-              ),
-            ),
+            Icon(iconTab, color: color),
+            Text(translate(nameTab, context), style: TextStyle(color: color)),
           ],
         ),
       ),
@@ -110,7 +103,7 @@ class _AppState extends State<AppPage> {
 
   Future<bool> _onWillPop() {
     final DateTime now = DateTime.now();
-    final duration = Duration(seconds: 2);
+    const duration = const Duration(seconds: 2);
     if (_backPressTime == null || now.difference(_backPressTime!) > duration) {
       _backPressTime = now;
       showSnackBar(context, "Press one more time for exit", duration: duration);
@@ -119,36 +112,44 @@ class _AppState extends State<AppPage> {
     return Future.value(true);
   }
 
-  AppBar _createAppBar(AppState state) => AppBar(
-        title: _createTitle(state),
-        leading: _createLeading(),
-        actions: _createActions(state),
-//        toolbarHeight: kToolbarHeight,
-      );
+  AppBar _createAppBar(AppState state) {
+    final size = AppBar().preferredSize;
+    return AppBar(
+      title: _createTitle(state, size),
+      leading: _createLeading(),
+      actions: _createActions(state),
+    );
+  }
 
-  Widget _createTitle(AppState state) {
-    final title = state.scheduleLoaded ? _loadedTitle(state) : _errorTitle();
-    return Text(title);
-    // return Expanded(
-    //     child: SizedBox(
-    //         child: Marquee(text: title),
-    //         height: kToolbarHeight
-    //     )
-    // );
+  Widget _createTitle(AppState state, Size size) {
+    log("_createTitle()");
+    log("state.isScheduleLoaded = ${state.isScheduleLoaded}");
+    log("state.presentArtist = ${state.presentArtist}");
+    log("state.presentTitle = ${state.presentTitle}");
+    log("state.nextArtist = ${state.nextArtist}");
+    log("state.nextTitle = ${state.nextTitle}");
+    final title = state.isScheduleLoaded ? _loadedTitle(state) : _unloadedTitle();
+    final marquee = Marquee(
+      text: title,
+      startAfter: const Duration(seconds: 3),
+      pauseAfterRound: const Duration(seconds: 3),
+      blankSpace: 75.0,
+    );
+    return SizedBox(height: size.height, width: size.width, child: marquee);
   }
 
   String _loadedTitle(AppState state) {
-    final presentArticle = translate(StringKeys.presentArticle, context);
-    final presentArtist = state.presentArtist!;
-    final presentTitle = state.presentTitle!;
-    final nextArticle = translate(StringKeys.nextArticle, context);
-    final nextArtist = state.nextArtist!;
-    final nextTitle = state.nextTitle!;
+    final presentArticle = translate(StringKeys.present_article, context);
+    final presentArtist = state.presentArtist;
+    final presentTitle = state.presentTitle;
+    final nextArticle = translate(StringKeys.next_article, context);
+    final nextArtist = state.nextArtist;
+    final nextTitle = state.nextTitle;
     return "$presentArticle: $presentArtist - $presentTitle. $nextArticle: $nextArtist - $nextTitle";
   }
 
-  String _errorTitle() {
-    return translate(StringKeys.loading_error, context);
+  String _unloadedTitle() {
+    return translate(StringKeys.information_not_loaded, context);
   }
 
   Widget _createLeading() {
@@ -195,8 +196,7 @@ class _AppState extends State<AppPage> {
     }
   }
 
-  FloatingActionButton _createFAB(AppState state) =>
-      FloatingActionButton(
+  FloatingActionButton _createFAB(AppState state) => FloatingActionButton(
         onPressed: () => context.read<AppBloc>().add(AppFabEvent()),
         tooltip: 'Play / Stop',
         child: Icon(

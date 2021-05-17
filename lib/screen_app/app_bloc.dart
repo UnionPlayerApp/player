@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:connectivity/connectivity.dart';
@@ -28,15 +29,22 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     Timer.periodic(Duration(seconds: PLAYER_BUFFER_CHECK_DURATION),
         (Timer t) => _checkForBufferLoading());
 
+    log("AppBloc() => repository subscribe invoke", name: LOG_TAG);
     _subscriptions.add(_repository.stream().listen((state) {
       if (state is ScheduleRepositoryLoadSuccessState) {
+        log("repository.stream().listen() => Load SUCCESS ${state.items.length} items",
+            name: LOG_TAG);
         add(AppScheduleEvent(state.items));
       }
       if (state is ScheduleRepositoryLoadErrorState) {
+        log("repository.stream().listen() => Load ERROR ${state.error}",
+            name: LOG_TAG);
         add(AppScheduleEvent(null));
       }
     }));
 
+    log("AppBloc() => player.playbackEventStream subscribe invoke",
+        name: LOG_TAG);
     _subscriptions.add(_player.playbackEventStream.listen((event) {
       // nothing
     }, onError: (Object e, StackTrace stackTrace) {
@@ -44,7 +52,11 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       _waitForConnection();
     }));
 
+    log("AppBloc() => player.playbackStateStream subscribe invoke",
+        name: LOG_TAG);
     _subscriptions.add(_player.playerStateStream.listen((playerState) {
+      log("AppBloc() => player.playbackStateStream.listen() => playerState = $playerState",
+          name: LOG_TAG);
       add(AppPlayerEvent(playerState.playing, playerState.processingState));
     }));
 
@@ -68,12 +80,20 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
     if (event is AppNavEvent) {
       yield AppState(event.navIndex, state.playingState, state.processingState,
-          presentTitle: state.presentTitle);
+          isScheduleLoaded: state.isScheduleLoaded,
+          presentTitle: state.presentTitle,
+          presentArtist: state.presentArtist,
+          nextTitle: state.nextTitle,
+          nextArtist: state.nextArtist);
     }
 
     if (event is AppPlayerEvent) {
       yield AppState(state.navIndex, event.playingState, event.processingState,
-          presentTitle: state.presentTitle);
+          isScheduleLoaded: state.isScheduleLoaded,
+          presentTitle: state.presentTitle,
+          presentArtist: state.presentArtist,
+          nextTitle: state.nextTitle,
+          nextArtist: state.nextArtist);
     }
 
     if (event is AppScheduleEvent) {
@@ -85,6 +105,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         final nextItem = event.items![1];
         yield AppState(
             state.navIndex, state.playingState, state.processingState,
+            isScheduleLoaded: true,
             presentArtist: presentItem.artist,
             presentTitle: presentItem.title,
             nextArtist: nextItem.artist,
