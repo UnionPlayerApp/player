@@ -1,7 +1,7 @@
 import 'package:just_audio/just_audio.dart';
 import 'package:koin/koin.dart';
 import 'package:union_player_app/model/system_data/system_data.dart';
-import 'package:union_player_app/repository/schedule_repository/schedule_repository_impl.dart';
+import 'package:union_player_app/repository/schedule_repository_impl.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_app/app_page.dart';
 import 'package:union_player_app/screen_feedback/feedback_bloc.dart';
@@ -28,6 +28,6 @@ final appModule = Module()
   ..single((scope) => MainPage())
   ..single((scope) => ScheduleBloc(scope.get<ScheduleRepositoryImpl>(), scope.get()))
   ..single((scope) => SchedulePage())
-  ..single((scope) => ScheduleRepositoryImpl())
+  ..single((scope) => ScheduleRepositoryImpl(scope.get(), scope.get()))
   ..single((scope) => SettingsPage())
   ..single((scope) => SystemData());
