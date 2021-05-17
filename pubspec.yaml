@@ -31,6 +31,7 @@ dependencies:
   shared_preferences:
   webview_flutter:
   xml:
+  flutter_svg: ^0.22.0
 
 dev_dependencies:
   flutter_launcher_icons:

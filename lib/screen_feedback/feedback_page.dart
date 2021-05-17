@@ -8,7 +8,8 @@ import 'package:union_player_app/screen_feedback/feedback_bloc.dart';
 import 'package:union_player_app/screen_feedback/feedback_state.dart';
 import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
-import 'package:union_player_app/utils/no_divider_banner.dart';
+import 'package:union_player_app/utils/ui/app_theme.dart';
+import 'package:union_player_app/utils/ui/widgets/no_divider_banner.dart';
 import 'package:webview_flutter/platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -48,7 +49,6 @@ class FeedbackPage extends StatelessWidget {
             children: [
               Container(
                 decoration: new BoxDecoration(
-                  color: Colors.lightBlue,
                   borderRadius: new BorderRadius.only(
                     bottomLeft: Radius.circular(12.w),
                     bottomRight: Radius.circular(12.w),
@@ -61,27 +61,34 @@ class FeedbackPage extends StatelessWidget {
                   ],
                 ),
                 child:
-              // _logger.logDebug("Has banner? - ${state.hasBanner}");
-              // widget =
-                  NoDividerBanner(
-                    Colors.transparent,
-                    Text(translate(StringKeys.message_us, context)),
-                    CircleAvatar(child: Icon(Icons.mail_rounded)),
-                  [
-                    TextButton(
-                      child: Text(translate(StringKeys.hide, context)),
-                      onPressed: () {
-                        _hideBanner(context, state);
-                      },
-                    ),
-                    TextButton(
-                      child: Text(translate(StringKeys.write, context)),
-                      onPressed: () {
-                        _writeEmailBottomPressed(context);
-                      },
-                    ),
-                  ],
-                )),
+                   ClipRRect(
+                      borderRadius: BorderRadius.only(bottomLeft: Radius.circular(12.w), bottomRight: Radius.circular(12.w)) ,
+                      child: NoDividerBanner(
+                        Text(translate(StringKeys.message_us, context)),
+                        CircleAvatar(child: Icon(Icons.mail_rounded)),
+                        [
+                          TextButton(
+                            child: Text(
+                              translate(StringKeys.hide, context),
+                              style: TextStyle(color: primaryDarkColor),
+                            ),
+                            onPressed: () {
+                              _hideBanner(context, state);
+                            },
+                          ),
+                          TextButton(
+                            child: Text(
+                                translate(StringKeys.write, context),
+                                style: TextStyle(color: primaryDarkColor),
+                            ),
+                            onPressed: () {
+                              _writeEmailBottomPressed(context);
+                            },
+                          ),
+                        ],
+                      )
+                    )
+                ),
               SizedBox(height: 15.h),
             ]
           );

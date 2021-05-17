@@ -1,5 +1,5 @@
 // Asset Constants
-const APP_BAR_LOGO_IMAGE = "assets/images/union_radio_logo_1.png";
+const APP_BAR_LOGO_IMAGE = "assets/images/union_radio_logo_outline.svg";
 const LOGO_IMAGE = "assets/images/union_radio_logo.png";
 
 // Периодичность проверки буффера плеера на заполненность. В сек.

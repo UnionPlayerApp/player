@@ -13,9 +13,11 @@ import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_page.dart';
 import 'package:union_player_app/screen_settings/settings_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/info_page.dart';
+import 'package:union_player_app/utils/ui/app_theme.dart';
+import 'package:union_player_app/utils/ui/pages/info_page.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
-import 'package:union_player_app/utils/snack_bar.dart';
+import 'package:union_player_app/utils/ui/widgets/snack_bar.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 
 class AppPage extends StatefulWidget {
@@ -89,12 +91,12 @@ class _AppState extends State<AppPage> {
           children: [
             Icon(
               iconTab,
-              color: state.navIndex == itemTab ? Colors.red[800] : Colors.grey,
+              color: state.navIndex == itemTab ? primaryColor : Colors.grey,
             ),
             Text(
               translate(nameTab, context),
               style: TextStyle(
-                color: state.navIndex == itemTab ? Colors.red[800] : Colors.grey,
+                color: state.navIndex == itemTab ? primaryColor : Colors.grey,
               ),
             ),
           ],
@@ -119,7 +121,12 @@ class _AppState extends State<AppPage> {
     title: _createTitle(context, state),
     leading: Container(
         padding: EdgeInsets.all(10.0),
-        child: Image.asset(APP_BAR_LOGO_IMAGE, fit: BoxFit.fill)),
+        // child: Image.asset(APP_BAR_LOGO_IMAGE, fit: BoxFit.fill)),
+        child: SvgPicture.asset(
+            APP_BAR_LOGO_IMAGE,
+            semanticsLabel: 'App Logo',
+            // color: colorOnPrimary,
+        )),
     actions: _createActions(context, state),
   );
 

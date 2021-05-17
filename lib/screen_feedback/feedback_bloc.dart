@@ -66,8 +66,8 @@ class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
     switch (locale) {
       case "be_BY": return WebViewLoadAwaitState(hasBanner, _systemData.aboutData.urlBy);
       case "ru_RU": return WebViewLoadAwaitState(hasBanner, _systemData.aboutData.urlRu);
-      // default : return WebViewLoadAwaitState(hasBanner, _systemData.aboutData.urlEn);
-      default : return WebViewLoadAwaitState(hasBanner, "https://pub.dev");
+      default : return WebViewLoadAwaitState(hasBanner, _systemData.aboutData.urlEn);
+      // default : return WebViewLoadAwaitState(hasBanner, "https://pub.dev");
     }
   }
 

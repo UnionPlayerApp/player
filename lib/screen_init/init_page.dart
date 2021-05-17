@@ -15,8 +15,9 @@ import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_app/app_page.dart';
 import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
-import 'package:union_player_app/utils/info_page.dart';
-import 'package:union_player_app/utils/loading_page.dart';
+import 'package:union_player_app/utils/ui/pages/info_page.dart';
+import 'package:union_player_app/utils/ui/pages/loading_page.dart';
+import 'package:union_player_app/utils/ui/app_theme.dart';
 import 'package:union_player_app/utils/localizations/app_localizations_delegate.dart';
 
 class InitPage extends StatefulWidget {
@@ -172,7 +173,8 @@ class _InitPageState extends State<InitPage> {
                 return supportedLocales.first;
               },
               title: 'Union Radio Player',
-              theme: ThemeData(primarySwatch: Colors.blueGrey),
+              // theme: ThemeData(primarySwatch: Colors.blueGrey),
+              theme: buildUnionRadioTheme(),
               home: homePage,
             ));
   }

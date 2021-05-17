@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 
 class NoDividerBanner extends MaterialBanner {
-  const NoDividerBanner (Color? backgroundColor, Widget content, Widget? leading, List<Widget> actions) :
-        super(backgroundColor:backgroundColor,content: content, actions: actions, leading: leading);
+  const NoDividerBanner (Widget content, Widget? leading, List<Widget> actions) :
+        super(content: content, actions: actions, leading: leading);
 
   @override
   Widget build(BuildContext context) {
