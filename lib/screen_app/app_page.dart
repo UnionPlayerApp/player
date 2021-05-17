@@ -153,9 +153,17 @@ class _AppState extends State<AppPage> {
   }
 
   Widget _createLeading() {
-    return Container(
-        padding: const EdgeInsets.all(10.0),
-        child: CircleAvatar(backgroundImage: AssetImage(APP_BAR_LOGO_IMAGE)));
+    return Padding(
+        padding: const EdgeInsets.all(6.0),
+        child: Container(
+          child: CircleAvatar(
+            backgroundImage: ExactAssetImage(APP_BAR_LOGO_IMAGE),
+          ),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 4.0),
+          ),
+        ));
   }
 
   List<Widget>? _createActions(AppState state) {
