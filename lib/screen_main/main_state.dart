@@ -1,14 +1,18 @@
 import 'package:equatable/equatable.dart';
 
 class MainState extends Equatable {
-  final String stateStr01;
-  final String stateStr02;
+  final bool isArtistVisible;
+  final String itemLabel;
+  final String itemTitle;
+  final String itemArtist;
 
   const MainState(
-    this.stateStr01,
-    this.stateStr02,
-  );
+      {this.isArtistVisible = false,
+      this.itemLabel = "",
+      this.itemTitle = "",
+      this.itemArtist = ""});
 
   @override
-  List<Object?> get props => [stateStr01, stateStr02];
+  List<Object?> get props =>
+      [isArtistVisible, itemLabel, itemTitle, itemArtist];
 }

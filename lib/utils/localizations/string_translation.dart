@@ -15,8 +15,8 @@ enum  StringKeys{
   write,
   hide,
   // AppBar
-  present_article,
-  next_article,
+  present_label,
+  next_label,
   information_not_loaded,
   // BottomNavigationBar
   home,

@@ -8,8 +8,8 @@
   "feedback": "Напісаць",
   "settings": "Настройкі",
 
-  "present_article": "Зараз у эфіры",
-  "next_article": "Потым у эфіры",
+  "present_label": "Зараз у эфіры",
+  "next_label": "Потым у эфіры",
   "information_not_loaded": "Інфармацыя не загружана",
 
   "loading_error": "Памылка загрузкі"

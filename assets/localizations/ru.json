@@ -8,8 +8,8 @@
   "feedback" : "Написать",
   "settings" : "Настройки",
 
-  "present_article": "СЕЙЧАС в эфире",
-  "next_article": "ПОТОМ в эфире",
+  "present_label": "СЕЙЧАС в эфире",
+  "next_label": "ПОТОМ в эфире",
   "information_not_loaded": "Информация не загружена",
 
   "loading_error" : "Ошибка загрузки"

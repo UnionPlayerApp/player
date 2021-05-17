@@ -63,7 +63,12 @@ List<ScheduleItemRaw> parseScheduleFile(File file) {
       final item = ScheduleItemRaw(thisStart, duration, type, title, artist,
           imageUrl: _randomUrl());
       newList.add(item);
-      Log.log("type = $type, start = $thisStart, duration = $duration, title = $title, artist = $artist", name: LOG_TAG);
+
+      if (index <= 2) {
+        Log.log(
+            "type = $type, start = $thisStart, duration = $duration, title = $title, artist = $artist",
+            name: LOG_TAG);
+      }
     });
     return newList;
   } catch (error) {
@@ -96,7 +101,9 @@ DateTime? _createStart(XmlElement element, DateTime start) {
   if (eStartDate == null || eStartTime == null) return start;
 
   try {
-    Log.log("_createStart() => date = ${eStartDate.innerText}, time = ${eStartTime.innerText}", name: LOG_TAG);
+    Log.log(
+        "_createStart() => date = ${eStartDate.innerText}, time = ${eStartTime.innerText}",
+        name: LOG_TAG);
     return parseDateTime(eStartDate.innerText, eStartTime.innerText);
   } catch (error) {
     return null;
