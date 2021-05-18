@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'package:rxdart/rxdart.dart';
 import 'package:union_player_app/model/system_data/system_data.dart';
 import 'package:union_player_app/repository/schedule_file.dart';
 import 'package:union_player_app/repository/schedule_repository_interface.dart';
@@ -14,12 +15,13 @@ const _ATTEMPT_MAX = 5;
 class ScheduleRepositoryImpl implements IScheduleRepository {
   final AppLogger _logger;
   final SystemData _systemData;
-
-  ScheduleRepositoryImpl(this._logger, this._systemData);
-
+  final _subject = BehaviorSubject<ScheduleRepositoryState>(sync: true);
+  final _items = List<ScheduleItemRaw>.empty(growable: true);
   bool _isOpen = true;
 
-  List<ScheduleItemRaw> _items = List.empty(growable: true);
+  ScheduleRepositoryImpl(this._logger, this._systemData) {
+    startStream();
+  }
 
   @override
   List<ScheduleItemRaw> getItems() => _items;
@@ -30,8 +32,11 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
   }
 
   @override
-  Stream<ScheduleRepositoryState> stream() async* {
-    log("schedule repository stream() => start", name: LOG_TAG);
+  Stream<ScheduleRepositoryState> stream() => _subject.stream;
+
+  void startStream() async {
+    log("schedule repository ($this) stream() => start", name: LOG_TAG);
+
     while (_isOpen) {
       ScheduleRepositoryState state;
       int attempt = 1;
@@ -48,7 +53,7 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
         log("schedule repository stream() => _load() finish, attempt = $attempt", name: LOG_TAG);
       } while (state is ScheduleRepositoryLoadErrorState && attempt++ < _ATTEMPT_MAX);
 
-      yield state;
+      _subject.add(state);
 
       int seconds = _secondsToNextLoad();
 
@@ -110,5 +115,6 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
   @override
   void close() {
     _isOpen = false;
+    _subject.close();
   }
 }

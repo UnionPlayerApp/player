@@ -29,8 +29,9 @@ dependencies:
   logger:
   marquee:
   path_provider:
+  rxdart:
   shared_preferences:
-  webview_flutter:
+  webview_flutter: ^2.0.4
   xml:
 
 dev_dependencies:

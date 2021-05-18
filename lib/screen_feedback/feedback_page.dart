@@ -106,7 +106,7 @@ class FeedbackPage extends StatelessWidget {
     return _createWebView(context, state);
   }
 
-  WebView _createWebView(BuildContext context, AboutInfoLoadSuccessState state){
+  Widget _createWebView(BuildContext context, AboutInfoLoadSuccessState state){
     Set<Factory<OneSequenceGestureRecognizer>> _gestureRecognizers =
     [Factory(() => EagerGestureRecognizer())].toSet();
     return
@@ -120,6 +120,3 @@ class FeedbackPage extends StatelessWidget {
     );
   }
 }
-
-
-

@@ -139,10 +139,10 @@ class _AppState extends State<AppPage> {
   }
 
   String _loadedTitle(AppState state) {
-    final presentArticle = translate(StringKeys.present_article, context);
+    final presentArticle = translate(StringKeys.present_label, context);
     final presentArtist = state.presentArtist;
     final presentTitle = state.presentTitle;
-    final nextArticle = translate(StringKeys.next_article, context);
+    final nextArticle = translate(StringKeys.next_label, context);
     final nextArtist = state.nextArtist;
     final nextTitle = state.nextTitle;
     return "$presentArticle: $presentArtist - $presentTitle. $nextArticle: $nextArtist - $nextTitle";
@@ -186,8 +186,12 @@ class _AppState extends State<AppPage> {
   Widget _createPage(AppState state) {
     switch (state.navIndex) {
       case 0:
-        return BlocProvider(
-            create: (context) => get<MainBloc>(), child: get<MainPage>());
+        // return BlocProvider(
+        //     create: (context) => get<MainBloc>(),
+        //     child: get<MainPage>());
+        return BlocProvider.value(
+            value: get<MainBloc>(),
+            child: get<MainPage>());
       case 1:
         return BlocProvider(
             create: (context) => get<ScheduleBloc>(),

@@ -10,13 +10,15 @@ String translate(StringKeys key, BuildContext context){
 }
 
 enum  StringKeys{
+  empty,
   // FeedbackScreen
   message_us,
   write,
   hide,
   // AppBar
-  present_article,
-  next_article,
+  present_label,
+  next_label,
+  information_is_loading,
   information_not_loaded,
   // BottomNavigationBar
   home,

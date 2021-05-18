@@ -1,4 +1,6 @@
 {
+  "empty": "",
+
   "message_us" : "Message us",
   "write" : "WRITE",
   "hide" : "HIDE",
@@ -8,8 +10,9 @@
   "feedback" : "Feedback",
   "settings" : "Settings",
 
-  "present_article": "NOW is",
-  "next_article": "NEXT will",
+  "present_label": "NOW is",
+  "next_label": "NEXT will",
+  "information_is_loading": "Information is loading",
   "information_not_loaded": "Information is not loaded",
 
   "loading_error" : "Loading error"
