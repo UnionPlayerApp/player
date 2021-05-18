@@ -9,6 +9,9 @@ const double prototypeDeviceWidth = 390;
 // Общие настройки
 final EdgeInsets allSidesMargin = EdgeInsets.all(16.w);
 
+//AppBar
+final EdgeInsets appBarLeadingPadding = EdgeInsets.all(6.h) + EdgeInsets.only(left: 16.h);
+
 // ScheduleScreen
 // Разделитель
 final double listViewDividerHeight = 2.h;

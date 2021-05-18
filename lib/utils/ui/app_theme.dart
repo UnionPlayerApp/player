@@ -18,6 +18,7 @@ ThemeData buildUnionRadioTheme() {
     ),
     textTheme: _buildUnionPlayerTextTheme(base.textTheme),
     bannerTheme: _buildUnionPlayerBannerTheme(base.bannerTheme),
+    appBarTheme: _buildUnionPlayerAppBarTheme(base.appBarTheme),
   );
 }
 
@@ -32,6 +33,10 @@ MaterialBannerThemeData _buildUnionPlayerBannerTheme(MaterialBannerThemeData bas
   return base.copyWith(
     backgroundColor: primaryLightColor,
   );
+}
+
+AppBarTheme _buildUnionPlayerAppBarTheme(AppBarTheme base){
+  return base.copyWith(centerTitle: true);
 }
 
 

@@ -13,6 +13,7 @@ import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_page.dart';
 import 'package:union_player_app/screen_settings/settings_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/ui/app_theme.dart';
 import 'package:union_player_app/utils/ui/pages/info_page.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
@@ -119,13 +120,14 @@ class _AppState extends State<AppPage> {
 
   AppBar _createAppBar(BuildContext context, AppState state) => AppBar(
     title: _createTitle(context, state),
-    leading: Container(
-        padding: EdgeInsets.all(10.0),
-        // child: Image.asset(APP_BAR_LOGO_IMAGE, fit: BoxFit.fill)),
-        child: SvgPicture.asset(
-            APP_BAR_LOGO_IMAGE,
-            semanticsLabel: 'App Logo',
-            // color: colorOnPrimary,
+    leading:
+    Container(
+        padding: appBarLeadingPadding,
+        child:
+        SvgPicture.asset(
+          APP_BAR_LOGO_IMAGE,
+          color: colorOnPrimary,
+          fit: BoxFit.scaleDown,
         )),
     actions: _createActions(context, state),
   );
