@@ -122,12 +122,6 @@ class _AppState extends State<AppPage> {
   }
 
   Widget _createTitle(AppState state, Size size) {
-    log("_createTitle()");
-    log("state.isScheduleLoaded = ${state.isScheduleLoaded}");
-    log("state.presentArtist = ${state.presentArtist}");
-    log("state.presentTitle = ${state.presentTitle}");
-    log("state.nextArtist = ${state.nextArtist}");
-    log("state.nextTitle = ${state.nextTitle}");
     final title = state.isScheduleLoaded ? _loadedTitle(state) : _unloadedTitle();
     final marquee = Marquee(
       text: title,
@@ -135,6 +129,8 @@ class _AppState extends State<AppPage> {
       pauseAfterRound: const Duration(seconds: 3),
       blankSpace: 75.0,
     );
+    log("_createTitle() => isScheduleLoaded = ${state.isScheduleLoaded}", name: LOG_TAG);
+    log("_createTitle() => title = $title", name: LOG_TAG);
     return SizedBox(height: size.height, width: size.width, child: marquee);
   }
 
