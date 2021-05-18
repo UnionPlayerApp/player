@@ -121,7 +121,6 @@ class _AppState extends State<AppPage> {
     return AppBar(
       title: _createTitle(state, size),
       leading: _createLeading(),
-      actions: _createActions(state),
     );
   }
 
@@ -165,23 +164,6 @@ class _AppState extends State<AppPage> {
           color: colorOnPrimary,
           fit: BoxFit.scaleDown,
         ));
-  }
-
-  List<Widget>? _createActions(AppState state) {
-    List<Widget>? actions;
-    switch (state.navIndex) {
-      case 2:
-        actions = [
-          IconButton(
-            icon: Icon(Icons.mail_rounded),
-            onPressed: () {
-              // OPEN MAIL CLIENT
-            },
-          )
-        ];
-        break;
-    }
-    return actions;
   }
 
   Widget _createPage(AppState state) {
