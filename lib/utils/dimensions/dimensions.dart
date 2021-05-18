@@ -9,7 +9,11 @@ const double prototypeDeviceWidth = 390;
 // Общие настройки
 final EdgeInsets allSidesMargin = EdgeInsets.all(16.w);
 
-// ScheduleScreen
+// MainPage
+final double mainImageSide = 200.w;
+final double mainMarginBottom = 16.h;
+
+// SchedulePage
 // Разделитель
 final double listViewDividerHeight = 2.h;
 // Элемент списка

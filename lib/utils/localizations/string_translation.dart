@@ -10,6 +10,7 @@ String translate(StringKeys key, BuildContext context){
 }
 
 enum  StringKeys{
+  empty,
   // FeedbackScreen
   message_us,
   write,

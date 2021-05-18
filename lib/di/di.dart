@@ -17,12 +17,6 @@ import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/widgets/info_page.dart';
 import 'package:union_player_app/utils/widgets/loading_page.dart';
 
-class MainBlocParams {
-  final BuildContext context;
-  final IScheduleRepository repository;
-  MainBlocParams(this.context, this.repository);
-}
-
 final appModule = Module()
   ..factoryWithParam((scope, List<String> strings) => InfoPage(strings: strings))
   ..factoryWithParam((scope, String title) => LoadingPage(title: title))
@@ -32,7 +26,7 @@ final appModule = Module()
   ..single((scope) => AudioPlayer())
   ..single((scope) => FeedbackBloc(scope.get(), scope.get()))
   ..single((scope) => FeedbackPage(scope.get()))
-  ..singleWithParam((scope, MainBlocParams params) => MainBloc(params.context, params.repository))
+  ..single((scope) => MainBloc(scope.get<ScheduleRepositoryImpl>()))
   ..single((scope) => MainPage())
   ..single((scope) => ScheduleBloc(scope.get<ScheduleRepositoryImpl>(), scope.get()))
   ..single((scope) => SchedulePage())
