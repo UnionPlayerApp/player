@@ -10,7 +10,7 @@ import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/ui/app_theme.dart';
-import 'package:union_player_app/utils/ui/widgets/no_divider_banner.dart';
+import 'package:union_player_app/utils/widgets/no_divider_banner.dart';
 import 'package:webview_flutter/platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

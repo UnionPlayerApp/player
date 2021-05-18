@@ -12,13 +12,13 @@ import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_page.dart';
 import 'package:union_player_app/screen_settings/settings_page.dart';
 import 'package:union_player_app/utils/app_logger.dart';
-import 'package:union_player_app/utils/ui/pages/info_page.dart';
-import 'package:union_player_app/utils/ui/pages/loading_page.dart';
+import 'package:union_player_app/utils/widgets/info_page.dart';
+import 'package:union_player_app/utils/widgets/loading_page.dart';
 
 final appModule = Module()
   ..factoryWithParam((scope, List<String> strings) => InfoPage(strings: strings))
   ..factoryWithParam((scope, String title) => LoadingPage(title: title))
-  ..single((scope) => AppBloc(scope.get(), scope.get(), scope.get()))
+  ..single((scope) => AppBloc(scope.get<ScheduleRepositoryImpl>(), scope.get(), scope.get(), scope.get()))
   ..single((scope) => AppLogger())
   ..single((scope) => AppPage())
   ..single((scope) => AudioPlayer())

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
+import 'package:union_player_app/screen_schedule/schedule_item_view.dart';
 import 'package:union_player_app/screen_schedule/schedule_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
@@ -62,7 +63,7 @@ class SchedulePage extends StatelessWidget {
             }));
   }
 
-  _programElement(element) {
+  Widget _programElement(ScheduleItemView element) {
     late Image image;
     if (element.imageUrl != null && element.imageUrl != '') {
       image = Image.network(element.imageUrl!,
