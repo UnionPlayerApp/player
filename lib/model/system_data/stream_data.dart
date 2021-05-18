@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class StreamData {
-  String streamHi = "";
+  String streamHigh = "";
   String streamLow = "";
-  String streamMiddle = "";
+  String streamMedium = "";
 
   void setData(DocumentSnapshot<Object?> doc) {
     try {
       streamLow = doc["stream_low"];
-      streamMiddle = doc["stream_middle"];
-      streamHi = doc["stream_hi"];
+      streamMedium = doc["stream_middle"];
+      streamHigh = doc["stream_hi"];
     } catch (error) {
       throw Exception(error.toString());
     }
