@@ -24,6 +24,7 @@ final EdgeInsets programTextLeftPadding = EdgeInsets.only(left: 10.w);
 final EdgeInsets programBodyTopPadding = EdgeInsets.only(top: 10.h);
 
 // FeedbackScreen
+final double bannerHeight = 120.0;
 final EdgeInsets textFormFieldPadding = EdgeInsets.symmetric(horizontal: 10.w) + EdgeInsets.only(top: 15.h);
 
 

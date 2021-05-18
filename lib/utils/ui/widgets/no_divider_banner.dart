@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:union_player_app/utils/dimensions/dimensions.dart';
 
 class NoDividerBanner extends MaterialBanner {
   const NoDividerBanner (Widget content, Widget? leading, List<Widget> actions) :
@@ -39,6 +40,7 @@ class NoDividerBanner extends MaterialBanner {
         ?? theme.textTheme.bodyText2;
 
     return Container(
+      height: bannerHeight,
       color: backgroundColor,
       child: Column(
         children: <Widget>[

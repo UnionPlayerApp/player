@@ -56,18 +56,19 @@ const ColorScheme _unionRadioColorScheme = ColorScheme(
   brightness: Brightness.light,
 );
 
-const Color primaryColor = Color(0xFFcc3030);
-const Color primaryDarkColor = Color(0xFF940009);
-const Color primaryLightColor = Color(0xFFff655a);
+const Color primaryColor = Color(0xFF003e8d);
+const Color primaryDarkColor = Color(0xFF00195f);
+const Color primaryLightColor = Color(0xFF4b68be);
 
-const Color secondaryColor = Color(0xFF32cdcd);
-const Color secondaryDarkColor = Color(0xFF009b9c);
-const Color secondaryLightColor = Color(0xFF73ffff);
+const Color secondaryColor = Color(0xFFe8000a);
+const Color secondaryDarkColor = Color(0xFFad0000);
+const Color secondaryLightColor = Color(0xFFff5539);
 
 const Color errorColor = Color(0xFFC5032B);
 
 const Color colorOnPrimary = Colors.white;
-const Color colorOnSecondary = Color(0xFF000000);
+const Color colorOnSecondary = Colors.white;
+// const Color colorOnSecondary = Color(0xFF000000);
 
 const Color backgroundColor = Color(0xFFF1F1F1);
 const Color surfaceColor = Colors.white;

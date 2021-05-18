@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:union_player_app/screen_feedback/feedback_bloc.dart';
 import 'package:union_player_app/screen_feedback/feedback_state.dart';
 import 'package:union_player_app/utils/app_logger.dart';
+import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/ui/app_theme.dart';
 import 'package:union_player_app/utils/ui/widgets/no_divider_banner.dart';
@@ -28,14 +29,12 @@ class FeedbackPage extends StatelessWidget {
   return BlocBuilder<FeedbackBloc, FeedbackState>(
       builder: (BuildContext context, FeedbackState state) {
         return
-          Column(
-            children: [
-              _createBannerIfNotHidden(context, state),
-              Expanded(
-                child: _getCurrentStateWidget(context, state),
-              )
-            ],
-          );
+        Stack(
+          children: [
+            _getCurrentStateWidget(context, state),
+            _createBannerIfNotHidden(context, state),
+          ]
+        );
     },
     bloc: get<FeedbackBloc>(),
   );
@@ -89,7 +88,6 @@ class FeedbackPage extends StatelessWidget {
                       )
                     )
                 ),
-              SizedBox(height: 15.h),
             ]
           );
     } else {
@@ -155,7 +153,11 @@ class FeedbackPage extends StatelessWidget {
   }
 
   Widget _loadAboutInfoWidget(BuildContext context, WebViewState state) {
-    return _createWebView(context, state);
+    if (state.hasBanner) {
+      return  Container(
+          padding: EdgeInsets.only(top: bannerHeight),
+          child: _createWebView(context, state));
+    } else return _createWebView(context, state);
   }
 
   Widget _createWebView(BuildContext context, WebViewState state){
