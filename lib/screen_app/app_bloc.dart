@@ -26,7 +26,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     });
   }
 
-  String _currentUrl = STREAM_MED_URL;
+  int _idChannel = 1;
+  int _lastPositionChecked = 0;
 
   @override
   Stream<AppState> mapEventToState(AppEvent event) async* {
@@ -42,39 +43,40 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   Future<void> _checkForBufferLoading() async {
     if (!await internetConnectionCheck() ||
         !_player.playing ||
-        _player.position.inSeconds < PLAYER_BUFFER_UNCHECKABLE_DURATION) {
+        _player.position.inSeconds - _lastPositionChecked < PLAYER_BUFFER_UNCHECKABLE_DURATION) {
       return;
     }
-
     final _bufferCapacity =
         _player.bufferedPosition.inSeconds - _player.position.inSeconds;
 
     if (_bufferCapacity > PLAYER_BUFFER_HIGH_CAPACITY) {
-      switch (_currentUrl) {
-        case STREAM_LOW_URL:
-          _switchStream(STREAM_MED_URL);
+      switch (_idChannel) {
+        case 0:
+          _switchStream(STREAM_MED_URL,1);
           break;
-        case STREAM_MED_URL:
-          _switchStream(STREAM_HIGH_URL);
+        case 1:
+          _switchStream(STREAM_HIGH_URL,2);
           break;
       }
+      _lastPositionChecked = _player.position.inSeconds;
       return;
     }
 
     if (_bufferCapacity < PLAYER_BUFFER_LOW_CAPACITY) {
-      switch (_currentUrl) {
-        case STREAM_HIGH_URL:
-          _switchStream(STREAM_MED_URL);
+      switch (_idChannel) {
+        case 2:
+          _switchStream(STREAM_MED_URL,1);
           break;
-        case STREAM_MED_URL:
-          _switchStream(STREAM_LOW_URL);
+        case 1:
+          _switchStream(STREAM_LOW_URL,0);
           break;
       }
+      _lastPositionChecked = _player.position.inSeconds;
     }
   }
 
-  _switchStream(String newStreamUrl) {
-    _currentUrl = newStreamUrl;
+  _switchStream(String newStreamUrl, int newStreamId) {
+    _idChannel = newStreamId;
     _waitForConnection();
   }
 
@@ -83,10 +85,21 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       Future.delayed(Duration(seconds: INTERNET_CONNECTION_CHECK_DURATION));
       _logger.logError("No internet connection", null);
     }
-
     try {
-      final _newSource = AudioSource.uri(Uri.parse(_currentUrl));
-      await _player.setAudioSource(_newSource);
+      switch(_idChannel){
+        case 0:
+          final _newSource = AudioSource.uri(Uri.parse(STREAM_LOW_URL));
+          await _player.setAudioSource(_newSource);
+          break;
+        case 1:
+          final _newSource = AudioSource.uri(Uri.parse(STREAM_MED_URL));
+          await _player.setAudioSource(_newSource);
+          break;
+        case 2:
+          final _newSource = AudioSource.uri(Uri.parse(STREAM_HIGH_URL));
+          await _player.setAudioSource(_newSource);
+          break;
+      }
     } catch (error) {
       _logger.logError("Player set audio source error", error);
     }
