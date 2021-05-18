@@ -18,6 +18,7 @@ enum  StringKeys{
   // AppBar
   present_label,
   next_label,
+  information_is_loading,
   information_not_loaded,
   // BottomNavigationBar
   home,

@@ -45,7 +45,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     bool isArtistVisible = false;
     String itemTitle = "";
     String itemArtist = "";
-    StringKeys itemLabelKey = StringKeys.information_not_loaded;
+    StringKeys itemLabelKey = StringKeys.information_is_loading;
 
     final imageSourceType = ImageSourceType.network;
     final imageSource = randomUrl();

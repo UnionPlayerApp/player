@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +9,7 @@ import 'package:union_player_app/screen_feedback/feedback_bloc.dart';
 import 'package:union_player_app/screen_feedback/feedback_state.dart';
 import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import 'feedback_event.dart';
 
@@ -104,20 +107,16 @@ class FeedbackPage extends StatelessWidget {
   }
 
   Widget _createWebView(BuildContext context, AboutInfoLoadSuccessState state){
-    return Text("Здесь должен быть web view");
-    // Set<Factory<OneSequenceGestureRecognizer>> _gestureRecognizers =
-    // [Factory(() => EagerGestureRecognizer())].toSet();
-    // return
-    //   WebView(
-    //   key: _webViewKey,
-    //   initialUrl: state.url,
-    //   javascriptMode: JavascriptMode.unrestricted,
-    //   gestureRecognizers: _gestureRecognizers,
-    //   onPageStarted: (value) {},
-    //   onPageFinished: (value) {},
-    // );
+    Set<Factory<OneSequenceGestureRecognizer>> _gestureRecognizers =
+    [Factory(() => EagerGestureRecognizer())].toSet();
+    return
+      WebView(
+      key: _webViewKey,
+      initialUrl: state.url,
+      javascriptMode: JavascriptMode.unrestricted,
+      gestureRecognizers: _gestureRecognizers,
+      onPageStarted: (value) {},
+      onPageFinished: (value) {},
+    );
   }
 }
-
-
-
