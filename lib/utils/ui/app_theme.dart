@@ -22,7 +22,6 @@ ThemeData buildUnionRadioTheme() {
   );
 }
 
-
 TextTheme _buildUnionPlayerTextTheme(TextTheme base) {
   return base.apply(
     fontFamily: 'Rubik',

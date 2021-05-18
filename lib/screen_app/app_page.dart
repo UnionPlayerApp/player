@@ -39,6 +39,7 @@ class _AppState extends State<AppPage> {
               child: Scaffold(
                 appBar: _createAppBar(state),
                 body: _createPage(state),
+                extendBody: true,
                 floatingActionButton: _createFAB(state),
                 floatingActionButtonLocation:
                     FloatingActionButtonLocation.centerDocked,
