@@ -7,6 +7,10 @@ const LOGO_IMAGE = "assets/images/union_radio_logo.png";
 const STREAM_LOW_URL = "http://78.155.222.238:8010/souz_radio_64.mp3";
 const STREAM_MED_URL = "http://78.155.222.238:8010/souz_radio_128.mp3";
 const STREAM_HIGH_URL = "http://78.155.222.238:8010/souz_radio_192.mp3";
+//Streams IDs
+const ID_CHANNEL_LOW = 0;
+const ID_CHANNEL_MEDIUM = 1;
+const ID_CHANNEL_HI = 2;
 // Периодичность проверки буффера плеера на заполненность. В сек.
 const PLAYER_BUFFER_CHECK_DURATION = 3;
 const PLAYER_BUFFER_UNCHECKABLE_DURATION = 5;

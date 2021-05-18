@@ -26,7 +26,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     });
   }
 
-  int _idChannel = 1;
+  int _idChannel = ID_CHANNEL_MEDIUM;
   int _lastPositionChecked = 0;
 
   @override
@@ -51,11 +51,11 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
     if (_bufferCapacity > PLAYER_BUFFER_HIGH_CAPACITY) {
       switch (_idChannel) {
-        case 0:
-          _switchStream(STREAM_MED_URL,1);
+        case ID_CHANNEL_LOW:
+          _switchStream(STREAM_MED_URL,ID_CHANNEL_MEDIUM);
           break;
-        case 1:
-          _switchStream(STREAM_HIGH_URL,2);
+        case ID_CHANNEL_MEDIUM:
+          _switchStream(STREAM_HIGH_URL,ID_CHANNEL_HI);
           break;
       }
       _lastPositionChecked = _player.position.inSeconds;
@@ -64,11 +64,11 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
     if (_bufferCapacity < PLAYER_BUFFER_LOW_CAPACITY) {
       switch (_idChannel) {
-        case 2:
-          _switchStream(STREAM_MED_URL,1);
+        case ID_CHANNEL_HI:
+          _switchStream(STREAM_MED_URL,ID_CHANNEL_MEDIUM);
           break;
-        case 1:
-          _switchStream(STREAM_LOW_URL,0);
+        case ID_CHANNEL_MEDIUM:
+          _switchStream(STREAM_LOW_URL,ID_CHANNEL_LOW);
           break;
       }
       _lastPositionChecked = _player.position.inSeconds;
@@ -87,15 +87,15 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     }
     try {
       switch(_idChannel){
-        case 0:
+        case ID_CHANNEL_LOW:
           final _newSource = AudioSource.uri(Uri.parse(STREAM_LOW_URL));
           await _player.setAudioSource(_newSource);
           break;
-        case 1:
+        case ID_CHANNEL_MEDIUM:
           final _newSource = AudioSource.uri(Uri.parse(STREAM_MED_URL));
           await _player.setAudioSource(_newSource);
           break;
-        case 2:
+        case ID_CHANNEL_HI:
           final _newSource = AudioSource.uri(Uri.parse(STREAM_HIGH_URL));
           await _player.setAudioSource(_newSource);
           break;
