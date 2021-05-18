@@ -193,8 +193,8 @@ class _AppState extends State<AppPage> {
             create: (context) => get<ScheduleBloc>(),
             child: get<SchedulePage>());
       case 2:
-        return BlocProvider(
-            create: (context) => get<FeedbackBloc>(),
+        return BlocProvider.value(
+            value: get<FeedbackBloc>(),
             child: get<FeedbackPage>());
       case 3:
         return get<SettingsPage>();

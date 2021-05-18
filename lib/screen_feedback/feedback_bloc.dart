@@ -19,12 +19,9 @@ class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
   }
 
   @override
-  // ignore: must_call_super
-  // ВНИМАНИЕ костыль
-  // Не вызываю super.close(), т.к. этот метод срабатывает при выходе со страницы фидбека и
-  // при возвращении на нее не позволяет собитиям попадать в метод mapEventToState()
   Future<void> close() {
-    return log("CLOSE");
+     log("#CLOSE#");
+     return super.close();
   }
 
   // Method for debug: called whenever an event is added to the Bloc:
