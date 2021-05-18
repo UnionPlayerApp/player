@@ -33,6 +33,7 @@ dependencies:
   webview_flutter:
   xml:
   flutter_svg: ^0.22.0
+  url_launcher: ^6.0.3
 
 dev_dependencies:
   flutter_launcher_icons:

@@ -3,6 +3,8 @@ import 'package:union_player_app/model/system_data/system_data.dart';
 import 'package:union_player_app/screen_feedback/feedback_event.dart';
 import 'package:union_player_app/screen_feedback/feedback_state.dart';
 import 'package:union_player_app/utils/app_logger.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
   final AppLogger _logger;
@@ -55,6 +57,14 @@ class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
     }
     if (event is WriteEmailButtonPressedEvent) {
       // OPEN MAIL CLIENT
+      final Uri _emailLaunchUri = Uri(
+          scheme: 'mailto',
+          path: 'lena.kurasheva@gmail.com',
+          queryParameters: {
+            'subject': ''
+          }
+      );
+      launch(_emailLaunchUri.toString());
     }
   }
 
