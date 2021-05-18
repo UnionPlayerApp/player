@@ -1,0 +1,19 @@
+{
+  "empty": "",
+
+  "message_us": "Напішы нам",
+  "write": "НАПІСАТЬ",
+  "hide": "СКРЫТЬ",
+
+  "home": "Главная",
+  "schedule": "Распісанне",
+  "feedback": "Напісаць",
+  "settings": "Настройкі",
+
+  "present_label": "Зараз у эфіры",
+  "next_label": "Потым у эфіры",
+  "information_is_loading": "Інфармацыя загружаецца",
+  "information_not_loaded": "Інфармацыя не загружана",
+
+  "loading_error": "Памылка загрузкі"
+}

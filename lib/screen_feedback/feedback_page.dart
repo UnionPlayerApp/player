@@ -1,113 +1,122 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:form_field_validator/form_field_validator.dart';
-import 'package:logger/logger.dart';
-import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/dimensions/dimensions.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:koin_flutter/koin_flutter.dart';
+import 'package:union_player_app/screen_feedback/feedback_bloc.dart';
+import 'package:union_player_app/screen_feedback/feedback_state.dart';
+import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
-late Logger logger = Logger();
+import 'feedback_event.dart';
 
-class FeedbackPage extends StatefulWidget {
+class FeedbackPage extends StatelessWidget {
+  final _webViewKey = UniqueKey();
+  final AppLogger _logger;
+
+  FeedbackPage(this._logger);
+
+
   @override
-  State<StatefulWidget> createState() {
-    return FeedbackPageState();
-  }
-}
-
-class FeedbackPageState extends State {
-  final _formKey = GlobalKey<FormState>();
-
-  _createTextFormField(
-      String label, String hint, FieldValidator formValidator) {
-    return TextFormField(
-        decoration: InputDecoration(
-            border: OutlineInputBorder(), labelText: label, hintText: hint),
-        keyboardType: TextInputType.multiline,
-        minLines: 1,
-        //Normal textInputField will be displayed
-        maxLines: 5,
-        validator: formValidator);
-  }
-
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-        padding: allSidesMargin,
-        child: Form(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                Padding(
-                    padding: textFormFieldPadding,
-                    child: _createTextFormField(
-                        translate(StringKeys.nameFormTitle, context),
-                        translate(StringKeys.nameFormHint, context),
-                        MultiValidator([
-                          RequiredValidator(
-                              errorText: translate(
-                                  StringKeys.requiredErrorText, context)),
-                        ]))),
-                Padding(
-                    padding: textFormFieldPadding,
-                    child: _createTextFormField(
-                        translate(StringKeys.emailFormTitle, context),
-                        translate(StringKeys.emailFormHint, context),
-                        MultiValidator([
-                          RequiredValidator(
-                              errorText: translate(
-                                  StringKeys.requiredErrorText, context)),
-                          EmailValidator(
-                              errorText: translate(
-                                  StringKeys.emailErrorText, context)),
-                        ]))),
-                Padding(
-                    padding: textFormFieldPadding,
-                    child: _createTextFormField(
-                        translate(StringKeys.phoneFormTitle, context),
-                        translate(StringKeys.phoneFormHint, context),
-                        MultiValidator([
-                          RequiredValidator(
-                              errorText: translate(
-                                  StringKeys.requiredErrorText, context)),
-                          PatternValidator(PHONE_PATTERN,
-                              errorText:
-                                  translate(StringKeys.phoneErrorText, context))
-                        ]))),
-                Padding(
-                    padding: textFormFieldPadding,
-                    child: _createTextFormField(
-                        translate(StringKeys.messageFormTitle, context),
-                        translate(StringKeys.messageFormHint, context),
-                        MultiValidator([
-                          RequiredValidator(
-                              errorText: translate(
-                                  StringKeys.requiredErrorText, context)),
-                          MaxLengthValidator(MAX_MESSAGE_LENGTH,
-                              errorText: translate(
-                                  StringKeys.messageMaxLengthError, context))
-                        ]))),
-                Padding(
-                  padding: EdgeInsets.only(top: 15.h),
-                  child: RaisedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        String text =
-                            translate(StringKeys.formSuccessText, context);
-                        Color color = Colors.green;
-                        // Для использования Scaffold.of(context) я создала внутренний BuildContext - см. коммент выше,
-                        // т.к. аргумент context не может использоваться для поиска Scaffold, если он находится "выше" в дереве виджетов.
-                        Scaffold.of(context).showSnackBar(SnackBar(
-                            content: Text(text), backgroundColor: color));
-                      }
-                    },
-                    child: Text(translate(StringKeys.sendButtonText, context)),
-                    color: Colors.blue,
-                    textColor: Colors.white,
-                  ),
-                ),
-              ],
-            )));
-    ;
+  return BlocBuilder<FeedbackBloc, FeedbackState>(
+      builder: (BuildContext context, FeedbackState state) {
+        return
+          Column(
+            children: [
+              _createBannerIfNotHidden(context, state),
+              Expanded(
+                child: _getCurrentStateWidget(context, state),
+              )
+            ],
+          );
+    },
+    bloc: get<FeedbackBloc>(),
+  );
+  }
+
+  Widget _createBannerIfNotHidden(BuildContext context, FeedbackState state) {
+    Widget widget;
+    if (state.hasBanner) {
+      _logger.logDebug("Has banner? - ${state.hasBanner}");
+      widget =
+        MaterialBanner(
+          content: Text(translate(StringKeys.message_us, context)),
+          leading: CircleAvatar(child: Icon(Icons.mail_rounded)),
+          actions: [
+            TextButton(
+              child: Text(translate(StringKeys.hide, context)),
+              onPressed: () {
+                _hideBanner(context);
+              },
+            ),
+            TextButton(
+              child: Text(translate(StringKeys.write, context)),
+              onPressed: () {
+                _writeEmailBottomPressed(context);
+              },
+            ),
+          ],
+        );
+    } else {
+      widget = Container();
+    }
+    return widget;
+  }
+
+  void _hideBanner(BuildContext context){
+    context.read<FeedbackBloc>().add(HideBannerButtonPressedEvent());
+  }
+
+  void _writeEmailBottomPressed(BuildContext context){
+    context.read<FeedbackBloc>().add(WriteEmailButtonPressedEvent());
+  }
+
+  void _getCurrentLocale(BuildContext context) async{
+    _logger.logDebug("Locale = ${Localizations.localeOf(context).toString()}");
+    Locale currentLocale = Localizations.localeOf(context);
+    context.read<FeedbackBloc>().add(GotCurrentLocaleEvent(currentLocale.toString()));
+  }
+
+  _getCurrentStateWidget(BuildContext context, FeedbackState state){
+    if (state is AboutInfoLoadAwaitState) {
+      _getCurrentLocale(context);
+      return _loadAboutInfoAwaitWidget();
+    }
+    if (state is AboutInfoLoadSuccessState){
+      return _loadAboutInfoSuccessWidget(context, state);
+    }
+     else {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+  }
+
+  Widget _loadAboutInfoAwaitWidget(){
+    return Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Widget _loadAboutInfoSuccessWidget(BuildContext context, AboutInfoLoadSuccessState state) {
+    return _createWebView(context, state);
+  }
+
+  Widget _createWebView(BuildContext context, AboutInfoLoadSuccessState state){
+    Set<Factory<OneSequenceGestureRecognizer>> _gestureRecognizers =
+    [Factory(() => EagerGestureRecognizer())].toSet();
+    return
+      WebView(
+      key: _webViewKey,
+      initialUrl: state.url,
+      javascriptMode: JavascriptMode.unrestricted,
+      gestureRecognizers: _gestureRecognizers,
+      onPageStarted: (value) {},
+      onPageFinished: (value) {},
+    );
   }
 }

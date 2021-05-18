@@ -1,26 +1,20 @@
 {
-  "requiredErrorText": "* Обязательное поле",
+  "empty": "",
 
-  "nameFormTitle" : "Ваше имя",
-  "nameFormHint" : "Пожалуйста, введите ваше имя",
-
-  "emailFormTitle" : "Email",
-  "emailFormHint" : "Введите ваш email",
-  "emailErrorText" : "Некорректный email.",
-
-  "phoneFormTitle" : "Ваш телефон",
-  "phoneFormHint" : "Пожалуйста, введите ваш номер телефона",
-  "phoneErrorText" : "Некорректный номер",
-
-  "messageFormTitle" : "Ваше сообщение",
-  "messageFormHint" : "Напишите нам что-нибудь",
-  "messageMaxLengthError" : "Длина сообщения не может превышать 400 символов",
-
-  "formSuccessText" : "Ваше сообщение отправлено",
-  "sendButtonText": "Отправить",
+  "message_us" : "Напишите нам",
+  "write" : "НАПИСАТЬ",
+  "hide" : "СКРЫТЬ",
 
   "home" : "Главная",
   "schedule" : "Расписание",
-  "feedback" : "Обратная связь",
-  "settings" : "Настройки"
+  "feedback" : "Написать",
+  "settings" : "Настройки",
+
+  "present_label": "СЕЙЧАС в эфире",
+  "next_label": "ПОТОМ в эфире",
+  "information_is_loading": "Информация загружается",
+  "information_not_loaded": "Информация не загружена",
+
+  "loading_error" : "Ошибка загрузки"
+
 }

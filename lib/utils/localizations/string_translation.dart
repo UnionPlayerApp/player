@@ -10,31 +10,22 @@ String translate(StringKeys key, BuildContext context){
 }
 
 enum  StringKeys{
+  empty,
   // FeedbackScreen
-  requiredErrorText,
-
-  nameFormTitle,
-  nameFormHint,
-
-  emailFormTitle,
-  emailFormHint,
-  emailErrorText,
-
-  phoneFormTitle,
-  phoneFormHint,
-  phoneErrorText,
-
-  messageFormTitle,
-  messageFormHint,
-  messageMaxLengthError,
-
-  formSuccessText,
-  sendButtonText,
-
+  message_us,
+  write,
+  hide,
+  // AppBar
+  present_label,
+  next_label,
+  information_is_loading,
+  information_not_loaded,
   // BottomNavigationBar
   home,
   schedule,
   feedback,
-  settings
+  settings,
+
+  loading_error
 }
 

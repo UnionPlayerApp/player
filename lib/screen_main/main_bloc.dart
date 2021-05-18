@@ -1,83 +1,79 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:bloc/bloc.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:union_player_app/repository/schedule_item_type.dart';
+import 'package:union_player_app/repository/schedule_repository_interface.dart';
+import 'package:union_player_app/repository/schedule_repository_state.dart';
 import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
-import 'package:union_player_app/utils/app_logger.dart';
+import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/core/debug.dart';
+import 'package:union_player_app/utils/core/image_source_type.dart';
+import 'package:union_player_app/utils/localizations/string_translation.dart';
 
 class MainBloc extends Bloc<MainEvent, MainState> {
-  final AppLogger _logger;
-  final AudioPlayer _player;
+  late final StreamSubscription _subscription;
 
-  MainBloc(this._player, this._logger)
-      : super(MainState("Stop", "Initialising"));
+  final IScheduleRepository _repository;
+
+  MainBloc(this._repository) : super(MainState()) {
+    _subscription = _repository.stream().listen((state) {
+      log("MainBloc => repository state changed", name: LOG_TAG);
+      if (state is ScheduleRepositoryLoadSuccessState) {
+        log("MainBloc => repository state changed => state is SUCCESS",
+            name: LOG_TAG);
+        add(MainEvent(true, scheduleItems: state.items));
+      }
+      if (state is ScheduleRepositoryLoadErrorState) {
+        log("MainBloc => repository state changed => state is ERROR",
+            name: LOG_TAG);
+        add(MainEvent(false));
+      }
+    });
+  }
+
+  @override
+  Future<void> close() {
+    log("MainBloc => close()", name: LOG_TAG);
+    _subscription.cancel();
+    return super.close();
+  }
 
   @override
   Stream<MainState> mapEventToState(MainEvent event) async* {
-    if (event is PlayPauseFabPressed) {
-      yield* _mapPlayPauseFabPressedToState();
-      return;
+    bool isTitleVisible = false;
+    bool isArtistVisible = false;
+    String itemTitle = "";
+    String itemArtist = "";
+    StringKeys itemLabelKey = StringKeys.information_is_loading;
+
+    final imageSourceType = ImageSourceType.network;
+    final imageSource = randomUrl();
+
+    if (event.isScheduleLoaded && event.scheduleItems.isNotEmpty) {
+      itemLabelKey = StringKeys.present_label;
+
+      final item = event.scheduleItems[0];
+      isTitleVisible = true;
+      itemTitle = item.title;
+
+      if (item.type == ScheduleItemType.music) {
+        isArtistVisible = true;
+        itemArtist = item.artist;
+      }
     }
 
-    if (event is PlayerStateChangedToBuffering) {
-      yield* _mapPlayerStateChangedBufferingToState(event.isPlaying);
-      return;
-    }
-    if (event is PlayerStateChangedToCompleted) {
-      yield* _mapPlayerStateChangedCompletedToState(event.isPlaying);
-      return;
-    }
-    if (event is PlayerStateChangedToIdle) {
-      yield* _mapPlayerStateChangedIdleToState(event.isPlaying);
-      return;
-    }
-    if (event is PlayerStateChangedToLoading) {
-      yield* _mapPlayerStateChangedLoadingToState(event.isPlaying);
-      return;
-    }
-    if (event is PlayerStateChangedToReady) {
-      yield* _mapPlayerStateChangedReadyToState(event.isPlaying);
-      return;
-    }
-    _logger.logError(
-        "Unknown event may be from user, may be from player",
-        ArgumentError("Unknown event may be from user, may be from player")
-    );
+    final state = MainState(
+        isTitleVisible: isTitleVisible,
+        isArtistVisible: isArtistVisible,
+        itemLabelKey: itemLabelKey,
+        itemTitle: itemTitle,
+        itemArtist: itemArtist,
+        imageSourceType: imageSourceType,
+        imageSource: imageSource);
+
+    log("MainBloc => mapEventToState => state = $state", name: LOG_TAG);
+
+    yield state;
   }
-
-  Stream<MainState> _mapPlayPauseFabPressedToState() async* {
-    String stateStr01 = state.stateStr01;
-
-    if (_player.processingState == ProcessingState.ready) {
-      stateStr01 = _createStateStr01(!_player.playing);
-    }
-
-    yield MainState(stateStr01, state.stateStr02);
-  }
-
-  Stream<MainState> _mapPlayerStateChangedBufferingToState(
-      bool isPlaying) async* {
-    yield MainState(state.stateStr01, "Buffering");
-  }
-
-  Stream<MainState> _mapPlayerStateChangedCompletedToState(
-      bool isPlaying) async* {
-    yield MainState(state.stateStr01, "Completed");
-  }
-
-  Stream<MainState> _mapPlayerStateChangedLoadingToState(
-      bool isPlaying) async* {
-    yield MainState(state.stateStr01, "Loading");
-  }
-
-  Stream<MainState> _mapPlayerStateChangedIdleToState(bool isPlaying) async* {
-    yield MainState(state.stateStr01, "Idle");
-  }
-
-  Stream<MainState> _mapPlayerStateChangedReadyToState(bool isPlaying) async* {
-    yield MainState(state.stateStr01, "Ready");
-  }
-
-  String _createStateStr01(bool isPlaying) =>
-      isPlaying ? "Play" : "Stop";
 }

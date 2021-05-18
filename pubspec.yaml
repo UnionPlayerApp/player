@@ -3,31 +3,39 @@ description: A Union Player Flutter application.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+1
+version: 1.0.1
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   audio_session:
+  cloud_firestore:
+  connectivity: ^3.0.3
   cupertino_icons: ^1.0.2
   equatable:
   firebase_core:
   flutter:
     sdk: flutter
-  connectivity: ^3.0.3
   flutter_bloc:
+  flutter_localizations:
+    sdk: flutter
+  flutter_screenutil: ^5.0.0
+  form_field_validator: ^1.1.0
+  intl:
   just_audio:
   koin_bloc:
   koin_flutter: ^0.11.0-nullsafety.0
   logger:
-  flutter_screenutil: ^5.0.0
-  form_field_validator: ^1.1.0
-  flutter_localizations:
-    sdk: flutter
-
+  marquee:
+  path_provider:
+  rxdart:
+  shared_preferences:
+  webview_flutter: ^2.0.4
+  xml:
 
 dev_dependencies:
+  flutter_launcher_icons:
   flutter_test:
     sdk: flutter
 
@@ -36,8 +44,12 @@ flutter:
     - assets/images/
     - assets/localizations/en.json
     - assets/localizations/ru.json
-
-
-
+    - assets/localizations/be.json
+    - assets/about_us_page/test_page.html
   uses-material-design: true
 
+flutter_icons:
+  ios: true
+  android: true
+  image_path_ios: "assets/images/union_radio_logo_1.png"
+  image_path_android: "assets/images/union_radio_logo_1.png"
