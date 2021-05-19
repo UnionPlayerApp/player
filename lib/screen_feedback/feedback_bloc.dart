@@ -3,51 +3,99 @@ import 'package:union_player_app/model/system_data/system_data.dart';
 import 'package:union_player_app/screen_feedback/feedback_event.dart';
 import 'package:union_player_app/screen_feedback/feedback_state.dart';
 import 'package:union_player_app/utils/app_logger.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
   final AppLogger _logger;
   final SystemData _systemData;
+  bool hasBanner = true;
 
   FeedbackBloc(this._logger, this._systemData)
-      : super(AboutInfoLoadAwaitState()) {
-    add(AboutInfoLoadEvent());
+      : super(AboutInfoUrlLoadAwaitState()) {
+    add(InitialEvent());
+  }
+
+  Future<void> log(String message) async {
+    return _logger.logDebug(message);
+  }
+
+  @override
+  Future<void> close() {
+     log("#CLOSE#");
+     return super.close();
+  }
+
+  // Method for debug: called whenever an event is added to the Bloc:
+  @override
+  void onEvent(FeedbackEvent event) {
+    super.onEvent(event);
+    log("NEW EVENT: ${event.toString()}");
   }
 
   @override
   Stream<FeedbackState> mapEventToState(FeedbackEvent event) async* {
-    if (event is AboutInfoLoadEvent) {
-      yield AboutInfoLoadAwaitState();
+    if (event is InitialEvent) {
+      yield AboutInfoUrlLoadAwaitState();
     }
     if (event is GotCurrentLocaleEvent){
-      yield await _getAboutInfoUrl(event.locale);
+      yield await _getAboutInfoUrl(event.locale, hasBanner);
+    }
+    if (event is WebViewLoadStartedEvent){
+      yield WebViewLoadAwaitState(hasBanner, event.url);
+    }
+    if(event is WebViewLoadSuccessEvent){
+      yield WebViewLoadSuccessState(hasBanner, event.url);
+    }
+    if(event is WebViewLoadErrorEvent){
+      log("WebViewLoadErrorEvent is processing...");
+      yield WebViewLoadErrorState(hasBanner,  event.errorDescription);
     }
     if (event is HideBannerButtonPressedEvent) {
-      yield _getCurrentStateWithoutBanner();
+      hasBanner = false;
+      yield _getCurrentStateWithoutBanner(event.state);
     }
     if (event is WriteEmailButtonPressedEvent) {
       // OPEN MAIL CLIENT
+      final Uri _emailLaunchUri = Uri(
+          scheme: 'mailto',
+          path: 'lena.kurasheva@gmail.com',
+          queryParameters: {
+            'subject': ''
+          }
+      );
+      launch(_emailLaunchUri.toString());
     }
   }
 
-  Future<FeedbackState> _getAboutInfoUrl(String locale) async {
+  Future<FeedbackState> _getAboutInfoUrl(String locale, bool hasBanner) async {
     _logger.logDebug("Localization: $locale");
-    if(locale == "be_BY") return AboutInfoLoadSuccessState(_systemData.aboutData.urlBy);
-    if (locale == "ru_RU") return AboutInfoLoadSuccessState(_systemData.aboutData.urlRu);
-    else return AboutInfoLoadSuccessState(_systemData.aboutData.urlEn);
+    switch (locale) {
+      case "be_BY": return WebViewLoadAwaitState(hasBanner, _systemData.aboutData.urlBy);
+      case "ru_RU": return WebViewLoadAwaitState(hasBanner, _systemData.aboutData.urlRu);
+      default : return WebViewLoadAwaitState(hasBanner, _systemData.aboutData.urlEn);
+      // default : return WebViewLoadAwaitState(hasBanner, "https://pub.dev");
+    }
   }
 
-  FeedbackState _getCurrentStateWithoutBanner() {
-    _logger.logDebug("Current state has banner: ${this.state.hasBanner}");
+  FeedbackState _getCurrentStateWithoutBanner(FeedbackState state) {
     FeedbackState newState;
-    if (this.state is AboutInfoLoadSuccessState) {
-      newState = AboutInfoLoadSuccessState(
-          (this.state as AboutInfoLoadSuccessState).url);
-    } else {
-      newState = AboutInfoLoadAwaitState();
+    if (state is WebViewLoadSuccessState ) {
+      newState = WebViewLoadSuccessState(
+        false, state.url);
     }
-    newState.hasBanner = false;
-    _logger.logDebug(
-        "New state has banner: ${newState.hasBanner} \n New state is ${newState.runtimeType}");
+    else if (state is WebViewLoadErrorState) {
+      newState = WebViewLoadErrorState(
+          false, state.errorType);
+    }
+    else if (state is WebViewLoadAwaitState) {
+      newState = WebViewLoadAwaitState(false,
+          state.url);
+    }
+    else {
+      newState = AboutInfoUrlLoadAwaitState();
+    }
     return newState;
   }
+
 }

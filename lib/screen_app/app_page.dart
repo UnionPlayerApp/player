@@ -16,8 +16,11 @@ import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_page.dart';
 import 'package:union_player_app/screen_settings/settings_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/widgets/info_page.dart';
+import 'package:union_player_app/utils/dimensions/dimensions.dart';
+import 'package:union_player_app/utils/ui/app_theme.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:union_player_app/utils/widgets/info_page.dart';
 import 'package:union_player_app/utils/widgets/snack_bar.dart';
 
 class AppPage extends StatefulWidget {
@@ -36,6 +39,7 @@ class _AppState extends State<AppPage> {
               child: Scaffold(
                 appBar: _createAppBar(state),
                 body: _createPage(state),
+                extendBody: true,
                 floatingActionButton: _createFAB(state),
                 floatingActionButtonLocation:
                     FloatingActionButtonLocation.centerDocked,
@@ -82,7 +86,7 @@ class _AppState extends State<AppPage> {
 
   Expanded _buttonAppBar(BuildContext context, AppState state, int itemTab,
       IconData iconTab, StringKeys nameTab) {
-    final color = state.navIndex == itemTab ? Colors.red[800] : Colors.grey;
+    final color = state.navIndex == itemTab ? primaryColor : Colors.grey;
     return Expanded(
       child: MaterialButton(
         padding: const EdgeInsets.all(0),
@@ -117,7 +121,6 @@ class _AppState extends State<AppPage> {
     return AppBar(
       title: _createTitle(state, size),
       leading: _createLeading(),
-      actions: _createActions(state),
     );
   }
 
@@ -153,34 +156,14 @@ class _AppState extends State<AppPage> {
   }
 
   Widget _createLeading() {
-    return Padding(
-        padding: const EdgeInsets.all(6.0),
-        child: Container(
-          child: CircleAvatar(
-            backgroundImage: ExactAssetImage(APP_BAR_LOGO_IMAGE),
-          ),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.white, width: 4.0),
-          ),
+    return Container(
+        padding: appBarLeadingPadding,
+        child:
+        SvgPicture.asset(
+          APP_BAR_LOGO_IMAGE,
+          color: colorOnPrimary,
+          fit: BoxFit.scaleDown,
         ));
-  }
-
-  List<Widget>? _createActions(AppState state) {
-    List<Widget>? actions;
-    switch (state.navIndex) {
-      case 2:
-        actions = [
-          IconButton(
-            icon: Icon(Icons.mail_rounded),
-            onPressed: () {
-              // OPEN MAIL CLIENT
-            },
-          )
-        ];
-        break;
-    }
-    return actions;
   }
 
   Widget _createPage(AppState state) {
@@ -197,8 +180,8 @@ class _AppState extends State<AppPage> {
             create: (context) => get<ScheduleBloc>(),
             child: get<SchedulePage>());
       case 2:
-        return BlocProvider(
-            create: (context) => get<FeedbackBloc>(),
+        return BlocProvider.value(
+            value: get<FeedbackBloc>(),
             child: get<FeedbackPage>());
       case 3:
         return get<SettingsPage>();

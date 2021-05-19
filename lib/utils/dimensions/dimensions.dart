@@ -9,6 +9,9 @@ const double prototypeDeviceWidth = 390;
 // Общие настройки
 final EdgeInsets allSidesMargin = EdgeInsets.all(16.w);
 
+//AppBar
+final EdgeInsets appBarLeadingPadding = EdgeInsets.all(6.h) + EdgeInsets.only(left: 16.h);
+
 // MainPage
 final double mainImageSide = 200.w;
 final double mainMarginBottom = 16.h;
@@ -25,6 +28,7 @@ final EdgeInsets programTextLeftPadding = EdgeInsets.only(left: 10.w);
 final EdgeInsets programBodyTopPadding = EdgeInsets.only(top: 10.h);
 
 // FeedbackScreen
+final double bannerHeight = 120.0;
 final EdgeInsets textFormFieldPadding = EdgeInsets.symmetric(horizontal: 10.w) + EdgeInsets.only(top: 15.h);
 
 
