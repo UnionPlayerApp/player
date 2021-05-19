@@ -43,15 +43,13 @@ class FeedbackPage extends StatelessWidget {
   Widget _createBannerIfNotHidden(BuildContext context, FeedbackState state) {
     Widget widget;
     if (state.hasBanner) {
+      final radius = Radius.circular(12.w);
       widget =
           Column(
             children: [
               Container(
-                decoration: new BoxDecoration(
-                  borderRadius: new BorderRadius.only(
-                    bottomLeft: Radius.circular(12.w),
-                    bottomRight: Radius.circular(12.w),
-                  ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(radius),
                   boxShadow: <BoxShadow>[
                     BoxShadow(
                         color: Colors.black54,
@@ -61,7 +59,7 @@ class FeedbackPage extends StatelessWidget {
                 ),
                 child:
                    ClipRRect(
-                      borderRadius: BorderRadius.only(bottomLeft: Radius.circular(12.w), bottomRight: Radius.circular(12.w)) ,
+                      borderRadius: BorderRadius.only(bottomLeft: radius, bottomRight: radius) ,
                       child: NoDividerBanner(
                         Text(translate(StringKeys.message_us, context)),
                         CircleAvatar(child: Icon(Icons.mail_rounded)),

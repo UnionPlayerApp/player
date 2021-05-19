@@ -5,6 +5,8 @@
   "write" : "WRITE",
   "hide" : "HIDE",
 
+  "press_again_to_exit": "Press again to exit",
+
   "home" : "Home",
   "schedule" : "Schedule",
   "feedback" : "Feedback",

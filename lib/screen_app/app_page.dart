@@ -35,7 +35,7 @@ class _AppState extends State<AppPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
         builder: (BuildContext context, AppState state) => WillPopScope(
-              onWillPop: _onWillPop,
+              onWillPop: () => _onWillPop(),
               child: Scaffold(
                 appBar: _createAppBar(state),
                 body: _createPage(state),
@@ -110,7 +110,8 @@ class _AppState extends State<AppPage> {
     const duration = const Duration(seconds: 2);
     if (_backPressTime == null || now.difference(_backPressTime!) > duration) {
       _backPressTime = now;
-      showSnackBar(context, "Press one more time for exit", duration: duration);
+      showSnackBar(context, translate(StringKeys.press_again_to_exit, context),
+          duration: duration);
       return Future.value(false);
     }
     return Future.value(true);
@@ -125,13 +126,14 @@ class _AppState extends State<AppPage> {
   }
 
   Widget _createTitle(AppState state, Size size) {
-    log("_createTitle()");
-    log("state.isScheduleLoaded = ${state.isScheduleLoaded}");
-    log("state.presentArtist = ${state.presentArtist}");
-    log("state.presentTitle = ${state.presentTitle}");
-    log("state.nextArtist = ${state.nextArtist}");
-    log("state.nextTitle = ${state.nextTitle}");
-    final title = state.isScheduleLoaded ? _loadedTitle(state) : _unloadedTitle();
+    log("_createTitle()", name: LOG_TAG);
+    log("state.isScheduleLoaded = ${state.isScheduleLoaded}", name: LOG_TAG);
+    log("state.presentArtist = ${state.presentArtist}", name: LOG_TAG);
+    log("state.presentTitle = ${state.presentTitle}", name: LOG_TAG);
+    log("state.nextArtist = ${state.nextArtist}", name: LOG_TAG);
+    log("state.nextTitle = ${state.nextTitle}", name: LOG_TAG);
+    final title =
+        state.isScheduleLoaded ? _loadedTitle(state) : _unloadedTitle();
     final marquee = Marquee(
       text: title,
       startAfter: const Duration(seconds: 3),
@@ -158,8 +160,7 @@ class _AppState extends State<AppPage> {
   Widget _createLeading() {
     return Container(
         padding: appBarLeadingPadding,
-        child:
-        SvgPicture.asset(
+        child: SvgPicture.asset(
           APP_BAR_LOGO_IMAGE,
           color: colorOnPrimary,
           fit: BoxFit.scaleDown,
@@ -173,16 +174,14 @@ class _AppState extends State<AppPage> {
         //     create: (context) => get<MainBloc>(),
         //     child: get<MainPage>());
         return BlocProvider.value(
-            value: get<MainBloc>(),
-            child: get<MainPage>());
+            value: get<MainBloc>(), child: get<MainPage>());
       case 1:
         return BlocProvider(
             create: (context) => get<ScheduleBloc>(),
             child: get<SchedulePage>());
       case 2:
         return BlocProvider.value(
-            value: get<FeedbackBloc>(),
-            child: get<FeedbackPage>());
+            value: get<FeedbackBloc>(), child: get<FeedbackPage>());
       case 3:
         return get<SettingsPage>();
       default:
