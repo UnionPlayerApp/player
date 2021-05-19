@@ -1,21 +1,27 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
+import 'package:rxdart/rxdart.dart';
 import 'package:union_player_app/model/system_data/system_data.dart';
 import 'package:union_player_app/repository/schedule_file.dart';
 import 'package:union_player_app/repository/schedule_repository_interface.dart';
 import 'package:union_player_app/repository/schedule_item_raw.dart';
 import 'package:union_player_app/repository/schedule_repository_state.dart';
 import 'package:union_player_app/utils/app_logger.dart';
+import 'package:union_player_app/utils/constants/constants.dart';
+
+const _ATTEMPT_MAX = 5;
 
 class ScheduleRepositoryImpl implements IScheduleRepository {
   final AppLogger _logger;
   final SystemData _systemData;
-
-  ScheduleRepositoryImpl(this._logger, this._systemData);
-
+  final _subject = BehaviorSubject<ScheduleRepositoryState>(sync: true);
+  final _items = List<ScheduleItemRaw>.empty(growable: true);
   bool _isOpen = true;
 
-  List<ScheduleItemRaw> _items = List.empty(growable: true);
+  ScheduleRepositoryImpl(this._logger, this._systemData) {
+    startStream();
+  }
 
   @override
   List<ScheduleItemRaw> getItems() => _items;
@@ -26,28 +32,56 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
   }
 
   @override
-  Stream<ScheduleRepositoryState> stream() async* {
-    while (_isOpen) {
-      final seconds = _secondsToCurrentFinish();
+  Stream<ScheduleRepositoryState> stream() => _subject.stream;
 
-      if (seconds < 0) {
-        yield await _load();
-      } else {
-        await Future.delayed(Duration(seconds: seconds));
-      }
+  void startStream() async {
+    log("schedule repository ($this) stream() => start", name: LOG_TAG);
+
+    while (_isOpen) {
+      ScheduleRepositoryState state;
+      int attempt = 1;
+
+      do {
+        if (attempt > 1) {
+          log("schedule repository stream() => delay for 1 second start", name: LOG_TAG);
+          await Future.delayed(const Duration(seconds: 1));
+          log("schedule repository stream() => delay for 1 second finish", name: LOG_TAG);
+        }
+
+        log("schedule repository stream() => _load() start, attempt = $attempt", name: LOG_TAG);
+        state  = await _load();
+        log("schedule repository stream() => _load() finish, attempt = $attempt", name: LOG_TAG);
+      } while (state is ScheduleRepositoryLoadErrorState && attempt++ < _ATTEMPT_MAX);
+
+      _subject.add(state);
+
+      int seconds = _secondsToNextLoad();
+
+      log("schedule repository stream() => delay for $seconds seconds start", name: LOG_TAG);
+      await Future.delayed(Duration(seconds: seconds));
+      log("schedule repository stream() => delay for $seconds seconds finish", name: LOG_TAG);
     }
   }
 
-  bool _firstItemIsCurrent() => (_secondsToCurrentFinish() >= 0);
+  bool _firstItemIsCurrent() => (_secondsToNextLoad() >= 0);
 
-  int _secondsToCurrentFinish() {
-    if (_items.isEmpty) return -1;
+  int _secondsToNextLoad() {
+    if (_items.isEmpty) return 1;
 
-    final current = _items[0];
-    final finish = current.start.add(current.duration);
+    final currentElement = _items[0];
+    final finish = currentElement.start.add(currentElement.duration);
     final now = DateTime.now();
+    final rest = finish.difference(now).inSeconds;
 
-    return finish.difference(now).inSeconds;
+    if (rest <= 0) {
+      log("rest = $rest", name: LOG_TAG);
+      log("start = ${currentElement.start}", name: LOG_TAG);
+      log("finish = $finish", name: LOG_TAG);
+      log("duration = ${currentElement.duration}", name: LOG_TAG);
+      log("now = $now", name: LOG_TAG);
+    }
+
+    return (rest > 0) ? rest : 1;
   }
 
   Future<ScheduleRepositoryState> _load() async {
@@ -81,5 +115,6 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
   @override
   void close() {
     _isOpen = false;
+    _subject.close();
   }
 }

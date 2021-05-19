@@ -1,4 +1,6 @@
 {
+  "empty": "",
+
   "message_us" : "Напишите нам",
   "write" : "НАПИСАТЬ",
   "hide" : "СКРЫТЬ",
@@ -7,6 +9,11 @@
   "schedule" : "Расписание",
   "feedback" : "Написать",
   "settings" : "Настройки",
+
+  "present_label": "СЕЙЧАС в эфире",
+  "next_label": "ПОТОМ в эфире",
+  "information_is_loading": "Информация загружается",
+  "information_not_loaded": "Информация не загружена",
 
   "loading_error" : "Ошибка загрузки",
 

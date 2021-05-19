@@ -1,4 +1,6 @@
 {
+  "empty": "",
+
   "message_us": "Напішы нам",
   "write": "НАПІСАТЬ",
   "hide": "СКРЫТЬ",
@@ -8,8 +10,12 @@
   "feedback": "Напісаць",
   "settings": "Настройкі",
 
-  "loading_error": "Ошибка загрузки",
+  "present_label": "Зараз у эфіры",
+  "next_label": "Потым у эфіры",
+  "information_is_loading": "Інфармацыя загружаецца",
+  "information_not_loaded": "Інфармацыя не загружана",
 
+  "loading_error": "Памылка загрузкі",
   "settings_theme_label": "Тэма",
   "settings_theme_light": "светлая",
   "settings_theme_dark": "цёмная",

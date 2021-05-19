@@ -2,6 +2,11 @@
 const APP_BAR_LOGO_IMAGE = "assets/images/union_radio_logo_1.png";
 const LOGO_IMAGE = "assets/images/union_radio_logo.png";
 
+//Streams IDs
+const ID_STREAM_LOW = 0;
+const ID_STREAM_MEDIUM = 1;
+const ID_STREAM_HIGH = 2;
+
 // Периодичность проверки буффера плеера на заполненность. В сек.
 const PLAYER_BUFFER_CHECK_DURATION = 3;
 const PLAYER_BUFFER_UNCHECKABLE_DURATION = 5;

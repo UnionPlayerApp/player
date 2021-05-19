@@ -9,11 +9,19 @@ String translate(StringKeys key, BuildContext context) {
   return translatedString ?? "NOT FOUND";
 }
 
-enum StringKeys {
+enum  StringKeys{
+  empty,
+
   // FeedbackScreen
   message_us,
   write,
   hide,
+
+  // AppBar
+  present_label,
+  next_label,
+  information_is_loading,
+  information_not_loaded,
 
   // BottomNavigationBar
   home,

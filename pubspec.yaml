@@ -27,7 +27,9 @@ dependencies:
   koin_bloc:
   koin_flutter: ^0.11.0-nullsafety.0
   logger:
+  marquee:
   path_provider:
+  rxdart:
   shared_preferences:
   webview_flutter: 2.0.4
   xml:
