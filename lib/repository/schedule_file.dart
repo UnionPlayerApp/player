@@ -1,7 +1,6 @@
 import 'dart:convert';
-import 'dart:developer' as Log;
+import 'dart:developer';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
@@ -9,6 +8,7 @@ import 'package:union_player_app/repository/schedule_item_raw.dart';
 import 'package:union_player_app/repository/schedule_item_type.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/date_time.dart';
+import 'package:union_player_app/utils/core/debug.dart';
 import 'package:union_player_app/utils/core/duration.dart';
 import 'package:xml/xml.dart';
 
@@ -30,13 +30,13 @@ Future<File> loadScheduleFile(String url) async {
 
 List<ScheduleItemRaw> parseScheduleFile(File file) {
   try {
-    Log.log("XmlDocument.parse() - in", name: LOG_TAG);
+    log("XmlDocument.parse() - in", name: LOG_TAG);
     final document = XmlDocument.parse(file.readAsStringSync());
-    Log.log("XmlDocument.parse() - out", name: LOG_TAG);
+    log("XmlDocument.parse() - out", name: LOG_TAG);
 
-    Log.log("document.findAllElements() - in", name: LOG_TAG);
+    log("document.findAllElements() - in", name: LOG_TAG);
     final elements = document.findAllElements("ELEM");
-    Log.log("document.findAllElements() - out", name: LOG_TAG);
+    log("document.findAllElements() - out", name: LOG_TAG);
 
     final newList = List<ScheduleItemRaw>.empty(growable: true);
     DateTime start = DateTime.now();
@@ -45,7 +45,7 @@ List<ScheduleItemRaw> parseScheduleFile(File file) {
 
     elements.forEach((element) {
       index++;
-      Log.log("elements.forEach() => index = $index", name: LOG_TAG);
+      log("elements.forEach() => index = $index", name: LOG_TAG);
 
       final type = _createType(element);
       if (type == null) return;
@@ -61,13 +61,17 @@ List<ScheduleItemRaw> parseScheduleFile(File file) {
       final artist = _createArtist(element);
 
       final item = ScheduleItemRaw(thisStart, duration, type, title, artist,
-          imageUrl: _randomUrl());
+          imageUrl: randomUrl());
       newList.add(item);
-      Log.log("type = $type, start = $thisStart, duration = $duration, title = $title, artist = $artist", name: LOG_TAG);
+
+      if (index <= 2) {
+        log("type = $type, start = $thisStart, duration = $duration, title = $title, artist = $artist",
+            name: LOG_TAG);
+      }
     });
     return newList;
   } catch (error) {
-    Log.log("parseScheduleFile() => error", name: LOG_TAG, error: error);
+    log("parseScheduleFile() => error", name: LOG_TAG, error: error);
     throw Exception(error.toString());
   }
 }
@@ -96,7 +100,8 @@ DateTime? _createStart(XmlElement element, DateTime start) {
   if (eStartDate == null || eStartTime == null) return start;
 
   try {
-    Log.log("_createStart() => date = ${eStartDate.innerText}, time = ${eStartTime.innerText}", name: LOG_TAG);
+    log("_createStart() => date = ${eStartDate.innerText}, time = ${eStartTime.innerText}",
+        name: LOG_TAG);
     return parseDateTime(eStartDate.innerText, eStartTime.innerText);
   } catch (error) {
     return null;
@@ -124,22 +129,10 @@ String _createTitle(XmlElement element) {
   return eName == null ? "" : eName.innerText;
 }
 
-String _randomUrl() {
-  List<String> urls = [
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRygBKRZC_XhwMXnmXT-Wq_8TGT4MSkV3KY-A&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSsh0I61KOzNAOzvjEmMUKjmH9EZwxB2UGovg&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhUkOp_uSZY5R2gsHMxKt6nTIy-isvdm7pxQ&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRWS-O75WhJE-wnol-9NfBr54rmbsUc0LeDA&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoydUqpTZ-TQ2h-IDrwIwuQjtWd44w2IXPWQ&usqp=CAU"
-  ];
-  final index = Random().nextInt(urls.length - 1);
-  return urls[index];
-}
-
 void logScheduleFile(File file) {
   file
       .openRead()
       .transform(utf8.decoder)
       .transform(LineSplitter())
-      .forEach((line) => Log.log(line, name: LOG_TAG));
+      .forEach((line) => log(line, name: LOG_TAG));
 }

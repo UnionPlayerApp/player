@@ -12,7 +12,11 @@ final EdgeInsets allSidesMargin = EdgeInsets.all(16.w);
 //AppBar
 final EdgeInsets appBarLeadingPadding = EdgeInsets.all(6.h) + EdgeInsets.only(left: 16.h);
 
-// ScheduleScreen
+// MainPage
+final double mainImageSide = 200.w;
+final double mainMarginBottom = 16.h;
+
+// SchedulePage
 // Разделитель
 final double listViewDividerHeight = 2.h;
 // Элемент списка

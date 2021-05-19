@@ -21,7 +21,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   final AudioPlayer _player;
   final AppLogger _logger;
   final SystemData _systemData;
-  late String _currentUrl;
+  int _lastPositionChecked = 0;
+  int _currentStreamId = ID_STREAM_MEDIUM;
   final List<StreamSubscription> _subscriptions = List.empty(growable: true);
 
   AppBloc(this._repository, this._player, this._logger, this._systemData)
@@ -59,8 +60,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
           name: LOG_TAG);
       add(AppPlayerEvent(playerState.playing, playerState.processingState));
     }));
-
-    _currentUrl = _systemData.streamData.streamMiddle;
   }
 
   @override
@@ -117,53 +116,70 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   Future<void> _checkForBufferLoading() async {
     if (!await internetConnectionCheck() ||
         !_player.playing ||
-        _player.position.inSeconds < PLAYER_BUFFER_UNCHECKABLE_DURATION) {
+        _player.position.inSeconds - _lastPositionChecked <
+            PLAYER_BUFFER_UNCHECKABLE_DURATION) {
       return;
     }
-
     final _bufferCapacity =
         _player.bufferedPosition.inSeconds - _player.position.inSeconds;
 
     if (_bufferCapacity > PLAYER_BUFFER_HIGH_CAPACITY) {
-      if (_currentUrl == _systemData.streamData.streamLow) {
-        _switchStream(_systemData.streamData.streamMiddle);
-        return;
+      switch (_currentStreamId) {
+        case ID_STREAM_LOW:
+          _switchStream(ID_STREAM_MEDIUM);
+          break;
+        case ID_STREAM_MEDIUM:
+          _switchStream(ID_STREAM_HIGH);
+          break;
       }
-      if (_currentUrl == _systemData.streamData.streamMiddle) {
-        _switchStream(_systemData.streamData.streamHi);
-        return;
-      }
+      _lastPositionChecked = _player.position.inSeconds;
       return;
     }
 
     if (_bufferCapacity < PLAYER_BUFFER_LOW_CAPACITY) {
-      if (_currentUrl == _systemData.streamData.streamHi) {
-        _switchStream(_systemData.streamData.streamMiddle);
-        return;
+      switch (_currentStreamId) {
+        case ID_STREAM_HIGH:
+          _switchStream(ID_STREAM_MEDIUM);
+          break;
+        case ID_STREAM_MEDIUM:
+          _switchStream(ID_STREAM_LOW);
+          break;
       }
-      if (_currentUrl == _systemData.streamData.streamMiddle) {
-        _switchStream(_systemData.streamData.streamLow);
-        return;
-      }
-      return;
+      _lastPositionChecked = _player.position.inSeconds;
     }
   }
 
-  _switchStream(String newStreamUrl) {
-    _logger.logDebug("switch stream to $newStreamUrl");
-    _currentUrl = newStreamUrl;
+  _switchStream(int newStreamId) {
+    _currentStreamId = newStreamId;
     _waitForConnection();
   }
 
   Future<void> _waitForConnection() async {
     while (await internetConnectionCheck() == false) {
-      Future.delayed(Duration(seconds: INTERNET_CONNECTION_CHECK_DURATION));
-      _logger.logError("No internet connection", null);
+      _logger.logError(
+          "No internet connection. Waiting $INTERNET_CONNECTION_CHECK_DURATION seconds for next check",
+          null);
+      await Future.delayed(
+          const Duration(seconds: INTERNET_CONNECTION_CHECK_DURATION));
     }
-
     try {
-      final _newSource = AudioSource.uri(Uri.parse(_currentUrl));
-      await _player.setAudioSource(_newSource);
+      switch (_currentStreamId) {
+        case ID_STREAM_LOW:
+          final _newSource =
+              AudioSource.uri(Uri.parse(_systemData.streamData.streamLow));
+          await _player.setAudioSource(_newSource);
+          break;
+        case ID_STREAM_MEDIUM:
+          final _newSource =
+              AudioSource.uri(Uri.parse(_systemData.streamData.streamMedium));
+          await _player.setAudioSource(_newSource);
+          break;
+        case ID_STREAM_HIGH:
+          final _newSource =
+              AudioSource.uri(Uri.parse(_systemData.streamData.streamHigh));
+          await _player.setAudioSource(_newSource);
+          break;
+      }
     } catch (error) {
       _logger.logError("Player set audio source error", error);
     }

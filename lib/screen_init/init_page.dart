@@ -89,10 +89,10 @@ class _InitPageState extends State<InitPage> {
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration.music());
 
-    _logger.logDebug(_systemData.streamData.streamMiddle);
+    _logger.logDebug(_systemData.streamData.streamMedium);
 
     final _source =
-        AudioSource.uri(Uri.parse(_systemData.streamData.streamMiddle));
+        AudioSource.uri(Uri.parse(_systemData.streamData.streamMedium));
     try {
       await _player.setAudioSource(_source);
     } catch (error) {
