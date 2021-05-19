@@ -8,6 +8,27 @@
   "feedback": "Напісаць",
   "settings": "Настройкі",
 
-  "loading_error": "Ошибка загрузки"
+  "loading_error": "Ошибка загрузки",
 
+  "settings_theme_label": "Тэма",
+  "settings_theme_light": "светлая",
+  "settings_theme_dark": "цёмная",
+  "settings_theme_system": "як у сістэме",
+
+  "settings_quality_label": "Якасць гуку",
+  "settings_quality_low": "нізкае",
+  "settings_quality_medium": "сярэдняе",
+  "settings_quality_high": "высокае",
+  "settings_quality_auto": "аўтаматычнае",
+
+  "settings_start_playing_label": "Прайграванне пры старце",
+  "settings_start_playing_start": "уключана",
+  "settings_start_playing_stop": "выключана",
+  "settings_start_playing_last": "як было",
+
+  "settings_lang_label": "Мова",
+  "settings_lang_ru": "руская",
+  "settings_lang_be": "беларускі",
+  "settings_lang_en": "англійская",
+  "settings_lang_system": "як у сістэме"
 }

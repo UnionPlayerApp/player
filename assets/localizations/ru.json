@@ -8,6 +8,27 @@
   "feedback" : "Написать",
   "settings" : "Настройки",
 
-  "loading_error" : "Ошибка загрузки"
+  "loading_error" : "Ошибка загрузки",
 
+  "settings_theme_label": "Тема",
+  "settings_theme_light": "светлая",
+  "settings_theme_dark": "тёмная",
+  "settings_theme_system": "системная",
+
+  "settings_quality_label": "Качество звука",
+  "settings_quality_low": "низкое",
+  "settings_quality_medium": "среднее",
+  "settings_quality_high": "высокое",
+  "settings_quality_auto": "автоматическое",
+
+  "settings_start_playing_label": "Воспроизведение при старте",
+  "settings_start_playing_start": "включено",
+  "settings_start_playing_stop": "выключено",
+  "settings_start_playing_last": "как было",
+
+  "settings_lang_label": "Язык",
+  "settings_lang_ru": "русский",
+  "settings_lang_be": "белорусский",
+  "settings_lang_en": "английский",
+  "settings_lang_system": "системный"
 }

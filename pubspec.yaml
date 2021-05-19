@@ -29,7 +29,7 @@ dependencies:
   logger:
   path_provider:
   shared_preferences:
-  webview_flutter:
+  webview_flutter: 2.0.4
   xml:
 
 dev_dependencies:
