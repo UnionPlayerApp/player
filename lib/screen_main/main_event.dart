@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:union_player_app/repository/schedule_item_raw.dart';
 
 class MainEvent extends Equatable {
