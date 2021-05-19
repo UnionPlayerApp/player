@@ -15,5 +15,27 @@
   "information_is_loading": "Information is loading",
   "information_not_loaded": "Information is not loaded",
 
-  "loading_error" : "Loading error"
+  "loading_error" : "Loading error",
+
+  "settings_theme_label": "Theme",
+  "settings_theme_light": "light",
+  "settings_theme_dark": "dark",
+  "settings_theme_system": "system",
+
+  "settings_quality_label": "Sound quality",
+  "settings_quality_low": "low",
+  "settings_quality_medium": "medium",
+  "settings_quality_high": "high",
+  "settings_quality_auto": "auto",
+
+  "settings_start_playing_label": "Playing on start",
+  "settings_start_playing_start": "on (play)",
+  "settings_start_playing_stop": "off (stop)",
+  "settings_start_playing_last": "last mode",
+
+  "settings_lang_label": "Language",
+  "settings_lang_ru": "russian",
+  "settings_lang_be": "belorussian",
+  "settings_lang_en": "english",
+  "settings_lang_system": "system"
 }
