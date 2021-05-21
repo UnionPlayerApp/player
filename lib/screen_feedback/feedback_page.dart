@@ -7,16 +7,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:union_player_app/screen_feedback/feedback_bloc.dart';
 import 'package:union_player_app/screen_feedback/feedback_state.dart';
 import 'package:union_player_app/utils/app_logger.dart';
-import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/ui/app_theme.dart';
 import 'package:union_player_app/utils/widgets/no_divider_banner.dart';
+import 'package:union_player_app/utils/widgets/feedback_snapping_sheet.dart';
 import 'package:webview_flutter/platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:koin_flutter/koin_flutter.dart';
 import 'feedback_event.dart';
+
 
 class FeedbackPage extends StatelessWidget {
   final _webViewKey = UniqueKey();
@@ -43,55 +43,41 @@ class FeedbackPage extends StatelessWidget {
   Widget _createBannerIfNotHidden(BuildContext context, FeedbackState state) {
     Widget widget;
     if (state.hasBanner) {
-      final radius = Radius.circular(12.w);
-      widget =
-          Column(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(radius),
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                        color: Colors.black54,
-                        blurRadius: 5.h,
-                    )
-                  ],
-                ),
-                child:
-                   ClipRRect(
-                      borderRadius: BorderRadius.only(bottomLeft: radius, bottomRight: radius) ,
-                      child: NoDividerBanner(
-                        Text(translate(StringKeys.message_us, context)),
-                        CircleAvatar(child: Icon(Icons.mail_rounded)),
-                        [
-                          TextButton(
-                            child: Text(
-                              translate(StringKeys.hide, context),
-                              style: TextStyle(color: primaryDarkColor),
-                            ),
-                            onPressed: () {
-                              _hideBanner(context, state);
-                            },
-                          ),
-                          TextButton(
-                            child: Text(
-                                translate(StringKeys.write, context),
-                                style: TextStyle(color: primaryDarkColor),
-                            ),
-                            onPressed: () {
-                              _writeEmailBottomPressed(context);
-                            },
-                          ),
-                        ],
-                      )
-                    )
-                ),
-            ]
-          );
+      widget = FeedbackSnappingSheet(
+        _createSimpleSnappingSheetContent(context, state),
+      );
     } else {
       widget = Container();
     }
     return widget;
+  }
+  
+  Widget _createSimpleSnappingSheetContent(BuildContext context, FeedbackState state){
+    return
+      NoDividerBanner(
+        Text(translate(StringKeys.message_us, context)),
+        CircleAvatar(child: Icon(Icons.mail_rounded)),
+        [
+          TextButton(
+            child: Text(
+              translate(StringKeys.hide, context),
+              style: TextStyle(color: primaryDarkColor),
+            ),
+            onPressed: () {
+              _hideBanner(context, state);
+            },
+          ),
+          TextButton(
+            child: Text(
+                translate(StringKeys.write, context),
+                style: TextStyle(color: primaryDarkColor),
+            ),
+            onPressed: () {
+              _writeEmailBottomPressed(context);
+            },
+          ),
+        ],
+      );
   }
 
   void _hideBanner(BuildContext context, FeedbackState state){
@@ -151,20 +137,7 @@ class FeedbackPage extends StatelessWidget {
   }
 
   Widget _loadAboutInfoWidget(BuildContext context, WebViewState state) {
-    if (state.hasBanner) {
-      return  Container(
-          padding: EdgeInsets.only(top: bannerHeight),
-          child: _createWebView(context, state));
-    } else return _createWebView(context, state);
-  }
-
-  Widget _createWebView(BuildContext context, WebViewState state){
-    if (state.hasBanner) {
-      return ClipRRect(
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(12.w), topRight: Radius.circular(12.w)) ,
-          child: _createStackWithWebView(context, state),
-      );
-    } else return _createStackWithWebView(context, state);
+    return _createStackWithWebView(context, state);
   }
 
   _createStackWithWebView(BuildContext context, WebViewState state){

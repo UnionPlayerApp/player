@@ -29,6 +29,8 @@ final EdgeInsets programBodyTopPadding = EdgeInsets.only(top: 10.h);
 
 // FeedbackScreen
 final double bannerHeight = 120.0;
+final double grabbingHeight = 30.0;
+final double appBarHeight = 100.0;
 final EdgeInsets textFormFieldPadding = EdgeInsets.symmetric(horizontal: 10.w) + EdgeInsets.only(top: 15.h);
 
 
