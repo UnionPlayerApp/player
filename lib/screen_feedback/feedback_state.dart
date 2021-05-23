@@ -1,15 +1,14 @@
 import 'package:equatable/equatable.dart';
 
 abstract class FeedbackState extends Equatable {
-  final bool hasBanner = true;
 
   @override
-  List<Object> get props => [hasBanner];
+  List<Object> get props => [];
 }
 
 class AboutInfoUrlLoadAwaitState extends FeedbackState {
   @override
-  List<Object> get props => [hasBanner];
+  List<Object> get props => [];
 }
 
 abstract class WebViewState extends FeedbackState {
@@ -18,33 +17,30 @@ abstract class WebViewState extends FeedbackState {
 }
 
 class WebViewLoadAwaitState extends WebViewState{
-  final bool hasBanner;
   final String url;
   final int indexedStackPosition = 1;
 
-  WebViewLoadAwaitState(this.hasBanner, this.url);
+  WebViewLoadAwaitState(this.url);
 
   @override
-  List<Object> get props => [url, hasBanner];
+  List<Object> get props => [url];
 }
 
 class WebViewLoadSuccessState extends WebViewState{
-  final bool hasBanner;
   final String url;
   final int indexedStackPosition = 0;
 
-  WebViewLoadSuccessState(this.hasBanner, this.url);
+  WebViewLoadSuccessState(this.url);
 
   @override
-  List<Object> get props => [indexedStackPosition, hasBanner];
+  List<Object> get props => [indexedStackPosition];
 }
 
 class WebViewLoadErrorState extends FeedbackState{
-  final bool hasBanner;
   final String errorType;
 
-  WebViewLoadErrorState(this.hasBanner, this.errorType);
+  WebViewLoadErrorState(this.errorType);
 
   @override
-  List<Object> get props => [hasBanner, errorType];
+  List<Object> get props => [errorType];
 }

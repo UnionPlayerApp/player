@@ -20,14 +20,6 @@ class GotCurrentLocaleEvent extends FeedbackEvent {
 
 class WriteEmailButtonPressedEvent extends FeedbackEvent {}
 
-class HideBannerButtonPressedEvent extends FeedbackEvent {
-  final FeedbackState state;
-  HideBannerButtonPressedEvent(this.state);
-
-  @override
-  List<Object?> get props => [state];
-}
-
 class WebViewLoadStartedEvent extends FeedbackEvent {
   final String url;
   WebViewLoadStartedEvent(this.url);
