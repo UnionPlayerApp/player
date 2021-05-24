@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
@@ -28,7 +29,7 @@ final EdgeInsets programTextLeftPadding = EdgeInsets.only(left: 10.w);
 final EdgeInsets programBodyTopPadding = EdgeInsets.only(top: 10.h);
 
 // FeedbackScreen
-final double bannerHeight = 120.0;
-final EdgeInsets textFormFieldPadding = EdgeInsets.symmetric(horizontal: 10.w) + EdgeInsets.only(top: 15.h);
+final double bannerHeight = AppBar().preferredSize.height; // bannerHeight = app bar height
+final Radius bannerBorderRadius = Radius.circular(10.0);
 
 

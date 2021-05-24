@@ -31,8 +31,14 @@ class FeedbackPage extends StatelessWidget {
         return
         Stack(
           children: [
-            _getCurrentStateWidget(context, state),
-            _createBannerIfNotHidden(context, state),
+            Positioned(
+                top: (bannerHeight - bannerBorderRadius.y),
+                left: 0.0,
+                right: 0.0,
+                bottom: 0.0,
+                child: _getCurrentStateWidget(context, state)),
+            Positioned(
+                child: _createBanner(context, state)),
           ]
         );
     },
@@ -40,66 +46,42 @@ class FeedbackPage extends StatelessWidget {
   );
   }
 
-  Widget _createBannerIfNotHidden(BuildContext context, FeedbackState state) {
-    Widget widget;
-    if (state.hasBanner) {
-      final radius = Radius.circular(12.w);
-      widget =
-          Column(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(radius),
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                        color: Colors.black54,
-                        blurRadius: 5.h,
-                    )
-                  ],
-                ),
-                child:
-                   ClipRRect(
-                      borderRadius: BorderRadius.only(bottomLeft: radius, bottomRight: radius) ,
-                      child: NoDividerBanner(
-                        Text(translate(StringKeys.message_us, context)),
-                        CircleAvatar(child: Icon(Icons.mail_rounded)),
-                        [
-                          TextButton(
-                            child: Text(
-                              translate(StringKeys.hide, context),
-                              style: TextStyle(color: primaryDarkColor),
-                            ),
-                            onPressed: () {
-                              _hideBanner(context, state);
-                            },
-                          ),
-                          TextButton(
-                            child: Text(
-                                translate(StringKeys.write, context),
-                                style: TextStyle(color: primaryDarkColor),
-                            ),
-                            onPressed: () {
-                              _writeEmailBottomPressed(context);
-                            },
-                          ),
-                        ],
-                      )
-                    )
-                ),
-            ]
-          );
-    } else {
-      widget = Container();
-    }
-    return widget;
-  }
-
-  void _hideBanner(BuildContext context, FeedbackState state){
-    // context.read<FeedbackBloc>().add(HideBannerButtonPressedEvent(state));
-    BlocProvider.of<FeedbackBloc>(context).add(HideBannerButtonPressedEvent(state));
-    _logger.logDebug("hideBanner button pressed,"
-        " \n State: ${state.runtimeType},"
-        " \n Bloc: ${context.read<FeedbackBloc>().toString()}");
+  Widget _createBanner(BuildContext context, FeedbackState state) {
+    return
+      Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(bannerBorderRadius),
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                    color: Colors.black54,
+                    blurRadius: 5.h,
+                )
+              ],
+            ),
+            child:
+               ClipRRect(
+                  borderRadius: BorderRadius.only(bottomLeft: bannerBorderRadius, bottomRight: bannerBorderRadius) ,
+                  child: NoDividerBanner(
+                    Text(translate(StringKeys.message_us, context)),
+                    CircleAvatar(child: Icon(Icons.mail_rounded)),
+                    [
+                      TextButton(
+                        style: bannerButtonStyle(),
+                        child: Text(
+                            translate(StringKeys.write, context),
+                        ),
+                        onPressed: () {
+                          _writeEmailBottomPressed(context);
+                        },
+                      ),
+                    ],
+                  )
+                )
+            ),
+        ]
+      );
   }
 
   void _writeEmailBottomPressed(BuildContext context){
@@ -151,20 +133,7 @@ class FeedbackPage extends StatelessWidget {
   }
 
   Widget _loadAboutInfoWidget(BuildContext context, WebViewState state) {
-    if (state.hasBanner) {
-      return  Container(
-          padding: EdgeInsets.only(top: bannerHeight),
-          child: _createWebView(context, state));
-    } else return _createWebView(context, state);
-  }
-
-  Widget _createWebView(BuildContext context, WebViewState state){
-    if (state.hasBanner) {
-      return ClipRRect(
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(12.w), topRight: Radius.circular(12.w)) ,
-          child: _createStackWithWebView(context, state),
-      );
-    } else return _createStackWithWebView(context, state);
+    return _createStackWithWebView(context, state);
   }
 
   _createStackWithWebView(BuildContext context, WebViewState state){

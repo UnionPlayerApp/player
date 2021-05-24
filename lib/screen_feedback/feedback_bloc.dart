@@ -9,7 +9,6 @@ import 'package:url_launcher/url_launcher.dart';
 class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
   final AppLogger _logger;
   final SystemData _systemData;
-  bool hasBanner = true;
 
   FeedbackBloc(this._logger, this._systemData)
       : super(AboutInfoUrlLoadAwaitState()) {
@@ -39,21 +38,17 @@ class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
       yield AboutInfoUrlLoadAwaitState();
     }
     if (event is GotCurrentLocaleEvent){
-      yield await _getAboutInfoUrl(event.locale, hasBanner);
+      yield await _getAboutInfoUrl(event.locale);
     }
     if (event is WebViewLoadStartedEvent){
-      yield WebViewLoadAwaitState(hasBanner, event.url);
+      yield WebViewLoadAwaitState(event.url);
     }
     if(event is WebViewLoadSuccessEvent){
-      yield WebViewLoadSuccessState(hasBanner, event.url);
+      yield WebViewLoadSuccessState(event.url);
     }
     if(event is WebViewLoadErrorEvent){
       log("WebViewLoadErrorEvent is processing...");
-      yield WebViewLoadErrorState(hasBanner,  event.errorDescription);
-    }
-    if (event is HideBannerButtonPressedEvent) {
-      hasBanner = false;
-      yield _getCurrentStateWithoutBanner(event.state);
+      yield WebViewLoadErrorState(event.errorDescription);
     }
     if (event is WriteEmailButtonPressedEvent) {
       // OPEN MAIL CLIENT
@@ -68,34 +63,14 @@ class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
     }
   }
 
-  Future<FeedbackState> _getAboutInfoUrl(String locale, bool hasBanner) async {
+  Future<FeedbackState> _getAboutInfoUrl(String locale) async {
     _logger.logDebug("Localization: $locale");
     switch (locale) {
-      case "be_BY": return WebViewLoadAwaitState(hasBanner, _systemData.aboutData.urlBy);
-      case "ru_RU": return WebViewLoadAwaitState(hasBanner, _systemData.aboutData.urlRu);
-      default : return WebViewLoadAwaitState(hasBanner, _systemData.aboutData.urlEn);
-      // default : return WebViewLoadAwaitState(hasBanner, "https://pub.dev");
+      case "be_BY": return WebViewLoadAwaitState(_systemData.aboutData.urlBy);
+      case "ru_RU": return WebViewLoadAwaitState(_systemData.aboutData.urlRu);
+      default : return WebViewLoadAwaitState(_systemData.aboutData.urlEn);
+      // default : return WebViewLoadAwaitState("https://belros.tv/about/contacts");
     }
-  }
-
-  FeedbackState _getCurrentStateWithoutBanner(FeedbackState state) {
-    FeedbackState newState;
-    if (state is WebViewLoadSuccessState ) {
-      newState = WebViewLoadSuccessState(
-        false, state.url);
-    }
-    else if (state is WebViewLoadErrorState) {
-      newState = WebViewLoadErrorState(
-          false, state.errorType);
-    }
-    else if (state is WebViewLoadAwaitState) {
-      newState = WebViewLoadAwaitState(false,
-          state.url);
-    }
-    else {
-      newState = AboutInfoUrlLoadAwaitState();
-    }
-    return newState;
   }
 
 }
