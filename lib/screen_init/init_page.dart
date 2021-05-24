@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -175,7 +176,7 @@ class _InitPageState extends State<InitPage> {
               title: 'Union Radio Player',
               // theme: ThemeData(primarySwatch: Colors.blueGrey),
               theme: buildUnionRadioTheme(),
-              home: homePage,
+              home: AudioServiceWidget(child: homePage),
             ));
   }
 }

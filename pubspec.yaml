@@ -10,6 +10,7 @@ environment:
 
 dependencies:
   audio_session:
+  audio_service:
   cloud_firestore:
   connectivity: ^3.0.3
   cupertino_icons: ^1.0.2
