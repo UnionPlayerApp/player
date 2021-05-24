@@ -28,9 +28,17 @@ TextTheme _buildUnionPlayerTextTheme(TextTheme base) {
   );
 }
 
+ButtonStyle bannerButtonStyle(){
+  return ButtonStyle(
+      foregroundColor: MaterialStateProperty.all<Color>(
+          colorOnSecondaryWithAlfa),
+  );
+}
+
 MaterialBannerThemeData _buildUnionPlayerBannerTheme(MaterialBannerThemeData base){
   return base.copyWith(
     backgroundColor: primaryLightColor,
+    contentTextStyle: TextStyle(color: colorOnSecondaryWithAlfa),
   );
 }
 
@@ -67,6 +75,7 @@ const Color errorColor = Color(0xFFC5032B);
 
 const Color colorOnPrimary = Colors.white;
 const Color colorOnSecondary = Colors.white;
+const Color colorOnSecondaryWithAlfa = Color(0xCEFFFFFF);
 // const Color colorOnSecondary = Color(0xFF000000);
 
 const Color backgroundColor = Color(0xFFF1F1F1);

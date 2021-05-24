@@ -68,9 +68,9 @@ class FeedbackPage extends StatelessWidget {
                     CircleAvatar(child: Icon(Icons.mail_rounded)),
                     [
                       TextButton(
+                        style: bannerButtonStyle(),
                         child: Text(
                             translate(StringKeys.write, context),
-                            style: TextStyle(color: primaryDarkColor),
                         ),
                         onPressed: () {
                           _writeEmailBottomPressed(context);
