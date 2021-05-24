@@ -40,9 +40,8 @@ class PlayerTask extends BackgroundAudioTask {
 
     try {
       await _player.setAudioSource(AudioSource.uri(Uri.parse(mediaItem.id)));
-      onPlay();
     } catch (e) {
-      log("Audio source error: $e", name: LOG_TAG);
+      log("Audio source init error: $e", name: LOG_TAG);
       onStop();
     }
   }
