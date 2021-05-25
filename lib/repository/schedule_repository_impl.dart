@@ -9,6 +9,7 @@ import 'package:union_player_app/repository/schedule_item_raw.dart';
 import 'package:union_player_app/repository/schedule_repository_state.dart';
 import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/core/file_utils.dart';
 
 const _ATTEMPT_MAX = 5;
 
@@ -91,7 +92,7 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
     _items.clear();
 
     try {
-      file = await loadScheduleFile(_systemData.xmlData.url);
+      file = await loadRemoteFile(_systemData.xmlData.url);
       _logger.logDebug("Load schedule file success. File = $file");
     } catch (error) {
       final msg = "Load schedule file error. Url = ${_systemData.xmlData.url} ";

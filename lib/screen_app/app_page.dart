@@ -170,9 +170,6 @@ class _AppState extends State<AppPage> {
   Widget _createPage(AppState state) {
     switch (state.navIndex) {
       case 0:
-        // return BlocProvider(
-        //     create: (context) => get<MainBloc>(),
-        //     child: get<MainPage>());
         return BlocProvider.value(
             value: get<MainBloc>(), child: get<MainPage>());
       case 1:

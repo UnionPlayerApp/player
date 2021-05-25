@@ -22,24 +22,22 @@ class PlayerTask extends BackgroundAudioTask {
   Future<void> onStop() async {
     log("AudioPlayerTask.onStop()", name: LOG_TAG);
     await _player.dispose();
-    _eventSubscription.cancel();
+    await _eventSubscription.cancel();
     await _broadcastState();
     await super.onStop();
   }
 
   @override
-  Future<void> onPlay() => _player.play();
+  Future<void> onPlay() async => await _player.play();
 
   @override
-  Future<void> onPause() => _player.pause();
-
+  Future<void> onPause() async => await _player.pause();
 
   @override
   Future<void> onPlayMediaItem(MediaItem mediaItem) async {
-    AudioServiceBackground.setMediaItem(mediaItem);
-
     try {
       await _player.setAudioSource(AudioSource.uri(Uri.parse(mediaItem.id)));
+      await AudioServiceBackground.setMediaItem(mediaItem);
     } catch (e) {
       log("Audio source init error: $e", name: LOG_TAG);
       onStop();
@@ -50,7 +48,7 @@ class PlayerTask extends BackgroundAudioTask {
   Future<void> _broadcastState() async {
     await AudioServiceBackground.setState(
       controls: [
-        if (_player.playing) MediaControl.stop else MediaControl.play,
+        if (_player.playing) MediaControl.pause else MediaControl.play,
       ],
       androidCompactActions: [0],
       processingState: _getProcessingState(),

@@ -18,7 +18,7 @@ class AppNavEvent extends AppEvent {
 
 class AppPlayerEvent extends AppEvent {
   final bool playingState;
-  final ProcessingState processingState;
+  final AudioProcessingState processingState;
 
   AppPlayerEvent(this.playingState, this.processingState);
 
