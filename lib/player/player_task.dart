@@ -4,26 +4,37 @@ import 'dart:developer';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:union_player_app/repository/schedule_item_raw.dart';
+import 'package:union_player_app/repository/schedule_item_type.dart';
+import 'package:union_player_app/repository/schedule_repository_interface.dart';
+import 'package:union_player_app/repository/schedule_repository_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 
 class PlayerTask extends BackgroundAudioTask {
-  final _player = AudioPlayer();
-  late StreamSubscription<PlaybackEvent> _eventSubscription;
+  final AudioPlayer _player;
+  final IScheduleRepository _schedule;
+
+  late final StreamSubscription<PlayerState> _playerStateSubscription;
+  late final StreamSubscription<ScheduleRepositoryState> _scheduleStateSubscription;
+
+  PlayerTask(this._player, this._schedule);
 
   @override
   Future<void> onStart(Map<String, dynamic>? params) async {
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration.music());
 
-    _eventSubscription = _player.playbackEventStream.listen((event) => _broadcastState());
+    _playerStateSubscription = _player.playerStateStream.listen((state) => _broadcastPlayerState());
+    _scheduleStateSubscription = _schedule.stream().listen((state) => _broadcastScheduleState(state));
   }
 
   @override
   Future<void> onStop() async {
     log("AudioPlayerTask.onStop()", name: LOG_TAG);
+    await _scheduleStateSubscription.cancel();
+    await _playerStateSubscription.cancel();
     await _player.dispose();
-    await _eventSubscription.cancel();
-    await _broadcastState();
+    await _broadcastPlayerState();
     await super.onStop();
   }
 
@@ -44,8 +55,8 @@ class PlayerTask extends BackgroundAudioTask {
     }
   }
 
-  /// Broadcasts the current state to all clients.
-  Future<void> _broadcastState() async {
+  /// Broadcasts the current player state to all clients.
+  Future<void> _broadcastPlayerState() async {
     await AudioServiceBackground.setState(
       controls: [
         if (_player.playing) MediaControl.pause else MediaControl.play,
@@ -75,4 +86,51 @@ class PlayerTask extends BackgroundAudioTask {
         throw Exception("Invalid state: ${_player.processingState}");
     }
   }
+
+  Future<void> _broadcastScheduleState(ScheduleRepositoryState state) async {
+    if (state is ScheduleRepositoryLoadSuccessState) {
+      final queue = state.items.map((scheduleItem) => _mapScheduleItemRawToMediaItem(scheduleItem)).toList();
+      AudioServiceBackground.setQueue(queue);
+    }
+
+    if (state is ScheduleRepositoryLoadErrorState) {
+      AudioServiceBackground.sendCustomEvent(state.error);
+    }
+  }
+
+  MediaItem _mapScheduleItemRawToMediaItem(ScheduleItemRaw scheduleItem) {
+    final Map<String, dynamic> extras = {
+      "start": scheduleItem.start,
+      "guest": scheduleItem.guest,
+      "type": scheduleItem.type
+    };
+
+    return MediaItem(
+      id: '',
+      album: APP_INTERNATIONAL_TITLE,
+      artUri: scheduleItem.uri,
+      artist: scheduleItem.artist,
+      displayDescription: scheduleItem.description,
+      displaySubtitle: scheduleItem.artist,
+      displayTitle: scheduleItem.title,
+      duration: scheduleItem.duration,
+      extras: extras,
+      genre: scheduleItem.genre,
+      title: scheduleItem.title,
+    );
+  }
+}
+
+extension _ScheduleItemRawExtension on ScheduleItemRaw {
+
+  String get genre {
+    switch (this.type) {
+      case ScheduleItemType.music: return "music";
+      case ScheduleItemType.news: return "news";
+      case ScheduleItemType.talk: return "talk";
+      default: return "unknown";
+    }
+  }
+
+  Uri? get uri => (this.imageUrl == null) ? null : Uri.parse(this.imageUrl!);
 }

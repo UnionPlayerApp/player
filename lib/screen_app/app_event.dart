@@ -27,7 +27,7 @@ class AppPlayerEvent extends AppEvent {
 }
 
 class AppScheduleEvent extends AppEvent {
-  final List<ScheduleItemRaw>? items;
+  final List<MediaItem>? items;
 
   AppScheduleEvent(this.items);
 

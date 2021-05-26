@@ -4,9 +4,6 @@ import 'package:audio_service/audio_service.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:union_player_app/model/system_data/system_data.dart';
-import 'package:union_player_app/repository/schedule_item_raw.dart';
-import 'package:union_player_app/repository/schedule_repository_interface.dart';
-import 'package:union_player_app/repository/schedule_repository_state.dart';
 import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 
@@ -15,44 +12,54 @@ part 'app_event.dart';
 part 'app_state.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
-  final IScheduleRepository _repository;
   final AppLogger _logger;
   final SystemData _systemData;
 
-  // int _lastPositionChecked = 0;
-  // int _currentStreamId = ID_STREAM_MEDIUM;
-  final List<StreamSubscription> _subscriptions = List.empty(growable: true);
+  late final StreamSubscription _customSubscription;
+  late final StreamSubscription _playerSubscription;
+  late final StreamSubscription _queueSubscription;
 
-  AppBloc(this._repository, this._logger, this._systemData)
+  AppBloc(this._logger, this._systemData)
       : super(AppState(0, false, AudioProcessingState.connecting)) {
     // Timer.periodic(Duration(seconds: PLAYER_BUFFER_CHECK_DURATION),
     //     (Timer t) => _checkForBufferLoading());
 
-    log("AppBloc() => repository subscribe invoke", name: LOG_TAG);
-    _subscriptions.add(_repository.stream().listen((state) {
-      if (state is ScheduleRepositoryLoadSuccessState) {
-        log("repository.stream().listen() => Load SUCCESS ${state.items.length} items", name: LOG_TAG);
-        add(AppScheduleEvent(state.items));
-      }
-      if (state is ScheduleRepositoryLoadErrorState) {
-        log("repository.stream().listen() => Load ERROR ${state.error}", name: LOG_TAG);
-        add(AppScheduleEvent(null));
-      }
-    }));
+    log("AppBloc() => subscribes to custom", name: LOG_TAG);
+    _customSubscription = AudioService.customEventStream.listen((error) => _onCustom(error));
+    log("AppBloc() => subscribes to queue", name: LOG_TAG);
+    _queueSubscription = AudioService.queueStream.listen((queue) => _onQueue(queue));
+    log("AppBloc() => subscribes to player", name: LOG_TAG);
+    _playerSubscription = AudioService.playbackStateStream.listen((state) => _onPlayer(state));
+  }
 
-    log("AppBloc() => AudioService.playbackStateStream subscribe invoke", name: LOG_TAG);
-    _subscriptions.add(AudioService.playbackStateStream.listen((playerState) {
-      log("AppBloc() => AudioService.playbackStateStream.listen() => playing = ${playerState.playing}, state = ${playerState.processingState}", name: LOG_TAG);
-      add(AppPlayerEvent(playerState.playing, playerState.processingState));
-    }));
+  void _onCustom(error) {
+    log("_onCustom => Queue load ERROR ($error))", name: LOG_TAG);
+    add(AppScheduleEvent(null));
+  }
+
+  void _onQueue(List<MediaItem>? queue) {
+      if (queue == null) {
+        log("_onQueue => Queue load ERROR (queue == null))", name: LOG_TAG);
+        add(AppScheduleEvent(null));
+      } else if (queue.isEmpty) {
+        log("_onQueue => Queue load ERROR (queue is empty))", name: LOG_TAG);
+        add(AppScheduleEvent(null));
+      } else {
+        log("_onQueue => Queue load SUCCESS ${queue.length} items", name: LOG_TAG);
+        add(AppScheduleEvent(queue));
+      }
+  }
+
+  void _onPlayer(PlaybackState state) {
+      log("AppBloc() => AudioService.playbackStateStream.listen() => playing = ${state.playing}, state = ${state.processingState}", name: LOG_TAG);
+      add(AppPlayerEvent(state.playing, state.processingState));
   }
 
   @override
   Future<void> close() async {
-    _subscriptions.forEach((subscription) {
-      subscription.cancel();
-    });
-    _subscriptions.clear();
+    _customSubscription.cancel();
+    _playerSubscription.cancel();
+    _queueSubscription.cancel();
     super.close();
   }
 
@@ -88,9 +95,9 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         final nextItem = event.items![1];
         yield AppState(state.navIndex, state.playingState, state.processingState,
             isScheduleLoaded: true,
-            presentArtist: presentItem.artist,
+            presentArtist: presentItem.artist!,
             presentTitle: presentItem.title,
-            nextArtist: nextItem.artist,
+            nextArtist: nextItem.artist!,
             nextTitle: nextItem.title);
       }
     }

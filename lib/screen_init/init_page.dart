@@ -29,8 +29,8 @@ class InitPage extends StatefulWidget {
 }
 
 class _InitPageState extends State<InitPage> {
-  late AppLogger _logger;
-  late SystemData _systemData;
+  late final AppLogger _logger;
+  late final SystemData _systemData;
 
   @override
   void initState() {
@@ -47,7 +47,7 @@ class _InitPageState extends State<InitPage> {
       throw Exception("Firebase initialize error: $error");
     }
 
-    late CollectionReference collection;
+    late final CollectionReference collection;
 
     try {
       collection = FirebaseFirestore.instance.collection('system_data');
@@ -89,7 +89,7 @@ class _InitPageState extends State<InitPage> {
 
     final assetPath = "assets/images/union_radio_logo_1.png";
 
-    late Uri artUri;
+    late final Uri artUri;
 
     try {
       final file = await loadAssetFile(assetPath);
@@ -120,10 +120,6 @@ class _InitPageState extends State<InitPage> {
     }
   }
 
-  // void _audioPlayerTaskEntrypoint() async {
-  //   AudioServiceBackground.run(() => PlayerTask());
-  // }
-
   Future _initApp() async => Future.wait([_initSystemData()]).then((v) {
         _logger.logDebug("init System data success");
         _initPlayer()
@@ -147,7 +143,7 @@ class _InitPageState extends State<InitPage> {
   Widget build(BuildContext context) => FutureBuilder(
         future: _initApp(),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-          late Widget homePage;
+          late final Widget homePage;
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasError) {
               homePage = getWithParam<InfoPage, List<String>>([

@@ -24,5 +24,7 @@ const int MAX_MESSAGE_LENGTH = 400;
 // Периодичность проверки первого элемента расписания на завершение, сек
 const SCHEDULE_CHECK_INTERVAL = 5;
 
-const AUDIO_NOTIFICATION_CHANNEL_NAME = "Union Radio 1 Channel";
-const AUDIO_NOTIFICATION_ICON = "mipmap/ic_launcher";
+const AUDIO_NOTIFICATION_CHANNEL_NAME = "Union Radio App Notification Channel";
+const AUDIO_NOTIFICATION_ICON = "drawable/ic_notification";
+
+const APP_INTERNATIONAL_TITLE = "Union Radio 1";

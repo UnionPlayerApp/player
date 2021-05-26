@@ -64,9 +64,9 @@ class SchedulePage extends StatelessWidget {
   }
 
   Widget _programElement(ScheduleItemView element) {
-    late Image image;
-    if (element.imageUrl != null && element.imageUrl != '') {
-      image = Image.network(element.imageUrl!,
+    late final Image image;
+    if (element.imageUri != null && element.imageUri!.path != '') {
+      image = Image.network(element.imageUri!.path,
           width: scheduleImageSide,
           height: scheduleImageSide,
           fit: BoxFit.cover);

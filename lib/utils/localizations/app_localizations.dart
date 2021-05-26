@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 class AppLocalizations {
-  late Locale locale;
+  late final Locale locale;
 
   AppLocalizations(this.locale);
 
@@ -13,7 +13,7 @@ class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  late Map<String, String> _localizedStrings;
+  late final Map<String, String> _localizedStrings;
 
   Future<bool> load() async {
     // Load the language JSON file from the "lang" folder

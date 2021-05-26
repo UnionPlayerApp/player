@@ -86,8 +86,8 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
   }
 
   Future<ScheduleRepositoryState> _load() async {
-    late File file;
-    late List<ScheduleItemRaw> newItems;
+    late final File file;
+    late final List<ScheduleItemRaw> newItems;
 
     _items.clear();
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'package:audio_service/audio_service.dart';
 import 'package:bloc/bloc.dart';
 import 'package:union_player_app/repository/schedule_item_type.dart';
 import 'package:union_player_app/repository/schedule_repository_interface.dart';
@@ -12,30 +13,37 @@ import 'package:union_player_app/utils/core/image_source_type.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 
 class MainBloc extends Bloc<MainEvent, MainState> {
-  late final StreamSubscription _subscription;
+  late final StreamSubscription _queueSubscription;
+  late final StreamSubscription _customSubscription;
 
-  final IScheduleRepository _repository;
+  MainBloc() : super(MainState()) {
+    _customSubscription = AudioService.customEventStream.listen((error) => _onCustom(error));
+    _queueSubscription = AudioService.queueStream.listen((queue) => _onQueue(queue));
+  }
 
-  MainBloc(this._repository) : super(MainState()) {
-    _subscription = _repository.stream().listen((state) {
-      log("MainBloc => repository state changed", name: LOG_TAG);
-      if (state is ScheduleRepositoryLoadSuccessState) {
-        log("MainBloc => repository state changed => state is SUCCESS",
-            name: LOG_TAG);
-        add(MainEvent(true, scheduleItems: state.items));
-      }
-      if (state is ScheduleRepositoryLoadErrorState) {
-        log("MainBloc => repository state changed => state is ERROR",
-            name: LOG_TAG);
-        add(MainEvent(false));
-      }
-    });
+  void _onCustom(error) {
+    log("MainBloc => repository state changed => state is ERROR", name: LOG_TAG);
+    add(MainEvent(false, loadingError: error));
+  }
+
+  _onQueue(List<MediaItem>? queue) {
+    if (queue == null) {
+      log("MainBloc._onQueue => Queue load ERROR (queue == null))", name: LOG_TAG);
+      _onCustom("Schedule load error: queue is null");
+    } else if (queue.isEmpty) {
+      log("MainBloc._onQueue => Queue load ERROR (queue is empty))", name: LOG_TAG);
+      _onCustom("Schedule load error: queue is empty");
+    } else {
+      log("MainBloc._onQueue => Queue load SUCCESS ${queue.length} items", name: LOG_TAG);
+      add(MainEvent(true, scheduleItems: queue));
+    }
   }
 
   @override
   Future<void> close() {
     log("MainBloc => close()", name: LOG_TAG);
-    _subscription.cancel();
+    _customSubscription.cancel();
+    _queueSubscription.cancel();
     return super.close();
   }
 
@@ -59,7 +67,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
       if (item.type == ScheduleItemType.music) {
         isArtistVisible = true;
-        itemArtist = item.artist;
+        itemArtist = item.artist!;
       }
     }
 
@@ -76,4 +84,9 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
     yield state;
   }
+}
+
+extension _MediaItemExtension on MediaItem {
+
+  ScheduleItemType get type => this.extras!["type"];
 }

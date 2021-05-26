@@ -1,25 +1,42 @@
-import 'package:union_player_app/repository/schedule_item_raw.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:union_player_app/utils/core/date_time.dart';
 import 'package:union_player_app/utils/core/duration.dart';
 
 class ScheduleItemView {
-  String start = "";
-  String finish = "";
+  String artist = "";
   String duration = "";
+  String finish = "";
+  String start = "";
   String title = "";
   String? description;
-  String artist = "";
   String? guest;
-  String? imageUrl;
+  Uri? imageUri;
 
-  ScheduleItemView(ScheduleItemRaw itemRaw) {
-    this.start = formatDateTime(itemRaw.start);
-    this.finish = formatDateTime(itemRaw.start.add(itemRaw.duration));
-    this.duration = formatDuration(itemRaw.duration);
-    this.title = itemRaw.title;
-    this.artist = itemRaw.artist;
-    this.description = itemRaw.description;
-    this.guest = itemRaw.guest;
-    this.imageUrl = itemRaw.imageUrl;
+  // ScheduleItemView(ScheduleItemRaw itemRaw) {
+  //   this.start = formatDateTime(itemRaw.start);
+  //   this.finish = formatDateTime(itemRaw.start.add(itemRaw.duration));
+  //   this.duration = formatDuration(itemRaw.duration);
+  //   this.title = itemRaw.title;
+  //   this.artist = itemRaw.artist;
+  //   this.description = itemRaw.description;
+  //   this.guest = itemRaw.guest;
+  //   this.imageUrl = itemRaw.imageUrl;
+  // }
+
+  ScheduleItemView(MediaItem item) {
+    this.artist = item.artist ?? "";
+    this.description = item.displayDescription;
+    this.duration = formatDuration(item.duration!);
+    this.finish = formatDateTime(item.start.add(item.duration!));
+    this.guest = item.guest;
+    this.imageUri = item.artUri;
+    this.start = formatDateTime(item.start);
+    this.title = item.title;
   }
+}
+
+extension _MediaItemExtension on MediaItem {
+
+  DateTime get start => this.extras!["start"];
+  String get guest => this.extras!["guest"];
 }
