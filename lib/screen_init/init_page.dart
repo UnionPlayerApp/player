@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,10 +10,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/model/system_data/system_data.dart';
-import 'package:union_player_app/player/player_task.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_app/app_page.dart';
-import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/file_utils.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
@@ -29,14 +26,12 @@ class InitPage extends StatefulWidget {
 }
 
 class _InitPageState extends State<InitPage> {
-  late final AppLogger _logger;
   late final SystemData _systemData;
 
   @override
   void initState() {
     super.initState();
 
-    _logger = get<AppLogger>();
     _systemData = get<SystemData>();
   }
 
@@ -85,7 +80,7 @@ class _InitPageState extends State<InitPage> {
   }
 
   Future _initPlayer() async {
-    _logger.logDebug(_systemData.streamData.streamMedium);
+    log(_systemData.streamData.streamMedium);
 
     final assetPath = "assets/images/union_radio_logo_1.png";
 
@@ -94,49 +89,51 @@ class _InitPageState extends State<InitPage> {
     try {
       final file = await loadAssetFile(assetPath);
       artUri = file.uri;
-    } catch(error) {
+    } catch (error) {
       log("Load asset file error: $error", name: LOG_TAG);
       artUri = Uri();
     }
 
     log("loadAssetFile -> assetPath = $assetPath, artUri = $artUri", name: LOG_TAG);
 
-    final mediaItem =
-        MediaItem(
-            id: _systemData.streamData.streamMedium,
-            album: "album: Union Radio 1",
-            title: "title: Current program",
-            genre: "genre: music",
-            artUri: artUri,
-            displayDescription: "display description",
-            displaySubtitle: "display subtitle",
-            displayTitle: "display title",
-        );
+    final mediaItem = MediaItem(
+      id: _systemData.streamData.streamMedium,
+      album: "album: Union Radio 1",
+      title: "title: Current program",
+      genre: "genre: music",
+      artUri: artUri,
+      displayDescription: "display description",
+      displaySubtitle: "display subtitle",
+      displayTitle: "display title",
+    );
 
     try {
       await AudioService.playMediaItem(mediaItem);
     } catch (error) {
-      _logger.logError("Audio stream load error", error);
+      throw Exception("Audio stream load error: $error");
     }
   }
 
-  Future _initApp() async => Future.wait([_initSystemData()]).then((v) {
-        _logger.logDebug("init System data success");
+  Future _initApp() async => _initSystemData().then((v) {
+        _handleSuccess("System data init success");
         _initPlayer()
-            .then((value) => _logger.logDebug("init Player success"))
-            .catchError((e) => _handleInitError("init Player error", e));
-      }).catchError((e) => _handleInitError("init Player error", e));
+            .then((value) => _handleSuccess("Player init success"))
+            .catchError((e) => _handleError("Player init error", e));
+      }).catchError((e) => _handleError("System data init error", e));
 
-  FutureOr<Null> _handleInitError(String msg, dynamic error) {
-    _logger.logError(msg, error);
-    // throw Exception("App initialisation error");
+  FutureOr<Null> _handleSuccess(String msg) {
+    log(msg, name: LOG_TAG);
+  }
+
+  FutureOr<Null> _handleError(String msg, dynamic error) {
+    log("$msg: $error", name: LOG_TAG);
+    throw Exception(["App initialisation error", error]);
   }
 
   @override
   void dispose() {
     super.dispose();
     AudioService.stop();
-    _logger.close();
   }
 
   @override
@@ -164,9 +161,6 @@ class _InitPageState extends State<InitPage> {
       );
 
   Widget _createAppPage(Widget homePage) {
-    return ScreenUtilInit(
-        designSize: Size(prototypeDeviceWidth, prototypeDeviceHeight),
-        builder: () => homePage
-    );
+    return ScreenUtilInit(designSize: Size(prototypeDeviceWidth, prototypeDeviceHeight), builder: () => homePage);
   }
 }

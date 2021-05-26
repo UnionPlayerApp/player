@@ -6,18 +6,17 @@ import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:union_player_app/repository/schedule_item_raw.dart';
 import 'package:union_player_app/repository/schedule_item_type.dart';
+import 'package:union_player_app/repository/schedule_repository_impl.dart';
 import 'package:union_player_app/repository/schedule_repository_interface.dart';
 import 'package:union_player_app/repository/schedule_repository_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 
 class PlayerTask extends BackgroundAudioTask {
-  final AudioPlayer _player;
-  final IScheduleRepository _schedule;
+  final _player = AudioPlayer();
+  final _schedule = ScheduleRepositoryImpl();
 
   late final StreamSubscription<PlayerState> _playerStateSubscription;
   late final StreamSubscription<ScheduleRepositoryState> _scheduleStateSubscription;
-
-  PlayerTask(this._player, this._schedule);
 
   @override
   Future<void> onStart(Map<String, dynamic>? params) async {
@@ -25,7 +24,7 @@ class PlayerTask extends BackgroundAudioTask {
     await session.configure(AudioSessionConfiguration.music());
 
     _playerStateSubscription = _player.playerStateStream.listen((state) => _broadcastPlayerState());
-    _scheduleStateSubscription = _schedule.stream().listen((state) => _broadcastScheduleState(state));
+    _scheduleStateSubscription = _schedule.stateStream().listen((state) => _broadcastScheduleState(state));
   }
 
   @override
@@ -34,6 +33,7 @@ class PlayerTask extends BackgroundAudioTask {
     await _scheduleStateSubscription.cancel();
     await _playerStateSubscription.cancel();
     await _player.dispose();
+    await _schedule.onStop();
     await _broadcastPlayerState();
     await super.onStop();
   }
