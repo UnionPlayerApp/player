@@ -1,4 +1,6 @@
 {
+  "app_title": "Union Radio 1",
+
   "empty": "",
 
   "message_us" : "Please write to us. We love reading your letters!",
@@ -39,5 +41,13 @@
   "settings_lang_ru": "russian",
   "settings_lang_be": "belorussian",
   "settings_lang_en": "english",
-  "settings_lang_system": "system"
+  "settings_lang_system": "system",
+
+  "app_is_not_init_1": "Application launch error",
+  "app_is_not_init_2": "Unfortunately, there is currently no way to launch the application.",
+  "app_is_not_init_3": "Experts are already working on fixing the problem.",
+  "app_is_not_init_4": "Please try to launch the application later.",
+  "app_is_not_init_5": "We apologize for any inconvenience this may cause!",
+
+  "app_init_title": "Application initialization..."
 }

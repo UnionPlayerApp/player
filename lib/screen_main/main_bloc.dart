@@ -3,8 +3,6 @@ import 'dart:developer';
 import 'package:audio_service/audio_service.dart';
 import 'package:bloc/bloc.dart';
 import 'package:union_player_app/repository/schedule_item_type.dart';
-import 'package:union_player_app/repository/schedule_repository_interface.dart';
-import 'package:union_player_app/repository/schedule_repository_state.dart';
 import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';

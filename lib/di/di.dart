@@ -15,7 +15,7 @@ import 'package:union_player_app/utils/widgets/loading_page.dart';
 
 final appModule = Module()
   ..factoryWithParam((scope, List<String> strings) => InfoPage(strings: strings))
-  ..factoryWithParam((scope, String title) => LoadingPage(title: title))
+  ..factoryWithParam((scope, String title) => ProgressPage(title: title))
   ..single((scope) => AppBloc(scope.get(), scope.get()))
   ..single((scope) => AppLogger())
   ..single((scope) => AppPage())

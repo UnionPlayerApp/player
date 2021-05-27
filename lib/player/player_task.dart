@@ -7,24 +7,50 @@ import 'package:just_audio/just_audio.dart';
 import 'package:union_player_app/repository/schedule_item_raw.dart';
 import 'package:union_player_app/repository/schedule_item_type.dart';
 import 'package:union_player_app/repository/schedule_repository_impl.dart';
-import 'package:union_player_app/repository/schedule_repository_interface.dart';
 import 'package:union_player_app/repository/schedule_repository_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/core/audio_quality_type.dart';
 
 class PlayerTask extends BackgroundAudioTask {
   final _player = AudioPlayer();
   final _schedule = ScheduleRepositoryImpl();
+
+  late final String _appTitle;
+  late final Uri _appArtUri;
+  late final String _urlStreamLow;
+  late final String _urlStreamMedium;
+  late final String _urlStreamHigh;
+  late final String _urlSchedule;
 
   late final StreamSubscription<PlayerState> _playerStateSubscription;
   late final StreamSubscription<ScheduleRepositoryState> _scheduleStateSubscription;
 
   @override
   Future<void> onStart(Map<String, dynamic>? params) async {
+    assert(params != null, "PlayerTask.onStart() params must be not null");
+
+    _appTitle = params!["app_title"];
+    _urlStreamLow = params["url_stream_low"];
+    _urlStreamMedium = params["url_stream_medium"];
+    _urlStreamHigh = params["url_stream_high"];
+    _urlSchedule = params["url_schedule"];
+
+    final appArtPath = params["app_art_path"];
+
+    try{
+      _appArtUri = Uri.parse(appArtPath);
+    } catch (error) {
+      _appArtUri = Uri();
+      log("PlayerTask.onStart() -> app art uri parse error: $error for path $appArtPath", name: LOG_TAG);
+    }
+
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration.music());
 
     _playerStateSubscription = _player.playerStateStream.listen((state) => _broadcastPlayerState());
     _scheduleStateSubscription = _schedule.stateStream().listen((state) => _broadcastScheduleState(state));
+
+    onCustomAction("", params);
   }
 
   @override
@@ -45,13 +71,27 @@ class PlayerTask extends BackgroundAudioTask {
   Future<void> onPause() async => await _player.pause();
 
   @override
-  Future<void> onPlayMediaItem(MediaItem mediaItem) async {
+  Future<void> onPlayMediaItem(MediaItem mediaItem) async => await AudioServiceBackground.setMediaItem(mediaItem);
+
+  // Set audio quality and start / pause audio stream
+  @override
+  Future<void> onCustomAction(String name, dynamic arguments) async {
+    final Map<String, dynamic> args = arguments;
+
+    final AudioQualityType audioQuality = args["audio_quality"];
+    final bool isPlaying = args["is_playing"];
+
+    final audioUrl = _mapAudioQualityToUrl(audioQuality);
     try {
-      await _player.setAudioSource(AudioSource.uri(Uri.parse(mediaItem.id)));
-      await AudioServiceBackground.setMediaItem(mediaItem);
-    } catch (e) {
-      log("Audio source init error: $e", name: LOG_TAG);
-      onStop();
+      await _player.setUrl(audioUrl);
+
+      if (isPlaying) {
+        await _player.play();
+      } else {
+        await _player.pause();
+      }
+    } catch (error) {
+      log("Audio stream ($audioUrl) load or play/pause error: $error");
     }
   }
 
@@ -107,8 +147,8 @@ class PlayerTask extends BackgroundAudioTask {
 
     return MediaItem(
       id: '',
-      album: APP_INTERNATIONAL_TITLE,
-      artUri: scheduleItem.uri,
+      album: _appTitle,
+      artUri: _appArtUri, // TODO: scheduleItem.uri,
       artist: scheduleItem.artist,
       displayDescription: scheduleItem.description,
       displaySubtitle: scheduleItem.artist,
@@ -119,16 +159,37 @@ class PlayerTask extends BackgroundAudioTask {
       title: scheduleItem.title,
     );
   }
+
+  String _mapAudioQualityToUrl(AudioQualityType audioQuality) {
+    switch (audioQuality) {
+      case AudioQualityType.low:
+        return _urlStreamLow;
+      case AudioQualityType.medium:
+        return _urlStreamMedium;
+      case AudioQualityType.high:
+        return _urlStreamHigh;
+      case AudioQualityType.undefined:
+        return _urlStreamMedium;
+      default:
+        {
+          log("Unknown AudioQualityType $audioQuality. Default quality (medium) used.", name: LOG_TAG);
+          return _urlStreamMedium;
+        }
+    }
+  }
 }
 
 extension _ScheduleItemRawExtension on ScheduleItemRaw {
-
   String get genre {
     switch (this.type) {
-      case ScheduleItemType.music: return "music";
-      case ScheduleItemType.news: return "news";
-      case ScheduleItemType.talk: return "talk";
-      default: return "unknown";
+      case ScheduleItemType.music:
+        return "music";
+      case ScheduleItemType.news:
+        return "news";
+      case ScheduleItemType.talk:
+        return "talk";
+      default:
+        return "unknown";
     }
   }
 

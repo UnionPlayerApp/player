@@ -28,3 +28,5 @@ const AUDIO_NOTIFICATION_CHANNEL_NAME = "Union Radio App Notification Channel";
 const AUDIO_NOTIFICATION_ICON = "drawable/ic_notification";
 
 const APP_INTERNATIONAL_TITLE = "Union Radio 1";
+
+const AUDIO_BACKGROUND_TASK_LOGO_ASSET = "assets/images/union_radio_logo_1.png";
