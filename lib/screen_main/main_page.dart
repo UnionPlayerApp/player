@@ -7,12 +7,13 @@ import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 
 class MainPage extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return Center(
       child: BlocBuilder<MainBloc, MainState>(
         builder: (context, state) => _createWidget(context, state),
-        bloc: BlocProvider.of<MainBloc>(context),
+        bloc: get<MainBloc>(),
       ),
     );
   }

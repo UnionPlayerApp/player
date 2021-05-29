@@ -11,24 +11,15 @@ import 'package:union_player_app/utils/core/duration.dart';
 import 'package:xml/xml.dart';
 
 List<ScheduleItemRaw> parseScheduleFile(File file) {
+  log("parseScheduleFile()", name: LOG_TAG);
   try {
-    log("XmlDocument.parse() - in", name: LOG_TAG);
     final document = XmlDocument.parse(file.readAsStringSync());
-    log("XmlDocument.parse() - out", name: LOG_TAG);
-
-    log("document.findAllElements() - in", name: LOG_TAG);
     final elements = document.findAllElements("ELEM");
-    log("document.findAllElements() - out", name: LOG_TAG);
-
     final newList = List<ScheduleItemRaw>.empty(growable: true);
+
     DateTime start = DateTime.now();
 
-    int index = 0;
-
     elements.forEach((element) {
-      index++;
-      log("elements.forEach() => index = $index", name: LOG_TAG);
-
       final type = _createType(element);
       if (type == null) return;
 
@@ -42,14 +33,9 @@ List<ScheduleItemRaw> parseScheduleFile(File file) {
       final title = _createTitle(element);
       final artist = _createArtist(element);
 
-      final item = ScheduleItemRaw(thisStart, duration, type, title, artist,
-          imageUrl: randomUrl());
-      newList.add(item);
+      final item = ScheduleItemRaw(thisStart, duration, type, title, artist, imageUrl: randomUrl());
 
-      if (index <= 2) {
-        log("type = $type, start = $thisStart, duration = $duration, title = $title, artist = $artist",
-            name: LOG_TAG);
-      }
+      newList.add(item);
     });
     return newList;
   } catch (error) {
@@ -82,8 +68,7 @@ DateTime? _createStart(XmlElement element, DateTime start) {
   if (eStartDate == null || eStartTime == null) return start;
 
   try {
-    log("_createStart() => date = ${eStartDate.innerText}, time = ${eStartTime.innerText}",
-        name: LOG_TAG);
+    log("_createStart() => date = ${eStartDate.innerText}, time = ${eStartTime.innerText}", name: LOG_TAG);
     return parseDateTime(eStartDate.innerText, eStartTime.innerText);
   } catch (error) {
     return null;
@@ -112,9 +97,5 @@ String _createTitle(XmlElement element) {
 }
 
 void logScheduleFile(File file) {
-  file
-      .openRead()
-      .transform(utf8.decoder)
-      .transform(LineSplitter())
-      .forEach((line) => log(line, name: LOG_TAG));
+  file.openRead().transform(utf8.decoder).transform(LineSplitter()).forEach((line) => log(line, name: LOG_TAG));
 }

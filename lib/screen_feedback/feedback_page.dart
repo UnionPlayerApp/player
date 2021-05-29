@@ -27,19 +27,21 @@ class FeedbackPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<FeedbackBloc, FeedbackState>(
-      builder: (BuildContext context, FeedbackState state) {
-        return Stack(children: [
-          Positioned(
-              top: (bannerHeight - bannerBorderRadius.y),
-              left: 0.0,
-              right: 0.0,
-              bottom: 0.0,
-              child: _getCurrentStateWidget(context, state)),
-          Positioned(child: _createBanner(context, state)),
-        ]);
-      },
+      builder: (context, state) => _createWidget(context, state),
       bloc: get<FeedbackBloc>(),
     );
+  }
+
+  Widget _createWidget(BuildContext context, FeedbackState state) {
+    return Stack(children: [
+      Positioned(
+          top: (bannerHeight - bannerBorderRadius.y),
+          left: 0.0,
+          right: 0.0,
+          bottom: 0.0,
+          child: _getCurrentStateWidget(context, state)),
+      Positioned(child: _createBanner(context, state)),
+    ]);
   }
 
   Widget _createBanner(BuildContext context, FeedbackState state) {

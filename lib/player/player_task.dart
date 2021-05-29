@@ -9,7 +9,6 @@ import 'package:union_player_app/repository/schedule_item_type.dart';
 import 'package:union_player_app/repository/schedule_repository_impl.dart';
 import 'package:union_player_app/repository/schedule_repository_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/core/audio_quality_type.dart';
 
 class PlayerTask extends BackgroundAudioTask {
   final _player = AudioPlayer();
@@ -28,6 +27,8 @@ class PlayerTask extends BackgroundAudioTask {
   @override
   Future<void> onStart(Map<String, dynamic>? params) async {
     assert(params != null, "PlayerTask.onStart() params must be not null");
+
+    log("PlayerTask.onStart()", name: LOG_TAG);
 
     _appTitle = params!["app_title"];
     _urlStreamLow = params["url_stream_low"];
@@ -49,6 +50,8 @@ class PlayerTask extends BackgroundAudioTask {
 
     _playerStateSubscription = _player.playerStateStream.listen((state) => _broadcastPlayerState());
     _scheduleStateSubscription = _schedule.stateStream().listen((state) => _broadcastScheduleState(state));
+
+    _schedule.onStart(_urlSchedule);
 
     onCustomAction("", params);
   }
@@ -78,8 +81,10 @@ class PlayerTask extends BackgroundAudioTask {
   Future<void> onCustomAction(String name, dynamic arguments) async {
     final Map<String, dynamic> args = arguments;
 
-    final AudioQualityType audioQuality = args["audio_quality"];
+    final int audioQuality = args["audio_quality"];
     final bool isPlaying = args["is_playing"];
+
+    log("PlayerTask.onCustomAction(), audio quality = $audioQuality, is playing = $isPlaying", name: LOG_TAG);
 
     final audioUrl = _mapAudioQualityToUrl(audioQuality);
     try {
@@ -97,6 +102,7 @@ class PlayerTask extends BackgroundAudioTask {
 
   /// Broadcasts the current player state to all clients.
   Future<void> _broadcastPlayerState() async {
+    log("_broadcastPlayerState()", name: LOG_TAG);
     await AudioServiceBackground.setState(
       controls: [
         if (_player.playing) MediaControl.pause else MediaControl.play,
@@ -128,6 +134,7 @@ class PlayerTask extends BackgroundAudioTask {
   }
 
   Future<void> _broadcastScheduleState(ScheduleRepositoryState state) async {
+    log("_broadcastScheduleState()", name: LOG_TAG);
     if (state is ScheduleRepositoryLoadSuccessState) {
       final queue = state.items.map((scheduleItem) => _mapScheduleItemRawToMediaItem(scheduleItem)).toList();
       AudioServiceBackground.setQueue(queue);
@@ -140,9 +147,9 @@ class PlayerTask extends BackgroundAudioTask {
 
   MediaItem _mapScheduleItemRawToMediaItem(ScheduleItemRaw scheduleItem) {
     final Map<String, dynamic> extras = {
-      "start": scheduleItem.start,
+      "start": scheduleItem.start.microsecondsSinceEpoch,
       "guest": scheduleItem.guest,
-      "type": scheduleItem.type
+      "type": scheduleItem.type.toInt
     };
 
     return MediaItem(
@@ -160,15 +167,15 @@ class PlayerTask extends BackgroundAudioTask {
     );
   }
 
-  String _mapAudioQualityToUrl(AudioQualityType audioQuality) {
+  String _mapAudioQualityToUrl(int audioQuality) {
     switch (audioQuality) {
-      case AudioQualityType.low:
+      case AUDIO_QUALITY_LOW:
         return _urlStreamLow;
-      case AudioQualityType.medium:
+      case AUDIO_QUALITY_MEDIUM:
         return _urlStreamMedium;
-      case AudioQualityType.high:
+      case AUDIO_QUALITY_HIGH:
         return _urlStreamHigh;
-      case AudioQualityType.undefined:
+      case AUDIO_QUALITY_UNDEFINED:
         return _urlStreamMedium;
       default:
         {

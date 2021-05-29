@@ -20,26 +20,26 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   }
 
   void _onCustom(error) {
-    log("MainBloc => repository state changed => state is ERROR", name: LOG_TAG);
+    log("MainBloc._onCustom(error), error = $error", name: LOG_TAG);
     add(MainEvent(false, loadingError: error));
   }
 
   _onQueue(List<MediaItem>? queue) {
     if (queue == null) {
-      log("MainBloc._onQueue => Queue load ERROR (queue == null))", name: LOG_TAG);
+      log("MainBloc._onQueue(queue), queue is null", name: LOG_TAG);
       _onCustom("Schedule load error: queue is null");
     } else if (queue.isEmpty) {
-      log("MainBloc._onQueue => Queue load ERROR (queue is empty))", name: LOG_TAG);
+      log("MainBloc._onQueue(queue), queue is empty", name: LOG_TAG);
       _onCustom("Schedule load error: queue is empty");
     } else {
-      log("MainBloc._onQueue => Queue load SUCCESS ${queue.length} items", name: LOG_TAG);
+      log("MainBloc._onQueue(queue), queue has ${queue.length} elements", name: LOG_TAG);
       add(MainEvent(true, scheduleItems: queue));
     }
   }
 
   @override
   Future<void> close() {
-    log("MainBloc => close()", name: LOG_TAG);
+    log("MainBloc.close()", name: LOG_TAG);
     _customSubscription.cancel();
     _queueSubscription.cancel();
     return super.close();
@@ -47,14 +47,15 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
   @override
   Stream<MainState> mapEventToState(MainEvent event) async* {
-    bool isTitleVisible = false;
-    bool isArtistVisible = false;
-    String itemTitle = "";
-    String itemArtist = "";
-    StringKeys itemLabelKey = StringKeys.information_is_loading;
+    log("MainBloc.mapEventToState()", name: LOG_TAG);
 
-    final imageSourceType = ImageSourceType.network;
-    final imageSource = randomUrl();
+    var isTitleVisible = false;
+    var isArtistVisible = false;
+    var itemTitle = "";
+    var itemArtist = "";
+    var itemLabelKey = StringKeys.information_is_loading;
+    var imageSourceType = ImageSourceType.network;
+    var imageSource = placeholderUrl();
 
     if (event.isScheduleLoaded && event.scheduleItems.isNotEmpty) {
       itemLabelKey = StringKeys.present_label;
@@ -63,10 +64,12 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       isTitleVisible = true;
       itemTitle = item.title;
 
-      if (item.type == ScheduleItemType.music) {
+       if (item.type.toScheduleItemType == ScheduleItemType.music) {
         isArtistVisible = true;
         itemArtist = item.artist!;
       }
+
+      imageSource = randomUrl();
     }
 
     final state = MainState(
@@ -78,13 +81,11 @@ class MainBloc extends Bloc<MainEvent, MainState> {
         imageSourceType: imageSourceType,
         imageSource: imageSource);
 
-    log("MainBloc => mapEventToState => state = $state", name: LOG_TAG);
-
     yield state;
   }
 }
 
 extension _MediaItemExtension on MediaItem {
 
-  ScheduleItemType get type => this.extras!["type"];
+  int get type => this.extras!["type"];
 }

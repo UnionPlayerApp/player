@@ -14,7 +14,6 @@ import 'package:union_player_app/player/player_task.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_app/app_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/core/audio_quality_type.dart';
 import 'package:union_player_app/utils/core/file_utils.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
@@ -30,7 +29,7 @@ class InitPage extends StatefulWidget {
 
 class _InitPageState extends State<InitPage> {
   late final SystemData _systemData;
-  late final String _appArtPath;
+  String _appArtPath = "";
 
   @override
   void initState() {
@@ -89,16 +88,18 @@ class _InitPageState extends State<InitPage> {
       _appArtPath = file.path;
     } catch (error) {
       log("Load asset file ($AUDIO_BACKGROUND_TASK_LOGO_ASSET) error: $error", name: LOG_TAG);
-      _appArtPath = "";
     }
   }
 
-  Future _initApp() async => _initSystemData().then((v) {
-        _handleSuccess("System data init success");
-        _initPlayer()
-            .then((value) => _handleSuccess("Player init success"))
-            .catchError((e) => _handleError("Player init error", e));
-      }).catchError((e) => _handleError("System data init error", e));
+  Future _initApp() async {
+    log("init app start", name: LOG_TAG);
+    await _initSystemData()
+        .then((v) => _handleSuccess("System data init success"))
+        .catchError((e) => _handleError("System data init error", e));
+    await _initPlayer()
+        .then((v) => _handleSuccess("Player init success"))
+        .catchError((e) => _handleError("Player init error", e));
+  }
 
   FutureOr<Null> _handleSuccess(String msg) {
     log(msg, name: LOG_TAG);
@@ -124,6 +125,7 @@ class _InitPageState extends State<InitPage> {
             if (snapshot.hasError) {
               homePage = getWithParam<InfoPage, List<String>>(_createInfoPageStrings());
             } else {
+              log("FutureBuilder() -> builder -> no error -> _createAudioServiceWidget()", name: LOG_TAG);
               homePage = _createAudioServiceWidget();
             }
           } else {
@@ -142,29 +144,39 @@ class _InitPageState extends State<InitPage> {
           stream: AudioService.runningStream, builder: (context, snapshot) => _createAppPage(context, snapshot)));
 
   Widget _createAppPage(BuildContext context, AsyncSnapshot<bool> snapshot) {
-    log("_createWidget() -> snapshot.connectionState = ${snapshot.connectionState}", name: LOG_TAG);
+    log("_InitPageState._createAppPage() -> snapshot: connectionState = ${snapshot.connectionState}, hasData = ${snapshot.hasData}, hasError = ${snapshot.hasError}", name: LOG_TAG);
+    if (snapshot.hasData) {
+      log("_InitPageState._createAppPage() -> snapshot: data = ${snapshot.data}", name: LOG_TAG);
+    }
+    if (snapshot.hasError) {
+      log("_InitPageState._createAppPage() -> snapshot: error = ${snapshot.error}", name: LOG_TAG);
+    }
     if (snapshot.connectionState == ConnectionState.active) {
+      log("_InitPageState._createAppPage() -> snapshot connectionState is active", name: LOG_TAG);
       if (AudioService.running) {
-        log("AudioService is running -> start AppPage", name: LOG_TAG);
-        return BlocProvider(create: (context) => get<AppBloc>(), child: get<AppPage>());
+        log("_InitPageState._createAppPage -> AudioService is running -> start AppPage", name: LOG_TAG);
+        return BlocProvider.value(value: get<AppBloc>(), child: get<AppPage>());
       } else {
-        log("AudioService is not running -> start AudioService -> start ProgressPage", name: LOG_TAG);
-        AudioService.start(
-          backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
-          params: _createPlayerTaskParams(),
-          androidArtDownscaleSize: const Size(200.0, 200.0),
-          androidNotificationChannelName: AUDIO_NOTIFICATION_CHANNEL_NAME,
-          androidNotificationColor: Colors.lightGreenAccent.value,
-          androidNotificationIcon: AUDIO_NOTIFICATION_ICON,
-          androidShowNotificationBadge: true,
-        );
+        log("_InitPageState._createAppPage() -> AudioService is not running -> start AudioService -> start ProgressPage", name: LOG_TAG);
+        _waitForAudioServiceStartComplete();
         return _createProgressPage();
       }
     } else {
-      log("snapshot connectionState is not active -> start ProgressPage", name: LOG_TAG);
+      log("_InitPageState._createAppPage() -> snapshot connectionState is not active -> start ProgressPage", name: LOG_TAG);
       return _createProgressPage();
     }
   }
+
+  Future<bool> _waitForAudioServiceStartComplete() async => await AudioService.start(
+        backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
+        params: _createPlayerTaskParams(),
+        androidArtDownscaleSize: const Size(200.0, 200.0),
+        androidNotificationChannelName: AUDIO_NOTIFICATION_CHANNEL_NAME,
+        androidNotificationColor: Colors.lightGreenAccent.value,
+        androidNotificationIcon: AUDIO_NOTIFICATION_ICON,
+        androidShowNotificationBadge: true,
+        androidEnableQueue: true,
+      );
 
   List<String> _createInfoPageStrings() => ([
         translate(StringKeys.app_is_not_init_1, context),
@@ -178,14 +190,14 @@ class _InitPageState extends State<InitPage> {
 
   Map<String, dynamic> _createPlayerTaskParams() {
     final Map<String, dynamic> params = {
-    "app_title": translate(StringKeys.app_title, context),
-    "app_art_path": _appArtPath,
-    "url_stream_low": _systemData.streamData.streamLow,
-    "url_stream_medium": _systemData.streamData.streamMedium,
-    "url_stream_high": _systemData.streamData.streamHigh,
-    "url_schedule": _systemData.xmlData.url,
-    "audio_quality": AudioQualityType.medium,
-    "is_playing": false,
+      "app_title": translate(StringKeys.app_title, context),
+      "app_art_path": _appArtPath,
+      "url_stream_low": _systemData.streamData.streamLow,
+      "url_stream_medium": _systemData.streamData.streamMedium,
+      "url_stream_high": _systemData.streamData.streamHigh,
+      "url_schedule": _systemData.xmlData.url,
+      "audio_quality": AUDIO_QUALITY_MEDIUM,
+      "is_playing": true,
     };
     return params;
   }

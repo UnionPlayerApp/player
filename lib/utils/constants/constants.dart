@@ -30,3 +30,8 @@ const AUDIO_NOTIFICATION_ICON = "drawable/ic_notification";
 const APP_INTERNATIONAL_TITLE = "Union Radio 1";
 
 const AUDIO_BACKGROUND_TASK_LOGO_ASSET = "assets/images/union_radio_logo_1.png";
+
+const AUDIO_QUALITY_UNDEFINED = 0;
+const AUDIO_QUALITY_LOW = 1;
+const AUDIO_QUALITY_MEDIUM = 2;
+const AUDIO_QUALITY_HIGH = 3;

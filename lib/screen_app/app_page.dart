@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -33,19 +34,20 @@ class _AppState extends State<AppPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppBloc, AppState>(
-        builder: (BuildContext context, AppState state) => WillPopScope(
-              onWillPop: () => _onWillPop(),
-              child: Scaffold(
-                appBar: _createAppBar(state),
-                body: _createPage(state),
-                extendBody: true,
-                floatingActionButton: _createFAB(state),
-                floatingActionButtonLocation:
-                    FloatingActionButtonLocation.centerDocked,
-                bottomNavigationBar: _createBottomNavigationBar(state),
-              ),
-            ));
+    return BlocBuilder<AppBloc, AppState>(builder: (BuildContext context, AppState state) {
+      log("AppState.build(), AppState = $state", name: LOG_TAG);
+      return WillPopScope(
+        onWillPop: () => _onWillPop(),
+        child: Scaffold(
+          appBar: _createAppBar(state),
+          body: _createPage(state),
+          extendBody: true,
+          floatingActionButton: _createFAB(state),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          bottomNavigationBar: _createBottomNavigationBar(state),
+        ),
+      );
+    });
   }
 
   BottomAppBar _createBottomNavigationBar(AppState state) => BottomAppBar(
@@ -60,10 +62,8 @@ class _AppState extends State<AppPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buttonAppBar(
-                        context, state, 0, Icons.radio, StringKeys.home),
-                    _buttonAppBar(
-                        context, state, 1, Icons.list_alt, StringKeys.schedule),
+                    _buttonAppBar(context, state, 0, Icons.radio, StringKeys.home),
+                    _buttonAppBar(context, state, 1, Icons.list_alt, StringKeys.schedule),
                   ],
                 ),
               ),
@@ -72,10 +72,8 @@ class _AppState extends State<AppPage> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buttonAppBar(context, state, 2,
-                        Icons.markunread_mailbox_outlined, StringKeys.feedback),
-                    _buttonAppBar(context, state, 3, Icons.settings_rounded,
-                        StringKeys.settings),
+                    _buttonAppBar(context, state, 2, Icons.markunread_mailbox_outlined, StringKeys.feedback),
+                    _buttonAppBar(context, state, 3, Icons.settings_rounded, StringKeys.settings),
                   ],
                 ),
               ),
@@ -84,8 +82,7 @@ class _AppState extends State<AppPage> {
         ),
       );
 
-  Expanded _buttonAppBar(BuildContext context, AppState state, int itemTab,
-      IconData iconTab, StringKeys nameTab) {
+  Expanded _buttonAppBar(BuildContext context, AppState state, int itemTab, IconData iconTab, StringKeys nameTab) {
     final color = state.navIndex == itemTab ? primaryColor : Colors.grey;
     return Expanded(
       child: MaterialButton(
@@ -110,10 +107,10 @@ class _AppState extends State<AppPage> {
     const duration = const Duration(seconds: 2);
     if (_backPressTime == null || now.difference(_backPressTime!) > duration) {
       _backPressTime = now;
-      showSnackBar(context, translate(StringKeys.press_again_to_exit, context),
-          duration: duration);
+      showSnackBar(context, translate(StringKeys.press_again_to_exit, context), duration: duration);
       return Future.value(false);
     }
+    AudioService.stop();
     return Future.value(true);
   }
 
@@ -126,14 +123,7 @@ class _AppState extends State<AppPage> {
   }
 
   Widget _createTitle(AppState state, Size size) {
-    log("_createTitle()", name: LOG_TAG);
-    log("state.isScheduleLoaded = ${state.isScheduleLoaded}", name: LOG_TAG);
-    log("state.presentArtist = ${state.presentArtist}", name: LOG_TAG);
-    log("state.presentTitle = ${state.presentTitle}", name: LOG_TAG);
-    log("state.nextArtist = ${state.nextArtist}", name: LOG_TAG);
-    log("state.nextTitle = ${state.nextTitle}", name: LOG_TAG);
-    final title =
-        state.isScheduleLoaded ? _loadedTitle(state) : _unloadedTitle();
+    final title = state.isScheduleLoaded ? _loadedTitle(state) : _unloadedTitle();
     final marquee = Marquee(
       text: title,
       startAfter: const Duration(seconds: 3),
@@ -170,27 +160,21 @@ class _AppState extends State<AppPage> {
   Widget _createPage(AppState state) {
     switch (state.navIndex) {
       case 0:
-        return BlocProvider.value(
-            value: get<MainBloc>(), child: get<MainPage>());
+        return BlocProvider.value(value: get<MainBloc>(), child: get<MainPage>());
       case 1:
-        return BlocProvider(
-            create: (context) => get<ScheduleBloc>(),
-            child: get<SchedulePage>());
+        return BlocProvider.value(value: get<ScheduleBloc>(), child: get<SchedulePage>());
       case 2:
-        return BlocProvider.value(
-            value: get<FeedbackBloc>(), child: get<FeedbackPage>());
+        return BlocProvider.value(value: get<FeedbackBloc>(), child: get<FeedbackPage>());
       case 3:
         return get<SettingsPage>();
       default:
-        return getWithParam<InfoPage, List<String>>(
-            ["Ошибка навигации", "Экран не создан?"]);
+        return getWithParam<InfoPage, List<String>>(["Ошибка навигации", "Экран не создан?"]);
     }
   }
 
   FloatingActionButton _createFAB(AppState state) => FloatingActionButton(
         onPressed: () => context.read<AppBloc>().add(AppFabEvent()),
         tooltip: 'Play / Stop',
-        child: Icon(
-            state.playingState ? Icons.stop_rounded : Icons.play_arrow_rounded),
+        child: Icon(state.playingState ? Icons.stop_rounded : Icons.play_arrow_rounded),
       );
 }

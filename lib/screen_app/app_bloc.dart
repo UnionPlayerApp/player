@@ -33,30 +33,31 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   void _onCustom(error) {
-    log("_onCustom => Queue load ERROR ($error))", name: LOG_TAG);
+    log("AppBloc._onCustom() => Queue load ERROR ($error))", name: LOG_TAG);
     add(AppScheduleEvent(null));
   }
 
   void _onQueue(List<MediaItem>? queue) {
       if (queue == null) {
-        log("_onQueue => Queue load ERROR (queue == null))", name: LOG_TAG);
+        log("AppBloc._onQueue(queue), queue is null", name: LOG_TAG);
         add(AppScheduleEvent(null));
       } else if (queue.isEmpty) {
-        log("_onQueue => Queue load ERROR (queue is empty))", name: LOG_TAG);
+        log("AppBloc._onQueue(queue), queue is empty", name: LOG_TAG);
         add(AppScheduleEvent(null));
       } else {
-        log("_onQueue => Queue load SUCCESS ${queue.length} items", name: LOG_TAG);
+        log("AppBloc._onQueue(queue), queue has ${queue.length} elements", name: LOG_TAG);
         add(AppScheduleEvent(queue));
       }
   }
 
   void _onPlayer(PlaybackState state) {
-      log("AppBloc() => AudioService.playbackStateStream.listen() => playing = ${state.playing}, state = ${state.processingState}", name: LOG_TAG);
+      log("AppBloc._onPlayer(), playing = ${state.playing}, state = ${state.processingState}", name: LOG_TAG);
       add(AppPlayerEvent(state.playing, state.processingState));
   }
 
   @override
   Future<void> close() async {
+    log("AppBloc.close()", name: LOG_TAG);
     _customSubscription.cancel();
     _playerSubscription.cancel();
     _queueSubscription.cancel();

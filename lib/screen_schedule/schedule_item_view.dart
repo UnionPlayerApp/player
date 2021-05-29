@@ -12,17 +12,6 @@ class ScheduleItemView {
   String? guest;
   Uri? imageUri;
 
-  // ScheduleItemView(ScheduleItemRaw itemRaw) {
-  //   this.start = formatDateTime(itemRaw.start);
-  //   this.finish = formatDateTime(itemRaw.start.add(itemRaw.duration));
-  //   this.duration = formatDuration(itemRaw.duration);
-  //   this.title = itemRaw.title;
-  //   this.artist = itemRaw.artist;
-  //   this.description = itemRaw.description;
-  //   this.guest = itemRaw.guest;
-  //   this.imageUrl = itemRaw.imageUrl;
-  // }
-
   ScheduleItemView(MediaItem item) {
     this.artist = item.artist ?? "";
     this.description = item.displayDescription;
@@ -37,6 +26,6 @@ class ScheduleItemView {
 
 extension _MediaItemExtension on MediaItem {
 
-  DateTime get start => this.extras!["start"];
+  DateTime get start => DateTime.fromMicrosecondsSinceEpoch(this.extras!["start"]);
   String get guest => this.extras!["guest"];
 }
