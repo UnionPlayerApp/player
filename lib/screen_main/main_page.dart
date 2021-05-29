@@ -7,21 +7,19 @@ import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 
 class MainPage extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: BlocBuilder<MainBloc, MainState>(
-        builder: (context, state) => _createWidget(context, state),
-        bloc: get<MainBloc>(),
-      ),
+    return BlocBuilder<MainBloc, MainState>(
+      builder: (context, state) => _createWidget(context, state),
+      bloc: get<MainBloc>(),
     );
   }
 
-  Widget _createWidget(BuildContext context, MainState state) => Column(
+  Widget _createWidget(BuildContext context, MainState state) => Center(
+          child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: _createStateRows(context, state),
-      );
+      ));
 
   List<Widget> _createStateRows(BuildContext context, MainState state) {
     final list = List<Widget>.empty(growable: true);
@@ -52,8 +50,7 @@ class MainPage extends StatelessWidget {
 
   Widget _createStateRow(BuildContext context, String stateStr) {
     final text = Text(stateStr, style: Theme.of(context).textTheme.bodyText2);
-    return Container(
-        margin: EdgeInsets.only(bottom: mainMarginBottom), child: text);
+    return Container(margin: EdgeInsets.only(bottom: mainMarginBottom), child: text);
   }
 
   Widget _createImageFromAssets(String imageSource) {
@@ -75,7 +72,6 @@ class MainPage extends StatelessWidget {
   }
 
   Widget _createContainer(Image image) {
-    return Container(
-        margin: EdgeInsets.only(bottom: mainMarginBottom), child: image);
+    return Container(margin: EdgeInsets.only(bottom: mainMarginBottom), child: image);
   }
 }

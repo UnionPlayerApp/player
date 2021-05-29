@@ -12,23 +12,25 @@ class SchedulePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ScheduleBloc, ScheduleState>(
-      builder: (BuildContext context, ScheduleState state) {
-        if (state is ScheduleLoadAwaitState) {
-          return _loadAwaitPage();
-        }
-        if (state is ScheduleLoadSuccessState) {
-          return _loadSuccessPage(context, state);
-        }
-        if (state is ScheduleLoadErrorState) {
-          return _loadErrorPage(context, state);
-        } else {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
+      builder: (context, state) => _createWidget(context, state),
       bloc: get<ScheduleBloc>(),
     );
+  }
+
+  Widget _createWidget(BuildContext context, ScheduleState state) {
+    if (state is ScheduleLoadAwaitState) {
+      return _loadAwaitPage();
+    }
+    if (state is ScheduleLoadSuccessState) {
+      return _loadSuccessPage(context, state);
+    }
+    if (state is ScheduleLoadErrorState) {
+      return _loadErrorPage(context, state);
+    } else {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
   }
 
   Widget _loadAwaitPage() {
