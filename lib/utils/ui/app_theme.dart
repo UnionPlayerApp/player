@@ -31,6 +31,7 @@ TextTheme _createTextTheme(TextTheme base) {
 MaterialBannerThemeData _createBannerTheme(MaterialBannerThemeData base) {
   return base.copyWith(
     backgroundColor: primaryLightColor,
+    contentTextStyle: TextStyle(color: colorOnSecondaryWithAlfa),
   );
 }
 
@@ -66,6 +67,7 @@ const Color errorColor = Color(0xFFC5032B);
 
 const Color colorOnPrimary = Colors.white;
 const Color colorOnSecondary = Colors.white;
+const Color colorOnSecondaryWithAlfa = Color(0xCEFFFFFF);
 
 const Color backgroundColor = Color(0xFFF1F1F1);
 const Color surfaceColor = Colors.white;

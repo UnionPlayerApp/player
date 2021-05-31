@@ -113,9 +113,9 @@ class FeedbackPage extends StatelessWidget {
   Widget _loadErrorWidget(BuildContext context, WebViewLoadErrorState state) {
     return Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-      Text("${translate(StringKeys.loading_error, context)}"),
-      Text(state.errorType),
-    ]));
+          Text("${translate(StringKeys.loading_error, context)}"),
+          Text(state.errorType),
+        ]));
   }
 
   Widget _loadAboutInfoWidget(BuildContext context, WebViewState state) {
