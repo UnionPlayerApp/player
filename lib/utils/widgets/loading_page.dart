@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class LoadingPage extends StatelessWidget {
+class ProgressPage extends StatelessWidget {
   final String title;
 
-  LoadingPage({Key? key, required this.title})
+  ProgressPage({Key? key, required this.title})
       : super(key: key);
 
   @override

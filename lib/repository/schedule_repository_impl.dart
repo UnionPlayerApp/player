@@ -2,40 +2,25 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:rxdart/rxdart.dart';
-import 'package:union_player_app/model/system_data/system_data.dart';
 import 'package:union_player_app/repository/schedule_file.dart';
 import 'package:union_player_app/repository/schedule_repository_interface.dart';
-import 'package:union_player_app/repository/schedule_item_raw.dart';
+import 'package:union_player_app/repository/schedule_item.dart';
 import 'package:union_player_app/repository/schedule_repository_state.dart';
-import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/core/file_utils.dart';
 
 const _ATTEMPT_MAX = 5;
 
 class ScheduleRepositoryImpl implements IScheduleRepository {
-  final AppLogger _logger;
-  final SystemData _systemData;
   final _subject = BehaviorSubject<ScheduleRepositoryState>(sync: true);
-  final _items = List<ScheduleItemRaw>.empty(growable: true);
+  final _items = List<ScheduleItem>.empty(growable: true);
   bool _isOpen = true;
 
-  ScheduleRepositoryImpl(this._logger, this._systemData) {
-    startStream();
-  }
-
   @override
-  List<ScheduleItemRaw> getItems() => _items;
+  Stream<ScheduleRepositoryState> stateStream() => _subject.stream;
 
-  @override
-  ScheduleItemRaw? getCurrentItem() {
-    return _firstItemIsCurrent() ? _items[0] : null;
-  }
-
-  @override
-  Stream<ScheduleRepositoryState> stream() => _subject.stream;
-
-  void startStream() async {
-    log("schedule repository ($this) stream() => start", name: LOG_TAG);
+  void onStart(String url) async {
+    log("schedule repository => onStart()", name: LOG_TAG);
 
     while (_isOpen) {
       ScheduleRepositoryState state;
@@ -49,7 +34,7 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
         }
 
         log("schedule repository stream() => _load() start, attempt = $attempt", name: LOG_TAG);
-        state  = await _load();
+        state = await _load(url);
         log("schedule repository stream() => _load() finish, attempt = $attempt", name: LOG_TAG);
       } while (state is ScheduleRepositoryLoadErrorState && attempt++ < _ATTEMPT_MAX);
 
@@ -63,8 +48,6 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
     }
   }
 
-  bool _firstItemIsCurrent() => (_secondsToNextLoad() >= 0);
-
   int _secondsToNextLoad() {
     if (_items.isEmpty) return 1;
 
@@ -73,38 +56,36 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
     final now = DateTime.now();
     final rest = finish.difference(now).inSeconds;
 
-    if (rest <= 0) {
-      log("rest = $rest", name: LOG_TAG);
-      log("start = ${currentElement.start}", name: LOG_TAG);
-      log("finish = $finish", name: LOG_TAG);
-      log("duration = ${currentElement.duration}", name: LOG_TAG);
-      log("now = $now", name: LOG_TAG);
-    }
+    log("schedule repository -> current start     = ${currentElement.start}", name: LOG_TAG);
+    log("schedule repository -> current finish    = $finish", name: LOG_TAG);
+    log("schedule repository -> current duration  = ${currentElement.duration}", name: LOG_TAG);
+    log("schedule repository -> now               = $now", name: LOG_TAG);
+    log("schedule repository -> rest to next load = ${rest > 0 ? rest : 1}", name: LOG_TAG);
 
-    return (rest > 0) ? rest : 1;
+    return rest > 0 ? rest : 1;
   }
 
-  Future<ScheduleRepositoryState> _load() async {
-    late File file;
-    late List<ScheduleItemRaw> newItems;
+  Future<ScheduleRepositoryState> _load(String url) async {
+    late final File file;
+    late final List<ScheduleItem> newItems;
 
     _items.clear();
 
     try {
-      file = await loadScheduleFile(_systemData.xmlData.url);
-      _logger.logDebug("Load schedule file success. File = $file");
+      file = await loadRemoteFile(url);
+      log("Schedule file load success -> File: $file", name: LOG_TAG);
     } catch (error) {
-      final msg = "Load schedule file error. Url = ${_systemData.xmlData.url} ";
-      _logger.logError(msg, error);
-      return ScheduleRepositoryLoadErrorState("$msg: $error");
+      final msg = "Schedule file load error -> Url: $url -> Error: $error";
+      log(msg, name: LOG_TAG);
+      return ScheduleRepositoryLoadErrorState(msg);
     }
 
     try {
       newItems = parseScheduleFile(file);
     } catch (error) {
-      final msg = "Parse schedule file error. Path = $file ";
-      _logger.logError(msg, error);
-      return ScheduleRepositoryLoadErrorState("$msg: $error");
+      final msg = "Parse schedule file error -> Path: $file -> Error: $error";
+      log(msg, name: LOG_TAG);
+      return ScheduleRepositoryLoadErrorState(msg);
     }
 
     _items.addAll(newItems);
@@ -113,8 +94,8 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
   }
 
   @override
-  void close() {
+  Future<void> onStop() async {
     _isOpen = false;
-    _subject.close();
+    await _subject.close();
   }
 }

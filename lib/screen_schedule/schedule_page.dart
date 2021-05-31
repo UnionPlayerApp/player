@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:koin_flutter/koin_flutter.dart';
@@ -12,23 +14,25 @@ class SchedulePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ScheduleBloc, ScheduleState>(
-      builder: (BuildContext context, ScheduleState state) {
-        if (state is ScheduleLoadAwaitState) {
-          return _loadAwaitPage();
-        }
-        if (state is ScheduleLoadSuccessState) {
-          return _loadSuccessPage(context, state);
-        }
-        if (state is ScheduleLoadErrorState) {
-          return _loadErrorPage(context, state);
-        } else {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
+      builder: (context, state) => _createWidget(context, state),
       bloc: get<ScheduleBloc>(),
     );
+  }
+
+  Widget _createWidget(BuildContext context, ScheduleState state) {
+    if (state is ScheduleLoadAwaitState) {
+      return _loadAwaitPage();
+    }
+    if (state is ScheduleLoadSuccessState) {
+      return _loadSuccessPage(context, state);
+    }
+    if (state is ScheduleLoadErrorState) {
+      return _loadErrorPage(context, state);
+    } else {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
   }
 
   Widget _loadAwaitPage() {
@@ -64,9 +68,10 @@ class SchedulePage extends StatelessWidget {
   }
 
   Widget _programElement(ScheduleItemView element) {
-    late Image image;
-    if (element.imageUrl != null && element.imageUrl != '') {
-      image = Image.network(element.imageUrl!,
+    late final Image image;
+    if (element.imageUri != null && element.imageUri!.path != '') {
+      final file = File.fromUri(element.imageUri!);
+      image = Image.file(file,
           width: scheduleImageSide,
           height: scheduleImageSide,
           fit: BoxFit.cover);
