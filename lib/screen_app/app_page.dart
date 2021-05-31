@@ -144,7 +144,7 @@ class _AppState extends State<AppPage> {
   }
 
   String _unloadedTitle() {
-    return translate(StringKeys.information_not_loaded, context);
+    return translate(StringKeys.information_is_loading, context);
   }
 
   Widget _createLeading() {

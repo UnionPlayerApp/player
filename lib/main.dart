@@ -1,3 +1,4 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:koin/koin.dart';
@@ -40,6 +41,6 @@ void main() {
     },
     onGenerateTitle: (context) => translate(StringKeys.app_title, context),
     theme: createAppTheme(),
-    home: InitPage(),
+    home: AudioServiceWidget(child: InitPage()),
   ));
 }

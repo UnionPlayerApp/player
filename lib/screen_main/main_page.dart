@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:koin_flutter/koin_flutter.dart';
@@ -30,6 +32,9 @@ class MainPage extends StatelessWidget {
     switch (state.imageSourceType) {
       case ImageSourceType.none:
         break;
+      case ImageSourceType.file:
+        list.add(_createImageFromFile(state.imageSource));
+        break;
       case ImageSourceType.network:
         list.add(_createImageFromNetwork(state.imageSource));
         break;
@@ -52,6 +57,16 @@ class MainPage extends StatelessWidget {
   Widget _createStateRow(BuildContext context, String stateStr) {
     final text = Text(stateStr, style: Theme.of(context).textTheme.bodyText2);
     return Container(margin: EdgeInsets.only(bottom: mainMarginBottom), child: text);
+  }
+
+  Widget _createImageFromFile(String imageSource) {
+    final file = File(imageSource);
+    return _createContainer(Image.file(
+      file,
+      width: mainImageSide,
+      height: mainImageSide,
+      fit: BoxFit.cover,
+    ));
   }
 
   Widget _createImageFromAssets(String imageSource) {

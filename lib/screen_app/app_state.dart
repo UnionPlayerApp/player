@@ -8,9 +8,8 @@ class AppState extends Equatable {
   final bool playingState;
   final String presentArtist;
   final String presentTitle;
-  final AudioProcessingState processingState;
 
-  const AppState(this.navIndex, this.playingState, this.processingState,
+  const AppState(this.navIndex, this.playingState,
       {this.isScheduleLoaded = false,
       this.presentTitle = "",
       this.presentArtist = "",
@@ -26,6 +25,5 @@ class AppState extends Equatable {
         playingState,
         presentArtist,
         presentTitle,
-        processingState,
       ];
 }

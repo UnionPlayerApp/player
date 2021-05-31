@@ -18,12 +18,11 @@ class AppNavEvent extends AppEvent {
 
 class AppPlayerEvent extends AppEvent {
   final bool playingState;
-  final AudioProcessingState processingState;
 
-  AppPlayerEvent(this.playingState, this.processingState);
+  AppPlayerEvent(this.playingState);
 
   @override
-  List<Object?> get props => [playingState, processingState];
+  List<Object?> get props => [playingState];
 }
 
 class AppScheduleEvent extends AppEvent {

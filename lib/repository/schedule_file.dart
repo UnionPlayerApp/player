@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:union_player_app/repository/schedule_item_raw.dart';
+import 'package:union_player_app/repository/schedule_item.dart';
 import 'package:union_player_app/repository/schedule_item_type.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/date_time.dart';
@@ -10,12 +10,12 @@ import 'package:union_player_app/utils/core/debug.dart';
 import 'package:union_player_app/utils/core/duration.dart';
 import 'package:xml/xml.dart';
 
-List<ScheduleItemRaw> parseScheduleFile(File file) {
+List<ScheduleItem> parseScheduleFile(File file) {
   log("parseScheduleFile()", name: LOG_TAG);
   try {
     final document = XmlDocument.parse(file.readAsStringSync());
     final elements = document.findAllElements("ELEM");
-    final newList = List<ScheduleItemRaw>.empty(growable: true);
+    final newList = List<ScheduleItem>.empty(growable: true);
 
     DateTime start = DateTime.now();
 
@@ -33,7 +33,7 @@ List<ScheduleItemRaw> parseScheduleFile(File file) {
       final title = _createTitle(element);
       final artist = _createArtist(element);
 
-      final item = ScheduleItemRaw(thisStart, duration, type, title, artist, imageUrl: randomUrl());
+      final item = ScheduleItem(thisStart, duration, type, title, artist, imageUrl: randomUrl());
 
       newList.add(item);
     });

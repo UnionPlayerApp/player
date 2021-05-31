@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:audio_service/audio_service.dart';
 import 'package:bloc/bloc.dart';
+import 'package:union_player_app/player/player_task.dart';
 import 'package:union_player_app/repository/schedule_item_type.dart';
 import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/core/debug.dart';
 import 'package:union_player_app/utils/core/image_source_type.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 
@@ -26,14 +26,14 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
   _onQueue(List<MediaItem>? queue) {
     if (queue == null) {
-      log("MainBloc._onQueue(queue), queue is null", name: LOG_TAG);
+      log("MainBloc._onQueue(queue) -> queue is null", name: LOG_TAG);
       _onCustom("Schedule load error: queue is null");
     } else if (queue.isEmpty) {
-      log("MainBloc._onQueue(queue), queue is empty", name: LOG_TAG);
+      log("MainBloc._onQueue(queue) -> queue is empty", name: LOG_TAG);
       _onCustom("Schedule load error: queue is empty");
     } else {
-      log("MainBloc._onQueue(queue), queue has ${queue.length} elements", name: LOG_TAG);
-      add(MainEvent(true, scheduleItems: queue));
+      log("MainBloc._onQueue(queue) -> queue has ${queue.length} items", name: LOG_TAG);
+      add(MainEvent(true, mediaItems: queue));
     }
   }
 
@@ -49,30 +49,38 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   Stream<MainState> mapEventToState(MainEvent event) async* {
     log("MainBloc.mapEventToState()", name: LOG_TAG);
 
+    var isScheduleLoaded = false;
     var isTitleVisible = false;
     var isArtistVisible = false;
     var itemTitle = "";
     var itemArtist = "";
     var itemLabelKey = StringKeys.information_is_loading;
-    var imageSourceType = ImageSourceType.network;
-    var imageSource = placeholderUrl();
+    var imageSourceType = ImageSourceType.assets;
+    var imageSource = LOGO_IMAGE;
 
-    if (event.isScheduleLoaded && event.scheduleItems.isNotEmpty) {
+    if (event.isScheduleLoaded && event.mediaItems.isNotEmpty) {
       itemLabelKey = StringKeys.present_label;
 
-      final item = event.scheduleItems[0];
-      isTitleVisible = true;
-      itemTitle = item.title;
+      final mediaItem = event.mediaItems[0];
 
-       if (item.type.toScheduleItemType == ScheduleItemType.music) {
+      isScheduleLoaded = true;
+      isTitleVisible = true;
+
+      itemTitle = mediaItem.title;
+
+      if (mediaItem.type.toScheduleItemType == ScheduleItemType.music) {
         isArtistVisible = true;
-        itemArtist = item.artist!;
+        itemArtist = mediaItem.artist!;
       }
 
-      imageSource = randomUrl();
+      if (mediaItem.artUri != null) {
+        imageSource = mediaItem.artUri!.path;
+        imageSourceType = ImageSourceType.file;
+      }
     }
 
     final state = MainState(
+        isScheduleLoaded: isScheduleLoaded,
         isTitleVisible: isTitleVisible,
         isArtistVisible: isArtistVisible,
         itemLabelKey: itemLabelKey,
@@ -83,9 +91,4 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
     yield state;
   }
-}
-
-extension _MediaItemExtension on MediaItem {
-
-  int get type => this.extras!["type"];
 }

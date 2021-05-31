@@ -1,18 +1,24 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
+import 'dart:math' as Math;
 
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:union_player_app/repository/schedule_item_raw.dart';
+import 'package:union_player_app/repository/schedule_item.dart';
 import 'package:union_player_app/repository/schedule_item_type.dart';
 import 'package:union_player_app/repository/schedule_repository_impl.dart';
 import 'package:union_player_app/repository/schedule_repository_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/core/file_utils.dart';
+import 'package:uuid/uuid.dart';
 
 class PlayerTask extends BackgroundAudioTask {
   final _player = AudioPlayer();
   final _schedule = ScheduleRepositoryImpl();
+  final _uuid = Uuid();
+  final _random = Math.Random();
 
   late final String _appTitle;
   late final Uri _appArtUri;
@@ -20,6 +26,9 @@ class PlayerTask extends BackgroundAudioTask {
   late final String _urlStreamMedium;
   late final String _urlStreamHigh;
   late final String _urlSchedule;
+  late final List<Uri> _newsArtUriList;
+  late final List<Uri> _talkArtUriList;
+  late final List<Uri> _musicArtUriList;
 
   late final StreamSubscription<PlayerState> _playerStateSubscription;
   late final StreamSubscription<ScheduleRepositoryState> _scheduleStateSubscription;
@@ -36,14 +45,10 @@ class PlayerTask extends BackgroundAudioTask {
     _urlStreamHigh = params["url_stream_high"];
     _urlSchedule = params["url_schedule"];
 
-    final appArtPath = params["app_art_path"];
-
-    try{
-      _appArtUri = Uri.parse(appArtPath);
-    } catch (error) {
-      _appArtUri = Uri();
-      log("PlayerTask.onStart() -> app art uri parse error: $error for path $appArtPath", name: LOG_TAG);
-    }
+    _appArtUri = await _createUriFromAsset(AUDIO_BACKGROUND_TASK_LOGO_ASSET);
+    _newsArtUriList = await _createUriListFromAssetList(NEWS_ART_ASSET_LIST);
+    _talkArtUriList = await _createUriListFromAssetList(TALK_ART_ASSET_LIST);
+    _musicArtUriList = await _createUriListFromAssetList(MUSIC_ART_ASSET_LIST);
 
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration.music());
@@ -102,7 +107,7 @@ class PlayerTask extends BackgroundAudioTask {
 
   /// Broadcasts the current player state to all clients.
   Future<void> _broadcastPlayerState() async {
-    log("_broadcastPlayerState()", name: LOG_TAG);
+    log("PlayerTask._broadcastPlayerState()", name: LOG_TAG);
     await AudioServiceBackground.setState(
       controls: [
         if (_player.playing) MediaControl.pause else MediaControl.play,
@@ -134,37 +139,20 @@ class PlayerTask extends BackgroundAudioTask {
   }
 
   Future<void> _broadcastScheduleState(ScheduleRepositoryState state) async {
-    log("_broadcastScheduleState()", name: LOG_TAG);
     if (state is ScheduleRepositoryLoadSuccessState) {
-      final queue = state.items.map((scheduleItem) => _mapScheduleItemRawToMediaItem(scheduleItem)).toList();
+      log("PlayerTask._broadcastScheduleState() -> success -> is queue has ${state.items.length} items", name: LOG_TAG);
+      final queue = state.items.map((scheduleItem) => _mapScheduleItemToMediaItem(scheduleItem)).toList();
       AudioServiceBackground.setQueue(queue);
+      if (queue.isNotEmpty) {
+        AudioServiceBackground.setMediaItem(queue[0]);
+        log("AudioServiceBackground.setMediaItem() -> artUri = ${queue[0].artUri}", name: LOG_TAG);
+      }
     }
 
     if (state is ScheduleRepositoryLoadErrorState) {
+      log("PlayerTask._broadcastScheduleState() -> error -> ${state.error}", name: LOG_TAG);
       AudioServiceBackground.sendCustomEvent(state.error);
     }
-  }
-
-  MediaItem _mapScheduleItemRawToMediaItem(ScheduleItemRaw scheduleItem) {
-    final Map<String, dynamic> extras = {
-      "start": scheduleItem.start.microsecondsSinceEpoch,
-      "guest": scheduleItem.guest,
-      "type": scheduleItem.type.toInt
-    };
-
-    return MediaItem(
-      id: '',
-      album: _appTitle,
-      artUri: _appArtUri, // TODO: scheduleItem.uri,
-      artist: scheduleItem.artist,
-      displayDescription: scheduleItem.description,
-      displaySubtitle: scheduleItem.artist,
-      displayTitle: scheduleItem.title,
-      duration: scheduleItem.duration,
-      extras: extras,
-      genre: scheduleItem.genre,
-      title: scheduleItem.title,
-    );
   }
 
   String _mapAudioQualityToUrl(int audioQuality) {
@@ -184,11 +172,77 @@ class PlayerTask extends BackgroundAudioTask {
         }
     }
   }
+
+  MediaItem _mapScheduleItemToMediaItem(ScheduleItem scheduleItem) {
+    final Map<String, dynamic> extras = {
+      "start": scheduleItem.start.microsecondsSinceEpoch,
+      "type":  scheduleItem.type.toInt
+    };
+
+    late final Uri artUri;
+
+    switch (scheduleItem.type) {
+      case ScheduleItemType.news:
+        artUri = _getRandomUri(_newsArtUriList);
+        break;
+      case ScheduleItemType.music:
+        artUri = _getRandomUri(_musicArtUriList);
+        break;
+      case ScheduleItemType.talk:
+        artUri = _getRandomUri(_talkArtUriList);
+        break;
+      case ScheduleItemType.indefinite:
+        artUri = _appArtUri;
+        break;
+      default:
+        artUri = _appArtUri;
+        break;
+    }
+
+    return MediaItem(
+      id: _uuid.v1(),
+      album: _appTitle,
+      artUri: artUri,
+      artist: scheduleItem.artist,
+      displayDescription: scheduleItem.description,
+      displaySubtitle: scheduleItem.artist,
+      displayTitle: scheduleItem.title,
+      duration: scheduleItem.duration,
+      extras: extras,
+      genre: scheduleItem.genre,
+      title: scheduleItem.title,
+    );
+  }
+
+  Uri _getRandomUri(List<Uri> uriList) {
+    assert(uriList.isNotEmpty);
+    final int index = _random.nextInt(uriList.length - 1);
+    return uriList[index];
+  }
+
+  Future<Uri> _createUriFromAsset(String asset) async {
+    try {
+      File file = await loadAssetFile(asset);
+      return Uri.file(file.path);
+    } catch (error) {
+      log("Load asset file ($asset) error: $error", name: LOG_TAG);
+      return Uri();
+    }
+  }
+
+  Future <List<Uri>> _createUriListFromAssetList(List<String> assetList) async {
+    final List<Uri> uriList = List.empty(growable: true);
+    assetList.forEach((asset) async {
+      final path = await _createUriFromAsset(asset);
+      uriList.add(path);
+    });
+    return uriList;
+  }
 }
 
-extension _ScheduleItemRawExtension on ScheduleItemRaw {
+extension _ScheduleItemRawExtension on ScheduleItem {
   String get genre {
-    switch (this.type) {
+    switch (type) {
       case ScheduleItemType.music:
         return "music";
       case ScheduleItemType.news:
@@ -196,9 +250,18 @@ extension _ScheduleItemRawExtension on ScheduleItemRaw {
       case ScheduleItemType.talk:
         return "talk";
       default:
-        return "unknown";
+        {
+          log("Unknown ScheduleItemType $type. \"Unknown\" item type is used.", name: LOG_TAG);
+          return "unknown";
+        }
     }
   }
 
-  Uri? get uri => (this.imageUrl == null) ? null : Uri.parse(this.imageUrl!);
+  Uri? get uri => (imageUrl == null) ? null : Uri.parse(imageUrl!);
+}
+
+extension MediaItemExtensions on MediaItem {
+
+  DateTime get start => DateTime.fromMicrosecondsSinceEpoch(this.extras!["start"]);
+  int get type => this.extras!["type"];
 }

@@ -20,39 +20,40 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   late final StreamSubscription _queueSubscription;
 
   AppBloc(this._logger, this._systemData)
-      : super(AppState(0, false, AudioProcessingState.connecting)) {
+      : super(AppState(0, false)) {
+
     // Timer.periodic(Duration(seconds: PLAYER_BUFFER_CHECK_DURATION),
     //     (Timer t) => _checkForBufferLoading());
 
     log("AppBloc() => subscribes to custom", name: LOG_TAG);
-    _customSubscription = AudioService.customEventStream.listen((error) => _onCustom(error));
+    _customSubscription = AudioService.customEventStream.listen((error) => _onCustomEvent(error));
     log("AppBloc() => subscribes to queue", name: LOG_TAG);
-    _queueSubscription = AudioService.queueStream.listen((queue) => _onQueue(queue));
+    _queueSubscription = AudioService.queueStream.listen((queue) => _onQueueEvent(queue));
     log("AppBloc() => subscribes to player", name: LOG_TAG);
-    _playerSubscription = AudioService.playbackStateStream.listen((state) => _onPlayer(state));
+    _playerSubscription = AudioService.playbackStateStream.listen((state) => _onPlaybackEvent(state));
   }
 
-  void _onCustom(error) {
-    log("AppBloc._onCustom() => Queue load ERROR ($error))", name: LOG_TAG);
+  void _onCustomEvent(error) {
+    log("AppBloc._onCustomEvent() => Queue load ERROR ($error))", name: LOG_TAG);
     add(AppScheduleEvent(null));
   }
 
-  void _onQueue(List<MediaItem>? queue) {
-      if (queue == null) {
-        log("AppBloc._onQueue(queue), queue is null", name: LOG_TAG);
-        add(AppScheduleEvent(null));
-      } else if (queue.isEmpty) {
-        log("AppBloc._onQueue(queue), queue is empty", name: LOG_TAG);
-        add(AppScheduleEvent(null));
-      } else {
-        log("AppBloc._onQueue(queue), queue has ${queue.length} elements", name: LOG_TAG);
-        add(AppScheduleEvent(queue));
-      }
+  void _onQueueEvent(List<MediaItem>? queue) {
+    if (queue == null) {
+      log("AppBloc._onQueueEvent(queue), queue is null", name: LOG_TAG);
+      add(AppScheduleEvent(null));
+    } else if (queue.isEmpty) {
+      log("AppBloc._onQueueEvent(queue), queue is empty", name: LOG_TAG);
+      add(AppScheduleEvent(null));
+    } else {
+      log("AppBloc._onQueueEvent(queue), queue has ${queue.length} elements", name: LOG_TAG);
+      add(AppScheduleEvent(queue));
+    }
   }
 
-  void _onPlayer(PlaybackState state) {
-      log("AppBloc._onPlayer(), playing = ${state.playing}, state = ${state.processingState}", name: LOG_TAG);
-      add(AppPlayerEvent(state.playing, state.processingState));
+  void _onPlaybackEvent(PlaybackState state) {
+    log("AppBloc._onPlaybackEvent(), playing = ${state.playing}", name: LOG_TAG);
+    add(AppPlayerEvent(state.playing));
   }
 
   @override
@@ -68,21 +69,21 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   Stream<AppState> mapEventToState(AppEvent event) async* {
     if (event is AppFabEvent) {
       if (AudioService.playbackState.playing) {
-        log("event is AppFabEvent -> AudioService.pause()", name: LOG_TAG);
+        log("AppBloc.mapEventToState() -> event is AppFabEvent -> AudioService.pause()", name: LOG_TAG);
         AudioService.pause();
       } else {
-        log("event is AppFabEvent -> AudioService.play()", name: LOG_TAG);
+        log("AppBloc.mapEventToState() -> event is AppFabEvent -> AudioService.play()", name: LOG_TAG);
         AudioService.play();
       }
     } else if (event is AppNavEvent) {
-      yield AppState(event.navIndex, state.playingState, state.processingState,
+      yield AppState(event.navIndex, state.playingState, //state.processingState,
           isScheduleLoaded: state.isScheduleLoaded,
           presentTitle: state.presentTitle,
           presentArtist: state.presentArtist,
           nextTitle: state.nextTitle,
           nextArtist: state.nextArtist);
     } else if (event is AppPlayerEvent) {
-      yield AppState(state.navIndex, event.playingState, event.processingState,
+      yield AppState(state.navIndex, event.playingState, //event.processingState,
           isScheduleLoaded: state.isScheduleLoaded,
           presentTitle: state.presentTitle,
           presentArtist: state.presentArtist,
@@ -90,15 +91,15 @@ class AppBloc extends Bloc<AppEvent, AppState> {
           nextArtist: state.nextArtist);
     } else if (event is AppScheduleEvent) {
       if (event.items == null || event.items!.length < 2) {
-        yield AppState(state.navIndex, state.playingState, state.processingState);
+        yield AppState(state.navIndex, state.playingState, ); //state.processingState);
       } else {
         final presentItem = event.items![0];
         final nextItem = event.items![1];
-        yield AppState(state.navIndex, state.playingState, state.processingState,
+        yield AppState(state.navIndex, state.playingState, //state.processingState,
             isScheduleLoaded: true,
-            presentArtist: presentItem.artist!,
+            presentArtist: presentItem.artist ?? "",
             presentTitle: presentItem.title,
-            nextArtist: nextItem.artist!,
+            nextArtist: nextItem.artist ?? "",
             nextTitle: nextItem.title);
       }
     }

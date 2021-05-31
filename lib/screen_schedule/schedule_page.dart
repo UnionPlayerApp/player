@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:koin_flutter/koin_flutter.dart';
@@ -68,7 +70,8 @@ class SchedulePage extends StatelessWidget {
   Widget _programElement(ScheduleItemView element) {
     late final Image image;
     if (element.imageUri != null && element.imageUri!.path != '') {
-      image = Image.network(element.imageUri!.path,
+      final file = File.fromUri(element.imageUri!);
+      image = Image.file(file,
           width: scheduleImageSide,
           height: scheduleImageSide,
           fit: BoxFit.cover);

@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:rxdart/rxdart.dart';
 import 'package:union_player_app/repository/schedule_file.dart';
 import 'package:union_player_app/repository/schedule_repository_interface.dart';
-import 'package:union_player_app/repository/schedule_item_raw.dart';
+import 'package:union_player_app/repository/schedule_item.dart';
 import 'package:union_player_app/repository/schedule_repository_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/file_utils.dart';
@@ -13,7 +13,7 @@ const _ATTEMPT_MAX = 5;
 
 class ScheduleRepositoryImpl implements IScheduleRepository {
   final _subject = BehaviorSubject<ScheduleRepositoryState>(sync: true);
-  final _items = List<ScheduleItemRaw>.empty(growable: true);
+  final _items = List<ScheduleItem>.empty(growable: true);
   bool _isOpen = true;
 
   @override
@@ -34,7 +34,7 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
         }
 
         log("schedule repository stream() => _load() start, attempt = $attempt", name: LOG_TAG);
-        state  = await _load(url);
+        state = await _load(url);
         log("schedule repository stream() => _load() finish, attempt = $attempt", name: LOG_TAG);
       } while (state is ScheduleRepositoryLoadErrorState && attempt++ < _ATTEMPT_MAX);
 
@@ -56,28 +56,26 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
     final now = DateTime.now();
     final rest = finish.difference(now).inSeconds;
 
-    if (rest <= 0) {
-      log("rest = $rest", name: LOG_TAG);
-      log("start = ${currentElement.start}", name: LOG_TAG);
-      log("finish = $finish", name: LOG_TAG);
-      log("duration = ${currentElement.duration}", name: LOG_TAG);
-      log("now = $now", name: LOG_TAG);
-    }
+    log("schedule repository -> current start     = ${currentElement.start}", name: LOG_TAG);
+    log("schedule repository -> current finish    = $finish", name: LOG_TAG);
+    log("schedule repository -> current duration  = ${currentElement.duration}", name: LOG_TAG);
+    log("schedule repository -> now               = $now", name: LOG_TAG);
+    log("schedule repository -> rest to next load = ${rest > 0 ? rest : 1}", name: LOG_TAG);
 
-    return (rest > 0) ? rest : 1;
+    return rest > 0 ? rest : 1;
   }
 
   Future<ScheduleRepositoryState> _load(String url) async {
     late final File file;
-    late final List<ScheduleItemRaw> newItems;
+    late final List<ScheduleItem> newItems;
 
     _items.clear();
 
     try {
       file = await loadRemoteFile(url);
-      log("Load schedule file success. File = $file", name: LOG_TAG);
+      log("Schedule file load success -> File: $file", name: LOG_TAG);
     } catch (error) {
-      final msg = "Load schedule file error -> Url: $url -> Error: $error";
+      final msg = "Schedule file load error -> Url: $url -> Error: $error";
       log(msg, name: LOG_TAG);
       return ScheduleRepositoryLoadErrorState(msg);
     }
