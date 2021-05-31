@@ -9,16 +9,16 @@ class MainState extends Equatable {
   final String itemTitle;
   final String itemArtist;
   final ImageSourceType imageSourceType;
-  final String imageSource;
+  final String? imageSource;
 
-  const MainState(
-      {this.itemLabelKey = StringKeys.empty,
-      this.isTitleVisible = false,
-      this.isArtistVisible = false,
-      this.itemTitle = "",
-      this.itemArtist = "",
-      this.imageSourceType = ImageSourceType.none,
-      this.imageSource = ""});
+  MainState(
+    {this.itemLabelKey = StringKeys.empty,
+    this.isTitleVisible = false,
+    this.isArtistVisible = false,
+    this.itemTitle = "",
+    this.itemArtist = "",
+    this.imageSourceType = ImageSourceType.none,
+    this.imageSource = ""});
 
   @override
   List<Object?> get props => [

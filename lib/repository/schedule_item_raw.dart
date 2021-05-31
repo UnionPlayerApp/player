@@ -8,7 +8,7 @@ class ScheduleItemRaw {
   final String? description;
   final String artist;
   final String? guest;
-  final String? imageUrl;
+  String? imageUrl;
 
   ScheduleItemRaw(this.start, this.duration, this.type, this.title, this.artist,
       {this.description, this.guest, this.imageUrl});

@@ -16,7 +16,7 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
   final AppLogger _logger;
   final SystemData _systemData;
   final _subject = BehaviorSubject<ScheduleRepositoryState>(sync: true);
-  final _items = List<ScheduleItemRaw>.empty(growable: true);
+  var _items = List<ScheduleItemRaw>.empty(growable: true);
   bool _isOpen = true;
 
   ScheduleRepositoryImpl(this._logger, this._systemData) {
@@ -55,12 +55,32 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
 
       _subject.add(state);
 
+      // Загружаем картинки и отправляем новый state с картинками:
+      if (state is ScheduleRepositoryLoadSuccessState) {
+        if (!_imagesLoaded(state)) {
+          ScheduleRepositoryLoadSuccessState stateWithImages = await _loadImages(
+              state.items);
+          _subject.add(stateWithImages);
+        }
+      }
+
       int seconds = _secondsToNextLoad();
 
       log("schedule repository stream() => delay for $seconds seconds start", name: LOG_TAG);
       await Future.delayed(Duration(seconds: seconds));
       log("schedule repository stream() => delay for $seconds seconds finish", name: LOG_TAG);
     }
+  }
+
+  bool _imagesLoaded(ScheduleRepositoryLoadSuccessState state){
+    bool loaded = true;
+    state.items.forEach((item) {
+      if (item.imageUrl == null) {
+        loaded = false;
+        return;
+      }
+    });
+    return loaded;
   }
 
   bool _firstItemIsCurrent() => (_secondsToNextLoad() >= 0);
@@ -100,7 +120,8 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
     }
 
     try {
-      newItems = parseScheduleFile(file);
+      newItems = await parseScheduleFile(file);
+      print("_load, newItems count: ${newItems.length}");
     } catch (error) {
       final msg = "Parse schedule file error. Path = $file ";
       _logger.logError(msg, error);
@@ -109,6 +130,14 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
 
     _items.addAll(newItems);
 
+    return ScheduleRepositoryLoadSuccessState(_items);
+  }
+
+  Future<ScheduleRepositoryLoadSuccessState> _loadImages(List<ScheduleItemRaw> oldItems) async {
+    List<ScheduleItemRaw> newItems = <ScheduleItemRaw>[];
+    newItems.addAll(await getScheduleItemRawListWithImages(oldItems));
+    _items.clear();
+    _items.addAll(newItems);
     return ScheduleRepositoryLoadSuccessState(_items);
   }
 

@@ -4,9 +4,9 @@ import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_item_view.dart';
 import 'package:union_player_app/screen_schedule/schedule_state.dart';
-import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
+import 'package:union_player_app/utils/ui/app_theme.dart';
 
 class SchedulePage extends StatelessWidget {
   @override
@@ -64,24 +64,26 @@ class SchedulePage extends StatelessWidget {
   }
 
   Widget _programElement(ScheduleItemView element) {
-    late Image image;
+    late Widget image;
     if (element.imageUrl != null && element.imageUrl != '') {
       image = Image.network(element.imageUrl!,
           width: scheduleImageSide,
           height: scheduleImageSide,
           fit: BoxFit.cover);
     } else {
-      image = Image.asset(LOGO_IMAGE,
-          width: scheduleImageSide,
-          height: scheduleImageSide,
-          fit: BoxFit.cover);
+      image = Container(padding: scheduleIconPadding,
+          child: Icon(
+              Icons.music_note_rounded,
+              color: primaryLightColor, size: scheduleImageSide-scheduleIconPadding.top-scheduleIconPadding.bottom
+          )
+      );
     }
     return Container(
         color: Colors.white10,
         margin: allSidesMargin,
         height: scheduleItemHeight,
         child: Row(children: [
-          image,
+          _createContainer(image),
           Expanded(
               child: Container(
                   padding: programTextLeftPadding,
@@ -114,4 +116,12 @@ class SchedulePage extends StatelessWidget {
                   ])))
         ]));
   }
+
+  Widget _createContainer(Widget image) {
+    return Container(
+        width: scheduleImageSide,
+        height: scheduleImageSide,
+        child: image);
+  }
+
 }

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
+import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/image_source_type.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
+import 'package:union_player_app/utils/ui/app_theme.dart';
 
 class MainPage extends StatelessWidget {
   @override
@@ -34,7 +36,7 @@ class MainPage extends StatelessWidget {
         list.add(_createImageFromNetwork(state.imageSource));
         break;
       case ImageSourceType.assets:
-        list.add(_createImageFromAssets(state.imageSource));
+        list.add(_createImageFromAssets(state.imageSource!));
         break;
     }
 
@@ -64,17 +66,23 @@ class MainPage extends StatelessWidget {
     ));
   }
 
-  Widget _createImageFromNetwork(String imageSource) {
-    return _createContainer(Image.network(
-      imageSource,
-      width: mainImageSide,
-      height: mainImageSide,
-      fit: BoxFit.cover,
-    ));
+  Widget _createImageFromNetwork(String? imageSource) {
+    Widget img;
+    if (imageSource != null && imageSource != '') {
+      img = Image.network(imageSource,
+          width: scheduleImageSide,
+          height: scheduleImageSide,
+          fit: BoxFit.cover);
+    } else {
+      img = Container(child: Icon(Icons.music_note_rounded, color: primaryLightColor, size: scheduleImageSide ));
+    }
+  return _createContainer(img);
   }
 
-  Widget _createContainer(Image image) {
+  Widget _createContainer(Widget image) {
     return Container(
+        width: mainImageSide,
+        height: mainImageSide,
         margin: EdgeInsets.only(bottom: mainMarginBottom), child: image);
   }
 }

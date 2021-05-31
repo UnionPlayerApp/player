@@ -7,7 +7,6 @@ import 'package:union_player_app/repository/schedule_repository_state.dart';
 import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/core/debug.dart';
 import 'package:union_player_app/utils/core/image_source_type.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 
@@ -46,9 +45,9 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     String itemTitle = "";
     String itemArtist = "";
     StringKeys itemLabelKey = StringKeys.information_is_loading;
+    String? imageSource;
 
     final imageSourceType = ImageSourceType.network;
-    final imageSource = randomUrl();
 
     if (event.isScheduleLoaded && event.scheduleItems.isNotEmpty) {
       itemLabelKey = StringKeys.present_label;
@@ -56,6 +55,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       final item = event.scheduleItems[0];
       isTitleVisible = true;
       itemTitle = item.title;
+      imageSource = item.imageUrl;
 
       if (item.type == ScheduleItemType.music) {
         isArtistVisible = true;

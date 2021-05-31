@@ -27,6 +27,7 @@ final double titleFontSize = 16.0;
 final double bodyFontSize = 13.0;
 final EdgeInsets programTextLeftPadding = EdgeInsets.only(left: 10.w);
 final EdgeInsets programBodyTopPadding = EdgeInsets.only(top: 10.h);
+final EdgeInsets scheduleIconPadding = EdgeInsets.all(15.h);
 
 // FeedbackScreen
 final double bannerHeight = AppBar().preferredSize.height; // bannerHeight = app bar height
