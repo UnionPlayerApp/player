@@ -1,9 +1,9 @@
-import 'package:union_player_app/repository/schedule_item_raw.dart';
+import 'package:union_player_app/repository/schedule_item.dart';
 
 abstract class ScheduleRepositoryState {}
 
 class ScheduleRepositoryLoadSuccessState extends ScheduleRepositoryState {
-  final List<ScheduleItemRaw> items;
+  final List<ScheduleItem> items;
 
   ScheduleRepositoryLoadSuccessState(this.items);
 }

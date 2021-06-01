@@ -3,25 +3,28 @@ import 'package:union_player_app/utils/core/image_source_type.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 
 class MainState extends Equatable {
+  final bool isScheduleLoaded;
   final StringKeys itemLabelKey;
   final bool isTitleVisible;
   final bool isArtistVisible;
   final String itemTitle;
   final String itemArtist;
   final ImageSourceType imageSourceType;
-  final String? imageSource;
+  final String imageSource;
 
-  MainState(
-    {this.itemLabelKey = StringKeys.empty,
-    this.isTitleVisible = false,
-    this.isArtistVisible = false,
-    this.itemTitle = "",
-    this.itemArtist = "",
-    this.imageSourceType = ImageSourceType.none,
-    this.imageSource = ""});
+  const MainState(
+      {this.isScheduleLoaded = false,
+      this.itemLabelKey = StringKeys.empty,
+      this.isTitleVisible = false,
+      this.isArtistVisible = false,
+      this.itemTitle = "",
+      this.itemArtist = "",
+      this.imageSourceType = ImageSourceType.none,
+      this.imageSource = ""});
 
   @override
   List<Object?> get props => [
+        isScheduleLoaded,
         itemLabelKey,
         isTitleVisible,
         isArtistVisible,

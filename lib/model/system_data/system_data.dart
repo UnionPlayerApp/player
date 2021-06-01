@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:union_player_app/model/system_data/email_data.dart';
+import 'package:union_player_app/model/system_data/player_data.dart';
 import 'package:union_player_app/model/system_data/stream_data.dart';
 import 'package:union_player_app/model/system_data/xml_data.dart';
 
@@ -10,6 +11,7 @@ class SystemData {
   EmailData emailData = EmailData();
   StreamData streamData = StreamData();
   XmlData xmlData = XmlData();
+  PlayerData playerData = PlayerData();
 
   void setAboutData(DocumentSnapshot<Object?> doc) {
     try {

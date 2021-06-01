@@ -11,3 +11,5 @@ String randomUrl() {
   final index = Random().nextInt(urls.length - 1);
   return urls[index];
 }
+
+String placeholderUrl() => "https://dayzrussia.com/wiki/images/4/47/Placeholder.png";

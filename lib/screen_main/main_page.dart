@@ -1,28 +1,30 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/image_source_type.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
-import 'package:union_player_app/utils/ui/app_theme.dart';
 
 class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: BlocBuilder<MainBloc, MainState>(
-        builder: (context, state) => _createWidget(context, state),
-        bloc: BlocProvider.of<MainBloc>(context),
-      ),
+    return BlocBuilder<MainBloc, MainState>(
+      builder: (context, state) => _createWidget(context, state),
+      bloc: get<MainBloc>(),
     );
   }
 
-  Widget _createWidget(BuildContext context, MainState state) => Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: _createStateRows(context, state),
-      );
+  Widget _createWidget(BuildContext context, MainState state) =>
+      Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: _createStateRows(context, state),
+          ));
 
   List<Widget> _createStateRows(BuildContext context, MainState state) {
     final list = List<Widget>.empty(growable: true);
@@ -32,11 +34,14 @@ class MainPage extends StatelessWidget {
     switch (state.imageSourceType) {
       case ImageSourceType.none:
         break;
+      case ImageSourceType.file:
+        list.add(_createImageFromFile(state.imageSource));
+        break;
       case ImageSourceType.network:
         list.add(_createImageFromNetwork(state.imageSource));
         break;
       case ImageSourceType.assets:
-        list.add(_createImageFromAssets(state.imageSource!));
+        list.add(_createImageFromAssets(state.imageSource));
         break;
     }
 
@@ -47,14 +52,26 @@ class MainPage extends StatelessWidget {
     if (state.isArtistVisible) {
       list.add(_createStateRow(context, state.itemArtist));
     }
-
     return list;
   }
 
   Widget _createStateRow(BuildContext context, String stateStr) {
-    final text = Text(stateStr, style: Theme.of(context).textTheme.bodyText2);
+    final text = Text(stateStr, style: Theme
+        .of(context)
+        .textTheme
+        .bodyText2);
     return Container(
         margin: EdgeInsets.only(bottom: mainMarginBottom), child: text);
+  }
+
+  Widget _createImageFromFile(String imageSource) {
+    final file = File(imageSource);
+    return _createContainer(Image.file(
+      file,
+      width: mainImageSide,
+      height: mainImageSide,
+      fit: BoxFit.cover,
+    ));
   }
 
   Widget _createImageFromAssets(String imageSource) {
@@ -63,20 +80,18 @@ class MainPage extends StatelessWidget {
       width: mainImageSide,
       height: mainImageSide,
       fit: BoxFit.cover,
+      errorBuilder: (BuildContext context, Object object,
+          StackTrace? stackTrace) => Image.asset(MUSIC_ART_ASSET_LIST.first),
     ));
   }
 
-  Widget _createImageFromNetwork(String? imageSource) {
-    Widget img;
-    if (imageSource != null && imageSource != '') {
-      img = Image.network(imageSource,
-          width: scheduleImageSide,
-          height: scheduleImageSide,
-          fit: BoxFit.cover);
-    } else {
-      img = Container(child: Icon(Icons.music_note_rounded, color: primaryLightColor, size: scheduleImageSide ));
-    }
-  return _createContainer(img);
+  Widget _createImageFromNetwork(String imageSource) {
+    return _createContainer(Image.network(
+      imageSource,
+      width: mainImageSide,
+      height: mainImageSide,
+      fit: BoxFit.cover,
+    ));
   }
 
   Widget _createContainer(Widget image) {
@@ -85,4 +100,5 @@ class MainPage extends StatelessWidget {
         height: mainImageSide,
         margin: EdgeInsets.only(bottom: mainMarginBottom), child: image);
   }
+
 }

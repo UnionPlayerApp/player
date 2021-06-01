@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-ThemeData buildUnionRadioTheme() {
+ThemeData createAppTheme() {
   final ThemeData base = ThemeData.light();
   return base.copyWith(
-    colorScheme: _unionRadioColorScheme,
+    colorScheme: _appColorScheme,
     primaryColorDark: primaryDarkColor,
     primaryColor: primaryColor,
     primaryColorLight: primaryLightColor,
@@ -12,42 +12,34 @@ ThemeData buildUnionRadioTheme() {
     scaffoldBackgroundColor: backgroundColor,
     cardColor: surfaceColor,
     buttonTheme: ButtonThemeData(
-        buttonColor: secondaryColor,
-      colorScheme: _unionRadioColorScheme.copyWith(secondary: secondaryColor),
+      buttonColor: secondaryColor,
+      colorScheme: _appColorScheme.copyWith(secondary: secondaryColor),
       textTheme: ButtonTextTheme.normal,
     ),
-    textTheme: _buildUnionPlayerTextTheme(base.textTheme),
-    bannerTheme: _buildUnionPlayerBannerTheme(base.bannerTheme),
-    appBarTheme: _buildUnionPlayerAppBarTheme(base.appBarTheme),
+    textTheme: _createTextTheme(base.textTheme),
+    bannerTheme: _createBannerTheme(base.bannerTheme),
+    appBarTheme: _createAppBarTheme(base.appBarTheme),
   );
 }
 
-TextTheme _buildUnionPlayerTextTheme(TextTheme base) {
+TextTheme _createTextTheme(TextTheme base) {
   return base.apply(
     fontFamily: 'Rubik',
   );
 }
 
-ButtonStyle bannerButtonStyle(){
-  return ButtonStyle(
-      foregroundColor: MaterialStateProperty.all<Color>(
-          colorOnSecondaryWithAlfa),
-  );
-}
-
-MaterialBannerThemeData _buildUnionPlayerBannerTheme(MaterialBannerThemeData base){
+MaterialBannerThemeData _createBannerTheme(MaterialBannerThemeData base) {
   return base.copyWith(
     backgroundColor: primaryLightColor,
     contentTextStyle: TextStyle(color: colorOnSecondaryWithAlfa),
   );
 }
 
-AppBarTheme _buildUnionPlayerAppBarTheme(AppBarTheme base){
+AppBarTheme _createAppBarTheme(AppBarTheme base) {
   return base.copyWith(centerTitle: true);
 }
 
-
-const ColorScheme _unionRadioColorScheme = ColorScheme(
+const ColorScheme _appColorScheme = ColorScheme(
   primary: primaryColor,
   primaryVariant: primaryDarkColor,
   secondary: secondaryColor,
@@ -76,7 +68,6 @@ const Color errorColor = Color(0xFFC5032B);
 const Color colorOnPrimary = Colors.white;
 const Color colorOnSecondary = Colors.white;
 const Color colorOnSecondaryWithAlfa = Color(0xCEFFFFFF);
-// const Color colorOnSecondary = Color(0xFF000000);
 
 const Color backgroundColor = Color(0xFFF1F1F1);
 const Color surfaceColor = Colors.white;

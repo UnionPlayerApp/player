@@ -1,14 +1,14 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:equatable/equatable.dart';
-import 'package:union_player_app/repository/schedule_item_raw.dart';
 
 class MainEvent extends Equatable {
   final bool isScheduleLoaded;
-  final List<ScheduleItemRaw> scheduleItems;
+  final List<MediaItem> mediaItems;
   final String loadingError;
 
   MainEvent(this.isScheduleLoaded,
-      {this.scheduleItems = const [], this.loadingError = ""});
+      {this.mediaItems = const [], this.loadingError = ""});
 
   @override
-  List<Object?> get props => [isScheduleLoaded, scheduleItems, loadingError];
+  List<Object?> get props => [isScheduleLoaded, mediaItems, loadingError];
 }

@@ -1,16 +1,15 @@
 part of 'app_bloc.dart';
 
 class AppState extends Equatable {
-  final int navIndex;
-  final bool playingState;
-  final ProcessingState processingState;
-  final String presentTitle;
-  final String presentArtist;
-  final String nextTitle;
-  final String nextArtist;
   final bool isScheduleLoaded;
+  final int navIndex;
+  final String nextArtist;
+  final String nextTitle;
+  final bool playingState;
+  final String presentArtist;
+  final String presentTitle;
 
-  const AppState(this.navIndex, this.playingState, this.processingState,
+  const AppState(this.navIndex, this.playingState,
       {this.isScheduleLoaded = false,
       this.presentTitle = "",
       this.presentArtist = "",
@@ -19,13 +18,12 @@ class AppState extends Equatable {
 
   @override
   List<Object> get props => [
-        navIndex,
-        playingState,
-        processingState,
         isScheduleLoaded,
-        presentTitle,
-        presentArtist,
+        navIndex,
+        nextArtist,
         nextTitle,
-        nextArtist
+        playingState,
+        presentArtist,
+        presentTitle,
       ];
 }

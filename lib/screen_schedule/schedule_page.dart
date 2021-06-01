@@ -1,34 +1,39 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_item_view.dart';
 import 'package:union_player_app/screen_schedule/schedule_state.dart';
+import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
-import 'package:union_player_app/utils/ui/app_theme.dart';
 
 class SchedulePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ScheduleBloc, ScheduleState>(
-      builder: (BuildContext context, ScheduleState state) {
-        if (state is ScheduleLoadAwaitState) {
-          return _loadAwaitPage();
-        }
-        if (state is ScheduleLoadSuccessState) {
-          return _loadSuccessPage(context, state);
-        }
-        if (state is ScheduleLoadErrorState) {
-          return _loadErrorPage(context, state);
-        } else {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
+      builder: (context, state) => _createWidget(context, state),
       bloc: get<ScheduleBloc>(),
     );
+  }
+
+  Widget _createWidget(BuildContext context, ScheduleState state) {
+    if (state is ScheduleLoadAwaitState) {
+      return _loadAwaitPage();
+    }
+    if (state is ScheduleLoadSuccessState) {
+      return _loadSuccessPage(context, state);
+    }
+    if (state is ScheduleLoadErrorState) {
+      return _loadErrorPage(context, state);
+    } else {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
   }
 
   Widget _loadAwaitPage() {
@@ -65,17 +70,14 @@ class SchedulePage extends StatelessWidget {
 
   Widget _programElement(ScheduleItemView element) {
     late Widget image;
-    if (element.imageUrl != null && element.imageUrl != '') {
-      image = Image.network(element.imageUrl!,
-          width: scheduleImageSide,
-          height: scheduleImageSide,
-          fit: BoxFit.cover);
-    } else {
-      image = Container(padding: scheduleIconPadding,
-          child: Icon(
-              Icons.music_note_rounded,
-              color: primaryLightColor, size: scheduleImageSide-scheduleIconPadding.top-scheduleIconPadding.bottom
-          )
+    if (element.imageUri != null && element.imageUri!.path != '') {
+      final file = File.fromUri(element.imageUri!);
+      image = Image.file(file,
+        width: scheduleImageSide,
+        height: scheduleImageSide,
+        fit: BoxFit.cover,
+        errorBuilder: (BuildContext context, Object object,
+            StackTrace? stackTrace) => Image.asset(MUSIC_ART_ASSET_LIST.first),
       );
     }
     return Container(

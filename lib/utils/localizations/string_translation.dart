@@ -10,6 +10,8 @@ String translate(StringKeys key, BuildContext context) {
 }
 
 enum  StringKeys{
+  app_title,
+
   empty,
   // FeedbackScreen
   message_us,
@@ -50,4 +52,12 @@ enum  StringKeys{
   settings_lang_be,
   settings_lang_en,
   settings_lang_system,
+  // Strings for InfoPage for displaying when app is not initialized
+  app_is_not_init_1,
+  app_is_not_init_2,
+  app_is_not_init_3,
+  app_is_not_init_4,
+  app_is_not_init_5,
+  // Title for LoadingPage when app in initializing
+  app_init_title,
 }
