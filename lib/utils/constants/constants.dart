@@ -54,7 +54,21 @@ const DEFAULT_AUDIO_QUALITY_ID = AUDIO_QUALITY_MEDIUM;
 const DEFAULT_THEME_ID = THEME_SYSTEM;
 const DEFAULT_START_PLAYING_ID = START_PLAYING_LAST;
 const DEFAULT_LANG_ID = LANG_SYSTEM;
+const DEFAULT_IS_PLAYING = true;
+
+const KEY_AUDIO_QUALITY = "AUDIO_QUALITY";
+const KEY_THEME = "THEME";
+const KEY_START_PLAYING = "START_PLAYING";
+const KEY_LANG = "LANG";
+const KEY_IS_PLAYING = "IS_PLAYING";
+const KEY_APP_TITLE = "app_title";
+const KEY_URL_STREAM_LOW = "url_stream_low";
+const KEY_URL_STREAM_MEDIUM = "url_stream_medium";
+const KEY_URL_STREAM_HIGH = "url_stream_high";
+const KEY_URL_SCHEDULE = "url_schedule";
 
 const NEWS_ART_ASSET_LIST = ["assets/images/news_01.png", "assets/images/news_02.png", "assets/images/news_03.png"];
 const TALK_ART_ASSET_LIST = ["assets/images/talk_01.png", "assets/images/talk_02.png", "assets/images/talk_03.png"];
 const MUSIC_ART_ASSET_LIST = ["assets/images/music_01.png", "assets/images/music_02.png", "assets/images/music_03.png"];
+
+const PLAYER_TASK_ACTION_SET_AUDIO_QUALITY = "player_task_event_set_audio_quality";

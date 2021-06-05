@@ -23,3 +23,12 @@ class SettingsEventTheme extends SettingsEvent {
 
   SettingsEventTheme(this.themeId);
 }
+
+class SettingsEventSharedPreferencesRead extends SettingsEvent {
+  final int audioQualityId;
+  final int langId;
+  final int startPlayingId;
+  final int themeId;
+
+  SettingsEventSharedPreferencesRead(this.audioQualityId, this.langId, this.startPlayingId, this.themeId);
+}

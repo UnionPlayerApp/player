@@ -96,13 +96,13 @@ class _InitPageState extends State<InitPage> {
 
   Map<String, dynamic> _createPlayerTaskParams() {
     final Map<String, dynamic> params = {
-      "app_title": _systemData.playerData.appTitle,
-      "url_stream_low": _systemData.streamData.streamLow,
-      "url_stream_medium": _systemData.streamData.streamMedium,
-      "url_stream_high": _systemData.streamData.streamHigh,
-      "url_schedule": _systemData.xmlData.url,
-      "audio_quality": AUDIO_QUALITY_MEDIUM,
-      "is_playing": true,
+      KEY_APP_TITLE: _systemData.playerData.appTitle,
+      KEY_URL_STREAM_LOW: _systemData.streamData.streamLow,
+      KEY_URL_STREAM_MEDIUM: _systemData.streamData.streamMedium,
+      KEY_URL_STREAM_HIGH: _systemData.streamData.streamHigh,
+      KEY_URL_SCHEDULE: _systemData.xmlData.url,
+      KEY_AUDIO_QUALITY: DEFAULT_AUDIO_QUALITY_ID,
+      KEY_IS_PLAYING: DEFAULT_IS_PLAYING,
     };
     return params;
   }

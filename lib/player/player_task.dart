@@ -39,11 +39,11 @@ class PlayerTask extends BackgroundAudioTask {
 
     log("PlayerTask.onStart()", name: LOG_TAG);
 
-    _appTitle = params!["app_title"];
-    _urlStreamLow = params["url_stream_low"];
-    _urlStreamMedium = params["url_stream_medium"];
-    _urlStreamHigh = params["url_stream_high"];
-    _urlSchedule = params["url_schedule"];
+    _appTitle = params![KEY_APP_TITLE];
+    _urlStreamLow = params[KEY_URL_STREAM_LOW];
+    _urlStreamMedium = params[KEY_URL_STREAM_MEDIUM];
+    _urlStreamHigh = params[KEY_URL_STREAM_HIGH];
+    _urlSchedule = params[KEY_URL_SCHEDULE];
 
     _appArtUri = await _createUriFromAsset(AUDIO_BACKGROUND_TASK_LOGO_ASSET);
     _newsArtUriList = await _createUriListFromAssetList(NEWS_ART_ASSET_LIST);
@@ -58,7 +58,7 @@ class PlayerTask extends BackgroundAudioTask {
 
     _schedule.onStart(_urlSchedule);
 
-    onCustomAction("", params);
+    onCustomAction(PLAYER_TASK_ACTION_SET_AUDIO_QUALITY, params);
   }
 
   @override
@@ -76,7 +76,7 @@ class PlayerTask extends BackgroundAudioTask {
   Future<void> onPlay() async => await _player.play();
 
   @override
-  Future<void> onPause() async => await _player.pause();
+  Future<void> onPause() async => await _player.stop();
 
   @override
   Future<void> onPlayMediaItem(MediaItem mediaItem) async => await AudioServiceBackground.setMediaItem(mediaItem);
@@ -84,24 +84,21 @@ class PlayerTask extends BackgroundAudioTask {
   // Set audio quality and start / pause audio stream
   @override
   Future<void> onCustomAction(String name, dynamic arguments) async {
-    final Map<String, dynamic> args = arguments;
-
-    final int audioQuality = args["audio_quality"];
-    final bool isPlaying = args["is_playing"];
-
-    log("PlayerTask.onCustomAction(), audio quality = $audioQuality, is playing = $isPlaying", name: LOG_TAG);
-
-    final audioUrl = _mapAudioQualityToUrl(audioQuality);
-    try {
-      await _player.setUrl(audioUrl);
-
-      if (isPlaying) {
-        await _player.play();
-      } else {
-        await _player.pause();
+    if (name == PLAYER_TASK_ACTION_SET_AUDIO_QUALITY) {
+      final Map<String, dynamic> params = Map.from(arguments);
+      final int audioQuality = params[KEY_AUDIO_QUALITY] ?? DEFAULT_AUDIO_QUALITY_ID;
+      final bool isPlaying = params[KEY_IS_PLAYING] ?? DEFAULT_IS_PLAYING;
+      final audioUrl = _mapAudioQualityToUrl(audioQuality);
+      log("PlayerTask.onCustomAction(), set audio stream = $audioUrl", name: LOG_TAG);
+      try {
+        await _player.stop();
+        await _player.setUrl(audioUrl);
+        if (isPlaying) {
+          await _player.play();
+        }
+      } catch (error) {
+        log("Audio stream ($audioUrl) load (set url) or stop/play error: $error");
       }
-    } catch (error) {
-      log("Audio stream ($audioUrl) load or play/pause error: $error");
     }
   }
 
@@ -176,7 +173,7 @@ class PlayerTask extends BackgroundAudioTask {
   MediaItem _mapScheduleItemToMediaItem(ScheduleItem scheduleItem) {
     final Map<String, dynamic> extras = {
       "start": scheduleItem.start.microsecondsSinceEpoch,
-      "type":  scheduleItem.type.toInt
+      "type": scheduleItem.type.toInt
     };
 
     late final Uri artUri;
@@ -230,7 +227,7 @@ class PlayerTask extends BackgroundAudioTask {
     }
   }
 
-  Future <List<Uri>> _createUriListFromAssetList(List<String> assetList) async {
+  Future<List<Uri>> _createUriListFromAssetList(List<String> assetList) async {
     final List<Uri> uriList = List.empty(growable: true);
     assetList.forEach((asset) async {
       final path = await _createUriFromAsset(asset);
@@ -256,12 +253,10 @@ extension _ScheduleItemRawExtension on ScheduleItem {
         }
     }
   }
-
-  Uri? get uri => (imageUrl == null) ? null : Uri.parse(imageUrl!);
 }
 
 extension MediaItemExtensions on MediaItem {
-
   DateTime get start => DateTime.fromMicrosecondsSinceEpoch(this.extras!["start"]);
+
   int get type => this.extras!["type"];
 }
