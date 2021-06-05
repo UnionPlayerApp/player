@@ -32,11 +32,43 @@ const APP_INTERNATIONAL_TITLE = "Union Radio 1";
 
 const AUDIO_BACKGROUND_TASK_LOGO_ASSET = "assets/images/union_radio_logo_1.png";
 
-const AUDIO_QUALITY_UNDEFINED = 0;
-const AUDIO_QUALITY_LOW = 1;
-const AUDIO_QUALITY_MEDIUM = 2;
-const AUDIO_QUALITY_HIGH = 3;
+const AUDIO_QUALITY_LOW = 0;
+const AUDIO_QUALITY_MEDIUM = 1;
+const AUDIO_QUALITY_HIGH = 2;
+const AUDIO_QUALITY_UNDEFINED = 3;
+
+const THEME_SYSTEM = 0;
+const THEME_LIGHT = 1;
+const THEME_DARK = 2;
+
+const START_PLAYING_START = 0;
+const START_PLAYING_STOP = 1;
+const START_PLAYING_LAST = 2;
+
+const LANG_SYSTEM = 0;
+const LANG_RU = 1;
+const LANG_BE = 2;
+const LANG_EN = 3;
+
+const DEFAULT_AUDIO_QUALITY_ID = AUDIO_QUALITY_MEDIUM;
+const DEFAULT_THEME_ID = THEME_SYSTEM;
+const DEFAULT_START_PLAYING_ID = START_PLAYING_LAST;
+const DEFAULT_LANG_ID = LANG_SYSTEM;
+const DEFAULT_IS_PLAYING = true;
+
+const KEY_AUDIO_QUALITY = "AUDIO_QUALITY";
+const KEY_THEME = "THEME";
+const KEY_START_PLAYING = "START_PLAYING";
+const KEY_LANG = "LANG";
+const KEY_IS_PLAYING = "IS_PLAYING";
+const KEY_APP_TITLE = "app_title";
+const KEY_URL_STREAM_LOW = "url_stream_low";
+const KEY_URL_STREAM_MEDIUM = "url_stream_medium";
+const KEY_URL_STREAM_HIGH = "url_stream_high";
+const KEY_URL_SCHEDULE = "url_schedule";
 
 const NEWS_ART_ASSET_LIST = ["assets/images/news_01.png", "assets/images/news_02.png", "assets/images/news_03.png"];
 const TALK_ART_ASSET_LIST = ["assets/images/talk_01.png", "assets/images/talk_02.png", "assets/images/talk_03.png"];
 const MUSIC_ART_ASSET_LIST = ["assets/images/music_01.png", "assets/images/music_02.png", "assets/images/music_03.png"];
+
+const PLAYER_TASK_ACTION_SET_AUDIO_QUALITY = "player_task_event_set_audio_quality";
