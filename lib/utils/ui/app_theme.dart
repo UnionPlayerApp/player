@@ -22,6 +22,18 @@ ThemeData createAppTheme() {
   );
 }
 
+ThemeData createAppThemeDark() {
+  final ThemeData base = ThemeData.dark();
+  return base.copyWith(
+    colorScheme: _appColorScheme,
+    // buttonTheme: ButtonThemeData(
+    //   buttonColor: secondaryColor,
+    //   colorScheme: _appColorScheme.copyWith(secondary: secondaryColor),
+    //   textTheme: ButtonTextTheme.normal,
+    // ),
+  );
+}
+
 TextTheme _createTextTheme(TextTheme base) {
   return base.apply(
     fontFamily: 'Rubik',
