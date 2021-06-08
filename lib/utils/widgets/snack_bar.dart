@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/ui/app_theme.dart';
 
 const Duration _snackBarDefaultDuration = Duration(seconds: 2);
 
-void showSnackBar(BuildContext context, String msg,
-    {Duration duration = _snackBarDefaultDuration}) {
+void showSnackBar(BuildContext context, StringKeys stringKey, {Duration duration = _snackBarDefaultDuration}) {
   final content = Row(children: [
     const Icon(
       Icons.info_rounded,
       color: colorOnPrimary,
     ),
     Container(
-      child: Text(msg),
+      child: Text(translate(stringKey, context)),
       margin: EdgeInsets.only(left: 6.0),
     ),
   ]);

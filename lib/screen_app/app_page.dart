@@ -107,7 +107,7 @@ class _AppState extends State<AppPage> {
     const duration = const Duration(seconds: 2);
     if (_backPressTime == null || now.difference(_backPressTime!) > duration) {
       _backPressTime = now;
-      showSnackBar(context, translate(StringKeys.press_again_to_exit, context), duration: duration);
+      showSnackBar(context, StringKeys.press_again_to_exit, duration: duration);
       return Future.value(false);
     }
     AudioService.stop();

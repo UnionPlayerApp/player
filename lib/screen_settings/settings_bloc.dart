@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:union_player_app/screen_settings/settings_event.dart';
 import 'package:union_player_app/screen_settings/settings_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/localizations/string_translation.dart';
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   SettingsBloc(
@@ -24,16 +25,17 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       newState = SettingsState(event.audioQualityId, event.langId, event.startPlayingId, event.themeId);
     } else if (event is SettingsEventTheme) {
       _doThemeChanged(event.themeId);
-      newState = state.copyWith(newTheme: event.themeId);
+      newState = state.copyWith(newTheme: event.themeId, newSnackBarKey: StringKeys.will_made_next_release);
     } else if (event is SettingsEventLang) {
       _doLangChanged(event.langId);
-      newState = state.copyWith(newLang: event.langId);
+      newState = state.copyWith(newLang: event.langId, newSnackBarKey: StringKeys.will_made_next_release);
     } else if (event is SettingsEventAudioQuality) {
       _doAudioQualityChanged(event.audioQualityId);
-      newState = state.copyWith(newAudioQuality: event.audioQualityId);
+      newState = state.copyWith(newAudioQuality: event.audioQualityId, newSnackBarKey: StringKeys.empty);
     } else if (event is SettingsEventStartPlaying) {
       _doStartPlayingChanged(event.startPlayingId);
-      newState = state.copyWith(newStartPlaying: event.startPlayingId);
+      newState = state.copyWith(
+          newStartPlaying: event.startPlayingId, newSnackBarKey: StringKeys.will_made_next_release);
     } else {
       log("SettingsBloc -> mapEventToState -> unknown event type $event", name: LOG_TAG);
       return;

@@ -49,5 +49,7 @@
   "app_is_not_init_4": "Please try to launch the application later.",
   "app_is_not_init_5": "We apologize for any inconvenience this may cause!",
 
-  "app_init_title": "Application initialization..."
+  "app_init_title": "Application initialization...",
+
+  "will_made_next_release": "At next release..."
 }

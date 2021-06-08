@@ -60,4 +60,6 @@ enum  StringKeys{
   app_is_not_init_5,
   // Title for LoadingPage when app in initializing
   app_init_title,
+
+  will_made_next_release,
 }
