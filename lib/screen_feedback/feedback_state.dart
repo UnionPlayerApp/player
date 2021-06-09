@@ -6,6 +6,8 @@ abstract class FeedbackState extends Equatable {
   List<Object> get props => [];
 }
 
+class MailingListEmptyState extends FeedbackState {}
+
 class AboutInfoUrlLoadAwaitState extends FeedbackState {
   @override
   List<Object> get props => [];

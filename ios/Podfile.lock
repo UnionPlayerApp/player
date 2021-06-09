@@ -222,7 +222,7 @@ PODS:
   - BoringSSL-GRPC/Implementation (0.0.7):
     - BoringSSL-GRPC/Interface (= 0.0.7)
   - BoringSSL-GRPC/Interface (0.0.7)
-  - cloud_firestore (2.2.0):
+  - cloud_firestore (2.2.1):
     - Firebase/Firestore (= 8.0.0)
     - firebase_core
     - Flutter
@@ -234,7 +234,7 @@ PODS:
   - Firebase/Firestore (8.0.0):
     - Firebase/CoreOnly
     - FirebaseFirestore (~> 8.0.0)
-  - firebase_core (1.2.0):
+  - firebase_core (1.2.1):
     - Firebase/CoreOnly (= 8.0.0)
     - Flutter
   - FirebaseCore (8.0.0):
@@ -384,10 +384,10 @@ SPEC CHECKSUMS:
   audio_service: f509d65da41b9521a61f1c404dd58651f265a567
   audio_session: 4f3e461722055d21515cf3261b64c973c062f345
   BoringSSL-GRPC: 8edf627ee524575e2f8d19d56f068b448eea3879
-  cloud_firestore: 8ead368e38b40bb2a4c97458b7b99272399f2214
+  cloud_firestore: 1452cb00997cbcb2783ee8b4691bea15b43df34e
   connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
   Firebase: 73c3e3b216ec1ecbc54d2ffdd4670c65c749edb1
-  firebase_core: e4d3efb030a2b2021819f8faa538bb23deb46695
+  firebase_core: a9b69f8583dc992f1b15f376b4918537c1804bb4
   FirebaseCore: 3f09591d51292843e2a46f18358d60bf4e996255
   FirebaseCoreDiagnostics: a31d987ba0fe16d59886a5dbadc2f1de871f88c8
   FirebaseFirestore: 7f6576eaca9f821e864c3e917d68aa99f4e6b613
