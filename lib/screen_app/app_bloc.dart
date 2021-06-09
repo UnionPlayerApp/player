@@ -1,64 +1,52 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:audio_service/audio_service.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:union_player_app/model/system_data/system_data.dart';
-import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/core/shared_preferences.dart';
 
 part 'app_event.dart';
 
 part 'app_state.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
-  final AppLogger _logger;
-  final SystemData _systemData;
 
   late final StreamSubscription _customSubscription;
   late final StreamSubscription _playerSubscription;
   late final StreamSubscription _queueSubscription;
 
-  AppBloc(this._logger, this._systemData)
+  AppBloc()
       : super(AppState(0, false)) {
 
     // Timer.periodic(Duration(seconds: PLAYER_BUFFER_CHECK_DURATION),
     //     (Timer t) => _checkForBufferLoading());
 
-    log("AppBloc() => subscribes to custom", name: LOG_TAG);
     _customSubscription = AudioService.customEventStream.listen((error) => _onCustomEvent(error));
-    log("AppBloc() => subscribes to queue", name: LOG_TAG);
     _queueSubscription = AudioService.queueStream.listen((queue) => _onQueueEvent(queue));
-    log("AppBloc() => subscribes to player", name: LOG_TAG);
     _playerSubscription = AudioService.playbackStateStream.listen((state) => _onPlaybackEvent(state));
   }
 
   void _onCustomEvent(error) {
-    log("AppBloc._onCustomEvent() => Queue load ERROR ($error))", name: LOG_TAG);
     add(AppScheduleEvent(null));
   }
 
   void _onQueueEvent(List<MediaItem>? queue) {
     if (queue == null) {
-      log("AppBloc._onQueueEvent(queue), queue is null", name: LOG_TAG);
       add(AppScheduleEvent(null));
     } else if (queue.isEmpty) {
-      log("AppBloc._onQueueEvent(queue), queue is empty", name: LOG_TAG);
       add(AppScheduleEvent(null));
     } else {
-      log("AppBloc._onQueueEvent(queue), queue has ${queue.length} elements", name: LOG_TAG);
       add(AppScheduleEvent(queue));
     }
   }
 
   void _onPlaybackEvent(PlaybackState state) {
-    log("AppBloc._onPlaybackEvent(), playing = ${state.playing}", name: LOG_TAG);
     add(AppPlayerEvent(state.playing));
+    writeBoolToSharedPreferences(KEY_IS_PLAYING, state.playing);
   }
 
   @override
   Future<void> close() async {
-    log("AppBloc.close()", name: LOG_TAG);
     _customSubscription.cancel();
     _playerSubscription.cancel();
     _queueSubscription.cancel();
@@ -69,10 +57,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   Stream<AppState> mapEventToState(AppEvent event) async* {
     if (event is AppFabEvent) {
       if (AudioService.playbackState.playing) {
-        log("AppBloc.mapEventToState() -> event is AppFabEvent -> AudioService.pause()", name: LOG_TAG);
         AudioService.pause();
       } else {
-        log("AppBloc.mapEventToState() -> event is AppFabEvent -> AudioService.play()", name: LOG_TAG);
         AudioService.play();
       }
     } else if (event is AppNavEvent) {

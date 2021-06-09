@@ -34,8 +34,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       newState = state.copyWith(newAudioQuality: event.audioQualityId, newSnackBarKey: StringKeys.empty);
     } else if (event is SettingsEventStartPlaying) {
       _doStartPlayingChanged(event.startPlayingId);
-      newState = state.copyWith(
-          newStartPlaying: event.startPlayingId, newSnackBarKey: StringKeys.will_made_next_release);
+      newState = state.copyWith(newStartPlaying: event.startPlayingId, newSnackBarKey: StringKeys.empty);
     } else {
       log("SettingsBloc -> mapEventToState -> unknown event type $event", name: LOG_TAG);
       return;
@@ -56,8 +55,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       KEY_AUDIO_QUALITY: audioQualityId,
       KEY_IS_PLAYING: AudioService.playbackState.playing,
     };
-    AudioService.customAction(PLAYER_TASK_ACTION_SET_AUDIO_QUALITY, params);
-    _writeIntToSharedPreferences(KEY_AUDIO_QUALITY, audioQualityId);
+    AudioService.customAction(PLAYER_TASK_ACTION_SET_AUDIO_QUALITY, params)
+        .then((value) => _writeIntToSharedPreferences(KEY_AUDIO_QUALITY, audioQualityId));
   }
 
   void _doStartPlayingChanged(int startPlayingId) {
