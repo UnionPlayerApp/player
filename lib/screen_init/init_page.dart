@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:koin_flutter/koin_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:union_player_app/model/system_data/system_data.dart';
 import 'package:union_player_app/player/player_task.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
@@ -83,9 +84,31 @@ class _InitPageState extends State<InitPage> {
   Future _initPlayer() async {
     _systemData.playerData.appTitle = translate(StringKeys.app_title, context);
 
+    final SharedPreferences sp = await SharedPreferences.getInstance();
+
+    final int audioQualityId = sp.getInt(KEY_AUDIO_QUALITY) ?? DEFAULT_AUDIO_QUALITY_ID;
+    final int startPlayingId = sp.getInt(KEY_START_PLAYING) ?? DEFAULT_START_PLAYING_ID;
+
+    late final bool isPlaying;
+
+    switch (startPlayingId) {
+      case START_PLAYING_START:
+        isPlaying = true;
+        break;
+      case START_PLAYING_STOP:
+        isPlaying = false;
+        break;
+      case START_PLAYING_LAST:
+        isPlaying = sp.getBool(KEY_IS_PLAYING) ?? DEFAULT_IS_PLAYING;
+        break;
+      default:
+        isPlaying = DEFAULT_IS_PLAYING;
+        break;
+    }
+
     await AudioService.start(
       backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
-      params: _createPlayerTaskParams(),
+      params: _createPlayerTaskParams(audioQualityId, isPlaying),
       androidNotificationChannelName: AUDIO_NOTIFICATION_CHANNEL_NAME,
       androidNotificationColor: Colors.lightGreenAccent.value,
       androidNotificationIcon: AUDIO_NOTIFICATION_ICON,
@@ -94,15 +117,15 @@ class _InitPageState extends State<InitPage> {
     );
   }
 
-  Map<String, dynamic> _createPlayerTaskParams() {
+  Map<String, dynamic> _createPlayerTaskParams(int audioQualityId, bool isPlaying) {
     final Map<String, dynamic> params = {
       KEY_APP_TITLE: _systemData.playerData.appTitle,
       KEY_URL_STREAM_LOW: _systemData.streamData.streamLow,
       KEY_URL_STREAM_MEDIUM: _systemData.streamData.streamMedium,
       KEY_URL_STREAM_HIGH: _systemData.streamData.streamHigh,
       KEY_URL_SCHEDULE: _systemData.xmlData.url,
-      KEY_AUDIO_QUALITY: DEFAULT_AUDIO_QUALITY_ID,
-      KEY_IS_PLAYING: DEFAULT_IS_PLAYING,
+      KEY_AUDIO_QUALITY: audioQualityId,
+      KEY_IS_PLAYING: isPlaying,
     };
     return params;
   }

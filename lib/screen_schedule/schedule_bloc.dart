@@ -4,15 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_event.dart';
 import 'package:union_player_app/screen_schedule/schedule_item_view.dart';
 import 'package:union_player_app/screen_schedule/schedule_state.dart';
-import 'package:union_player_app/utils/app_logger.dart';
 
 class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
-  final AppLogger _logger;
   late final StreamSubscription _queueSubscription;
   late final StreamSubscription _customSubscription;
 
-  ScheduleBloc(this._logger)
-      : super(ScheduleLoadAwaitState()) {
+  ScheduleBloc() : super(ScheduleLoadAwaitState()) {
     _queueSubscription = AudioService.queueStream.listen((queue) => _onQueueEvent(queue));
     _customSubscription = AudioService.customEventStream.listen((error) => _onCustomEvent(error));
   }
