@@ -4,7 +4,9 @@ import 'dart:developer';
 import 'package:audio_service/audio_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -40,6 +42,11 @@ class _InitPageState extends State<InitPage> {
   Future _initSystemData() async {
     try {
       await Firebase.initializeApp();
+      if (kDebugMode) {
+        await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+      } else {
+        FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+      }
     } catch (error) {
       throw Exception("Firebase initialize error: $error");
     }
