@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/shared_preferences.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 part 'app_event.dart';
 
