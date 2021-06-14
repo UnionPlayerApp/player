@@ -57,7 +57,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   @override
   Stream<AppState> mapEventToState(AppEvent event) async* {
     if (event is AppFabEvent) {
-      FirebaseCrashlytics.instance.crash();
       if (AudioService.playbackState.playing) {
         AudioService.pause();
       } else {

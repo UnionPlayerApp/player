@@ -43,7 +43,7 @@ class _InitPageState extends State<InitPage> {
     try {
       await Firebase.initializeApp();
       if (kDebugMode) {
-        //await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+        await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
       }
       if (kReleaseMode) {
         FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
