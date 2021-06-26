@@ -10,8 +10,11 @@ const double PROTOTYPE_DEVICE_WIDTH = 390;
 // Общие настройки
 final EdgeInsets allSidesMargin = EdgeInsets.all(16.w);
 
-//AppBar
-final EdgeInsets appBarLeadingPadding = EdgeInsets.all(6.h) + EdgeInsets.only(left: 16.h);
+// AppBar
+final EdgeInsets appBarLeadingPadding = EdgeInsets.all(3.h);
+
+// Audio Quality Selector
+final EdgeInsets appAudioQualitySelectorPadding = EdgeInsets.all(3.h);
 
 // MainPage
 final double mainImageSide = 200.w;

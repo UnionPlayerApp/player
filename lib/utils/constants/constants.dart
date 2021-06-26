@@ -3,6 +3,11 @@ const APP_BAR_LOGO_IMAGE = "assets/images/union_radio_logo_outline.svg";
 const LOGO_IMAGE = "assets/images/union_radio_logo.png";
 const LOGO_IMAGE_1 = "assets/images/union_radio_logo_1.png";
 
+const IC_AUDIO_QUALITY_LOW = "assets/images/audio_quality_low.png";
+const IC_AUDIO_QUALITY_HIGH = "assets/images/audio_quality_high.png";
+const IC_AUDIO_QUALITY_MEDIUM = "assets/images/audio_quality_medium.png";
+const IC_AUDIO_QUALITY_DEFAULT = IC_AUDIO_QUALITY_MEDIUM;
+
 //Streams IDs
 const ID_STREAM_LOW = 0;
 const ID_STREAM_MEDIUM = 1;

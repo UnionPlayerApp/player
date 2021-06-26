@@ -10,14 +10,11 @@ part 'app_event.dart';
 part 'app_state.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
-
   late final StreamSubscription _customSubscription;
   late final StreamSubscription _playerSubscription;
   late final StreamSubscription _queueSubscription;
 
-  AppBloc()
-      : super(AppState(0, false)) {
-
+  AppBloc() : super(AppState(0, DEFAULT_IS_PLAYING, DEFAULT_AUDIO_QUALITY_ID, false)) {
     // Timer.periodic(Duration(seconds: PLAYER_BUFFER_CHECK_DURATION),
     //     (Timer t) => _checkForBufferLoading());
 
@@ -62,32 +59,26 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         AudioService.play();
       }
     } else if (event is AppNavEvent) {
-      yield AppState(event.navIndex, state.playingState, //state.processingState,
-          isScheduleLoaded: state.isScheduleLoaded,
-          presentTitle: state.presentTitle,
-          presentArtist: state.presentArtist,
-          nextTitle: state.nextTitle,
-          nextArtist: state.nextArtist);
+      yield state.copyWith(navIndex: event.navIndex);
     } else if (event is AppPlayerEvent) {
-      yield AppState(state.navIndex, event.playingState, //event.processingState,
-          isScheduleLoaded: state.isScheduleLoaded,
-          presentTitle: state.presentTitle,
-          presentArtist: state.presentArtist,
-          nextTitle: state.nextTitle,
-          nextArtist: state.nextArtist);
+      yield state.copyWith(playingState: event.playingState);
     } else if (event is AppScheduleEvent) {
       if (event.items == null || event.items!.length < 2) {
-        yield AppState(state.navIndex, state.playingState, ); //state.processingState);
+        yield state.copyWith(isScheduleLoaded: false);
       } else {
         final presentItem = event.items![0];
         final nextItem = event.items![1];
-        yield AppState(state.navIndex, state.playingState, //state.processingState,
+        yield state.copyWith(
             isScheduleLoaded: true,
             presentArtist: presentItem.artist ?? "",
             presentTitle: presentItem.title,
             nextArtist: nextItem.artist ?? "",
             nextTitle: nextItem.title);
       }
+    } else if (event is AppAudioQualitySelectorEvent) {
+      yield state.copyWith(isAudioQualitySelectorOpen: !state.isAudioQualitySelectorOpen);
+    } else if (event is AppAudioQualityButtonEvent) {
+      yield state.copyWith(isAudioQualitySelectorOpen: false);
     }
   }
 

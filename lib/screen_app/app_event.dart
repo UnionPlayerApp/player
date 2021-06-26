@@ -1,11 +1,11 @@
 part of 'app_bloc.dart';
 
-abstract class AppEvent extends Equatable {}
-
-class AppFabEvent extends AppEvent {
+abstract class AppEvent extends Equatable {
   @override
   List<Object?> get props => [];
 }
+
+class AppFabEvent extends AppEvent {}
 
 class AppNavEvent extends AppEvent {
   final int navIndex;
@@ -32,4 +32,15 @@ class AppScheduleEvent extends AppEvent {
 
   @override
   List<Object?> get props => [items];
+}
+
+class AppAudioQualitySelectorEvent extends AppEvent {}
+
+class AppAudioQualityButtonEvent extends AppEvent {
+  int audioQualityId;
+
+  AppAudioQualityButtonEvent(this.audioQualityId);
+
+  @override
+  List<Object?> get props => [audioQualityId];
 }

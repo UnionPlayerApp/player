@@ -20,7 +20,6 @@ import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/ui/app_theme.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:union_player_app/utils/widgets/info_page.dart';
 import 'package:union_player_app/utils/widgets/snack_bar.dart';
 
@@ -50,7 +49,8 @@ class _AppState extends State<AppPage> {
     });
   }
 
-  BottomAppBar _createBottomNavigationBar(AppState state) => BottomAppBar(
+  BottomAppBar _createBottomNavigationBar(AppState state) =>
+      BottomAppBar(
         shape: CircularNotchedRectangle(),
         notchMargin: 7,
         child: Container(
@@ -118,7 +118,7 @@ class _AppState extends State<AppPage> {
     final size = AppBar().preferredSize;
     return AppBar(
       title: _createTitle(state, size),
-      leading: _createLeading(),
+      leading: _createLeading(state),
     );
   }
 
@@ -147,32 +147,112 @@ class _AppState extends State<AppPage> {
     return translate(StringKeys.information_is_loading, context);
   }
 
-  Widget _createLeading() {
-    return Container(
-        padding: appBarLeadingPadding,
-        child: SvgPicture.asset(
-          APP_BAR_LOGO_IMAGE,
-          color: colorOnPrimary,
-          fit: BoxFit.scaleDown,
-        ));
+  Widget _createLeading(AppState state) {
+    late final String assetName;
+    switch (state.audioQualityId) {
+      case AUDIO_QUALITY_LOW:
+        assetName = IC_AUDIO_QUALITY_LOW;
+        break;
+      case AUDIO_QUALITY_MEDIUM:
+        assetName = IC_AUDIO_QUALITY_MEDIUM;
+        break;
+      case AUDIO_QUALITY_HIGH:
+        assetName = IC_AUDIO_QUALITY_HIGH;
+        break;
+      default:
+        assetName = IC_AUDIO_QUALITY_DEFAULT;
+        break;
+    }
+    return MaterialButton(
+      padding: appBarLeadingPadding,
+      child: Image.asset(assetName),
+      onPressed: () {
+        context.read<AppBloc>().add(AppAudioQualitySelectorEvent());
+      },
+    );
   }
 
   Widget _createPage(AppState state) {
-    switch (state.navIndex) {
-      case 0:
-        return BlocProvider.value(value: get<MainBloc>(), child: get<MainPage>());
-      case 1:
-        return BlocProvider.value(value: get<ScheduleBloc>(), child: get<SchedulePage>());
-      case 2:
-        return BlocProvider.value(value: get<FeedbackBloc>(), child: get<FeedbackPage>());
-      case 3:
-        return get<SettingsPage>();
-      default:
-        return getWithParam<InfoPage, List<String>>(["Ошибка навигации", "Экран не создан?"]);
-    }
+    final navPage = _createNavPage(state.navIndex, !state.isAudioQualitySelectorOpen);
+    final audioQualitySelector = _createAudioQualitySelector(state.isAudioQualitySelectorOpen);
+
+    return Stack(children: [navPage, audioQualitySelector]);
   }
 
-  FloatingActionButton _createFAB(AppState state) => FloatingActionButton(
+  Widget _createNavPage(int navIndex, bool isActive) {
+    late final Widget navPage;
+    switch (navIndex) {
+      case 0:
+        navPage = BlocProvider.value(value: get<MainBloc>(), child: get<MainPage>());
+        break;
+      case 1:
+        navPage = BlocProvider.value(value: get<ScheduleBloc>(), child: get<SchedulePage>());
+        break;
+      case 2:
+        navPage = BlocProvider.value(value: get<FeedbackBloc>(), child: get<FeedbackPage>());
+        break;
+      case 3:
+        navPage = get<SettingsPage>();
+        break;
+      default:
+        navPage = getWithParam<InfoPage, List<String>>(["Ошибка навигации", "Экран не создан?"]);
+        break;
+    }
+
+    return Opacity(
+        opacity: isActive ? 1.0 : 0.2,
+        child: IgnorePointer(
+            ignoring: !isActive,
+            child: navPage
+        )
+    );
+  }
+
+  Widget _createAudioQualitySelector(bool visible) {
+    final children = [
+      _createAudioQualitySelectorButton(
+          IC_AUDIO_QUALITY_LOW, StringKeys.settings_quality_low, AUDIO_QUALITY_LOW),
+      _createAudioQualitySelectorButton(
+          IC_AUDIO_QUALITY_MEDIUM, StringKeys.settings_quality_medium, AUDIO_QUALITY_MEDIUM),
+      _createAudioQualitySelectorButton(
+          IC_AUDIO_QUALITY_HIGH, StringKeys.settings_quality_high, AUDIO_QUALITY_HIGH),
+    ];
+    return Visibility(
+        visible: visible,
+        child: Column(children: children)
+    );
+  }
+
+  Widget _createAudioQualitySelectorButton(String assetName, StringKeys key, int audioQualityId) {
+    final size = AppBar().preferredSize;
+
+    final image = Container(
+        padding: appAudioQualitySelectorPadding,
+        child: SizedBox(
+          height: size.height,
+          width: size.height,
+          child: Image.asset(assetName),
+        )
+    );
+
+    final string = "${translate(StringKeys.settings_quality_label, context)} ${translate(key, context)}";
+
+    final text = Text(string, style: Theme
+        .of(context)
+        .textTheme
+        .bodyText2);
+
+    final row = Row(children: [image, text]);
+
+    return MaterialButton(
+      child: row,
+      padding: const EdgeInsets.all(0),
+      onPressed: () => context.read<AppBloc>().add(AppAudioQualityButtonEvent(audioQualityId)),
+    );
+  }
+
+  FloatingActionButton _createFAB(AppState state) =>
+      FloatingActionButton(
         onPressed: () => context.read<AppBloc>().add(AppFabEvent()),
         tooltip: 'Play / Stop',
         child: Icon(state.playingState ? Icons.stop_rounded : Icons.play_arrow_rounded),
