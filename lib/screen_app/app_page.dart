@@ -233,7 +233,9 @@ class _AppState extends State<AppPage> {
         color: Colors.black12,
       ),
       margin: EdgeInsets.all(2.0),
-      child: Column(children: children),
+      child: Wrap(
+          children: [Column(children: children)]
+      ),
     );
 
     return Visibility(
@@ -259,7 +261,9 @@ class _AppState extends State<AppPage> {
 
     final text = Text(string, style: Theme.of(context).textTheme.bodyText2);
 
-    final row = Row(children: [image, text]);
+    final row = Wrap(
+        children: [Row(children: [image, text])]
+    );
 
     return MaterialButton(
       child: row,
