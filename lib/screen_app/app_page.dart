@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -33,8 +34,8 @@ class _AppState extends State<AppPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppBloc, AppState>(
-        builder: (BuildContext context, AppState state) {
+    FirebaseAnalytics().logEvent(name: GA_APP_START);
+    return BlocBuilder<AppBloc, AppState>(builder: (BuildContext context, AppState state) {
       log("AppState.build(), AppState = $state", name: LOG_TAG);
       return WillPopScope(
         onWillPop: () => _onWillPop(),
@@ -43,8 +44,7 @@ class _AppState extends State<AppPage> {
           body: _createPage(state),
           extendBody: true,
           floatingActionButton: _createFAB(state),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
           bottomNavigationBar: _createBottomNavigationBar(state),
         ),
       );
@@ -63,10 +63,8 @@ class _AppState extends State<AppPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buttonAppBar(
-                        context, state, 0, Icons.radio, StringKeys.home),
-                    _buttonAppBar(
-                        context, state, 1, Icons.list_alt, StringKeys.schedule),
+                    _buttonAppBar(context, state, 0, Icons.radio, StringKeys.home),
+                    _buttonAppBar(context, state, 1, Icons.list_alt, StringKeys.schedule),
                   ],
                 ),
               ),
@@ -75,10 +73,8 @@ class _AppState extends State<AppPage> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buttonAppBar(context, state, 2,
-                        Icons.markunread_mailbox_outlined, StringKeys.feedback),
-                    _buttonAppBar(context, state, 3, Icons.settings_rounded,
-                        StringKeys.settings),
+                    _buttonAppBar(context, state, 2, Icons.markunread_mailbox_outlined, StringKeys.feedback),
+                    _buttonAppBar(context, state, 3, Icons.settings_rounded, StringKeys.settings),
                   ],
                 ),
               ),
@@ -117,6 +113,7 @@ class _AppState extends State<AppPage> {
       return Future.value(false);
     }
     AudioService.stop();
+    FirebaseAnalytics().logEvent(name: GA_APP_STOP);
     return Future.value(true);
   }
 

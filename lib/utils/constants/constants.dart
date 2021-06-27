@@ -57,9 +57,9 @@ const LANG_EN = 3;
 
 const DEFAULT_AUDIO_QUALITY_ID = AUDIO_QUALITY_MEDIUM;
 const DEFAULT_THEME_ID = THEME_SYSTEM;
-const DEFAULT_START_PLAYING_ID = START_PLAYING_START;
+const DEFAULT_START_PLAYING_ID = START_PLAYING_STOP;
 const DEFAULT_LANG_ID = LANG_SYSTEM;
-const DEFAULT_IS_PLAYING = true;
+const DEFAULT_IS_PLAYING = false;
 
 const KEY_AUDIO_QUALITY = "AUDIO_QUALITY";
 const KEY_THEME = "THEME";
@@ -76,4 +76,11 @@ const NEWS_ART_ASSET_LIST = ["assets/images/news_01.png", "assets/images/news_02
 const TALK_ART_ASSET_LIST = ["assets/images/talk_01.png", "assets/images/talk_02.png", "assets/images/talk_03.png"];
 const MUSIC_ART_ASSET_LIST = ["assets/images/music_01.png", "assets/images/music_02.png", "assets/images/music_03.png"];
 
+// Custom action name for AudioBackgroundService
 const PLAYER_TASK_ACTION_SET_AUDIO_QUALITY = "player_task_event_set_audio_quality";
+
+// Google/Firebase Analytics event names
+const GA_APP_START = "UPA_APP_START";
+const GA_APP_STOP = "UPA_APP_STOP";
+const GA_PLAYER_START = "UPA_PLAYER_START";
+const GA_PLAYER_STOP = "UPA_PLAYER_STOP";
