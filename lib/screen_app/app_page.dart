@@ -242,7 +242,13 @@ class _AppState extends State<AppPage> {
         .textTheme
         .bodyText2);
 
-    final row = Row(children: [image, text]);
+    final row = Container(
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(Radius.circular(2.0)),
+        color: Colors.black12,
+      ),
+        child: Row(children: [image, text])
+    );
 
     return MaterialButton(
       child: row,
