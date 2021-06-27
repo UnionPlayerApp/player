@@ -33,7 +33,8 @@ class _AppState extends State<AppPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppBloc, AppState>(builder: (BuildContext context, AppState state) {
+    return BlocBuilder<AppBloc, AppState>(
+        builder: (BuildContext context, AppState state) {
       log("AppState.build(), AppState = $state", name: LOG_TAG);
       return WillPopScope(
         onWillPop: () => _onWillPop(),
@@ -42,15 +43,15 @@ class _AppState extends State<AppPage> {
           body: _createPage(state),
           extendBody: true,
           floatingActionButton: _createFAB(state),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
           bottomNavigationBar: _createBottomNavigationBar(state),
         ),
       );
     });
   }
 
-  BottomAppBar _createBottomNavigationBar(AppState state) =>
-      BottomAppBar(
+  BottomAppBar _createBottomNavigationBar(AppState state) => BottomAppBar(
         shape: CircularNotchedRectangle(),
         notchMargin: 7,
         child: Container(
@@ -62,8 +63,10 @@ class _AppState extends State<AppPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buttonAppBar(context, state, 0, Icons.radio, StringKeys.home),
-                    _buttonAppBar(context, state, 1, Icons.list_alt, StringKeys.schedule),
+                    _buttonAppBar(
+                        context, state, 0, Icons.radio, StringKeys.home),
+                    _buttonAppBar(
+                        context, state, 1, Icons.list_alt, StringKeys.schedule),
                   ],
                 ),
               ),
@@ -72,8 +75,10 @@ class _AppState extends State<AppPage> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buttonAppBar(context, state, 2, Icons.markunread_mailbox_outlined, StringKeys.feedback),
-                    _buttonAppBar(context, state, 3, Icons.settings_rounded, StringKeys.settings),
+                    _buttonAppBar(context, state, 2,
+                        Icons.markunread_mailbox_outlined, StringKeys.feedback),
+                    _buttonAppBar(context, state, 3, Icons.settings_rounded,
+                        StringKeys.settings),
                   ],
                 ),
               ),
@@ -82,7 +87,8 @@ class _AppState extends State<AppPage> {
         ),
       );
 
-  Expanded _buttonAppBar(BuildContext context, AppState state, int itemTab, IconData iconTab, StringKeys nameTab) {
+  Expanded _buttonAppBar(BuildContext context, AppState state, int itemTab,
+      IconData iconTab, StringKeys nameTab) {
     final color = state.navIndex == itemTab ? primaryColor : Colors.grey;
     return Expanded(
       child: MaterialButton(
@@ -123,7 +129,8 @@ class _AppState extends State<AppPage> {
   }
 
   Widget _createTitle(AppState state, Size size) {
-    final title = state.isScheduleLoaded ? _loadedTitle(state) : _unloadedTitle();
+    final title =
+        state.isScheduleLoaded ? _loadedTitle(state) : _unloadedTitle();
     final marquee = Marquee(
       text: title,
       startAfter: const Duration(seconds: 3),
@@ -173,8 +180,10 @@ class _AppState extends State<AppPage> {
   }
 
   Widget _createPage(AppState state) {
-    final navPage = _createNavPage(state.navIndex, !state.isAudioQualitySelectorOpen);
-    final audioQualitySelector = _createAudioQualitySelector(state.isAudioQualitySelectorOpen);
+    final navPage =
+        _createNavPage(state.navIndex, !state.isAudioQualitySelectorOpen);
+    final audioQualitySelector =
+        _createAudioQualitySelector(state.isAudioQualitySelectorOpen);
 
     return Stack(children: [navPage, audioQualitySelector]);
   }
@@ -183,47 +192,58 @@ class _AppState extends State<AppPage> {
     late final Widget navPage;
     switch (navIndex) {
       case 0:
-        navPage = BlocProvider.value(value: get<MainBloc>(), child: get<MainPage>());
+        navPage =
+            BlocProvider.value(value: get<MainBloc>(), child: get<MainPage>());
         break;
       case 1:
-        navPage = BlocProvider.value(value: get<ScheduleBloc>(), child: get<SchedulePage>());
+        navPage = BlocProvider.value(
+            value: get<ScheduleBloc>(), child: get<SchedulePage>());
         break;
       case 2:
-        navPage = BlocProvider.value(value: get<FeedbackBloc>(), child: get<FeedbackPage>());
+        navPage = BlocProvider.value(
+            value: get<FeedbackBloc>(), child: get<FeedbackPage>());
         break;
       case 3:
         navPage = get<SettingsPage>();
         break;
       default:
-        navPage = getWithParam<InfoPage, List<String>>(["Ошибка навигации", "Экран не создан?"]);
+        navPage = getWithParam<InfoPage, List<String>>(
+            ["Ошибка навигации", "Экран не создан?"]);
         break;
     }
 
     return Opacity(
         opacity: isActive ? 1.0 : 0.2,
-        child: IgnorePointer(
-            ignoring: !isActive,
-            child: navPage
-        )
-    );
+        child: IgnorePointer(ignoring: !isActive, child: navPage));
   }
 
   Widget _createAudioQualitySelector(bool visible) {
     final children = [
-      _createAudioQualitySelectorButton(
-          IC_AUDIO_QUALITY_LOW, StringKeys.settings_quality_low, AUDIO_QUALITY_LOW),
-      _createAudioQualitySelectorButton(
-          IC_AUDIO_QUALITY_MEDIUM, StringKeys.settings_quality_medium, AUDIO_QUALITY_MEDIUM),
-      _createAudioQualitySelectorButton(
-          IC_AUDIO_QUALITY_HIGH, StringKeys.settings_quality_high, AUDIO_QUALITY_HIGH),
+      _createAudioQualitySelectorButton(IC_AUDIO_QUALITY_LOW,
+          StringKeys.settings_quality_low, AUDIO_QUALITY_LOW),
+      _createAudioQualitySelectorButton(IC_AUDIO_QUALITY_MEDIUM,
+          StringKeys.settings_quality_medium, AUDIO_QUALITY_MEDIUM),
+      _createAudioQualitySelectorButton(IC_AUDIO_QUALITY_HIGH,
+          StringKeys.settings_quality_high, AUDIO_QUALITY_HIGH),
     ];
+
+    final widget = Container(
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(Radius.circular(2.0)),
+        color: Colors.black12,
+      ),
+      margin: EdgeInsets.all(2.0),
+      child: Column(children: children),
+    );
+
     return Visibility(
-        visible: visible,
-        child: Column(children: children)
+      visible: visible,
+      child: widget,
     );
   }
 
-  Widget _createAudioQualitySelectorButton(String assetName, StringKeys key, int audioQualityId) {
+  Widget _createAudioQualitySelectorButton(
+      String assetName, StringKeys key, int audioQualityId) {
     final size = AppBar().preferredSize;
 
     final image = Container(
@@ -232,35 +252,28 @@ class _AppState extends State<AppPage> {
           height: size.height,
           width: size.height,
           child: Image.asset(assetName),
-        )
-    );
+        ));
 
-    final string = "${translate(StringKeys.settings_quality_label, context)} ${translate(key, context)}";
+    final string =
+        "${translate(StringKeys.settings_quality_label, context)} ${translate(key, context)}";
 
-    final text = Text(string, style: Theme
-        .of(context)
-        .textTheme
-        .bodyText2);
+    final text = Text(string, style: Theme.of(context).textTheme.bodyText2);
 
-    final row = Container(
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(2.0)),
-        color: Colors.black12,
-      ),
-        child: Row(children: [image, text])
-    );
+    final row = Row(children: [image, text]);
 
     return MaterialButton(
       child: row,
       padding: const EdgeInsets.all(0),
-      onPressed: () => context.read<AppBloc>().add(AppAudioQualityButtonEvent(audioQualityId)),
+      onPressed: () => context
+          .read<AppBloc>()
+          .add(AppAudioQualityButtonEvent(audioQualityId)),
     );
   }
 
-  FloatingActionButton _createFAB(AppState state) =>
-      FloatingActionButton(
+  FloatingActionButton _createFAB(AppState state) => FloatingActionButton(
         onPressed: () => context.read<AppBloc>().add(AppFabEvent()),
         tooltip: 'Play / Stop',
-        child: Icon(state.playingState ? Icons.stop_rounded : Icons.play_arrow_rounded),
+        child: Icon(
+            state.playingState ? Icons.stop_rounded : Icons.play_arrow_rounded),
       );
 }
