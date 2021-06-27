@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -34,6 +35,7 @@ class _AppState extends State<AppPage> {
 
   @override
   Widget build(BuildContext context) {
+    FirebaseAnalytics().logEvent(name: GA_APP_START);
     return BlocBuilder<AppBloc, AppState>(builder: (BuildContext context, AppState state) {
       log("AppState.build(), AppState = $state", name: LOG_TAG);
       return WillPopScope(
@@ -111,6 +113,7 @@ class _AppState extends State<AppPage> {
       return Future.value(false);
     }
     AudioService.stop();
+    FirebaseAnalytics().logEvent(name: GA_APP_STOP);
     return Future.value(true);
   }
 
