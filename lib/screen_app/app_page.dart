@@ -166,7 +166,7 @@ class _AppState extends State<AppPage> {
         break;
     }
     return MaterialButton(
-      padding: appBarLeadingPadding,
+      padding: EdgeInsets.only(left: 6.0, right: 6.0),
       child: Image.asset(assetName),
       onPressed: () {
         context.read<AppBloc>().add(AppAudioQualitySelectorEvent());
@@ -247,8 +247,7 @@ class _AppState extends State<AppPage> {
         ),
         margin: EdgeInsets.only(left: 6.0),
         padding: appAudioQualitySelectorPadding,
-        child: Text(string, style: textStyle)
-    );
+        child: Text(string, style: textStyle));
 
     final row = Row(mainAxisSize: MainAxisSize.min, children: [image, text]);
 

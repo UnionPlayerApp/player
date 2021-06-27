@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:audio_service/audio_service.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -21,6 +22,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     _customSubscription = AudioService.customEventStream.listen((error) => _onCustomEvent(error));
     _queueSubscription = AudioService.queueStream.listen((queue) => _onQueueEvent(queue));
     _playerSubscription = AudioService.playbackStateStream.listen((state) => _onPlaybackEvent(state));
+
+    _readAudioQualityIdFromSharedPreferences();
   }
 
   void _onCustomEvent(error) {
@@ -78,8 +81,34 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     } else if (event is AppAudioQualitySelectorEvent) {
       yield state.copyWith(isAudioQualitySelectorOpen: !state.isAudioQualitySelectorOpen);
     } else if (event is AppAudioQualityButtonEvent) {
-      yield state.copyWith(isAudioQualitySelectorOpen: false);
+      _doAudioQualityChanged(event.audioQualityId);
+      yield state.copyWith(isAudioQualitySelectorOpen: false, audioQualityId: event.audioQualityId);
+    } else if (event is AppAudioQualityInitEvent) {
+      yield state.copyWith(audioQualityId: event.audioQualityId);
     }
+  }
+
+  void _doAudioQualityChanged(int audioQualityId) {
+    Map<String, dynamic> params = {
+      KEY_AUDIO_QUALITY: audioQualityId,
+      KEY_IS_PLAYING: AudioService.playbackState.playing,
+    };
+    AudioService.customAction(PLAYER_TASK_ACTION_SET_AUDIO_QUALITY, params)
+        .then((value) => writeIntToSharedPreferences(KEY_AUDIO_QUALITY, audioQualityId));
+  }
+
+  void _readAudioQualityIdFromSharedPreferences() async {
+      readIntFromSharedPreferences(KEY_AUDIO_QUALITY)
+        .then((audioQualityId) => _onSharedPreferencesReadSuccess(audioQualityId))
+        .catchError((error) => _onSharedPreferencesReadError(error));
+  }
+
+  _onSharedPreferencesReadSuccess(int? audioQualityId) {
+    add(AppAudioQualityInitEvent(audioQualityId ?? DEFAULT_AUDIO_QUALITY_ID));
+  }
+
+  _onSharedPreferencesReadError(error) {
+    log("shared preferences read error: $error", name: LOG_TAG);
   }
 
 // Future<void> _checkForBufferLoading() async {

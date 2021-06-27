@@ -37,9 +37,18 @@ class AppScheduleEvent extends AppEvent {
 class AppAudioQualitySelectorEvent extends AppEvent {}
 
 class AppAudioQualityButtonEvent extends AppEvent {
-  int audioQualityId;
+  final int audioQualityId;
 
   AppAudioQualityButtonEvent(this.audioQualityId);
+
+  @override
+  List<Object?> get props => [audioQualityId];
+}
+
+class AppAudioQualityInitEvent extends AppEvent {
+  final int audioQualityId;
+
+  AppAudioQualityInitEvent(this.audioQualityId);
 
   @override
   List<Object?> get props => [audioQualityId];
