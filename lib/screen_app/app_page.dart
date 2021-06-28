@@ -16,6 +16,7 @@ import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/screen_main/main_page.dart';
 import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_page.dart';
+import 'package:union_player_app/screen_settings/settings_bloc.dart';
 import 'package:union_player_app/screen_settings/settings_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
@@ -196,7 +197,7 @@ class _AppState extends State<AppPage> {
         navPage = BlocProvider.value(value: get<FeedbackBloc>(), child: get<FeedbackPage>());
         break;
       case 3:
-        navPage = get<SettingsPage>();
+        navPage = BlocProvider.value(value: get<SettingsBloc>(), child: get<SettingsPage>());
         break;
       default:
         navPage = getWithParam<InfoPage, List<String>>(["Ошибка навигации", "Экран не создан?"]);
