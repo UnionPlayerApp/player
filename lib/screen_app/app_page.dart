@@ -31,6 +31,8 @@ class AppPage extends StatefulWidget {
 
 class _AppState extends State<AppPage> {
   DateTime? _backPressTime;
+  Widget? _currentPage;
+  Duration _animationDuration = const Duration(milliseconds: 300);
 
   @override
   Widget build(BuildContext context) {
@@ -201,7 +203,18 @@ class _AppState extends State<AppPage> {
         break;
     }
 
-    return Opacity(opacity: isActive ? 1.0 : 0.2, child: IgnorePointer(ignoring: !isActive, child: navPage));
+    final navPageAnimated = _currentPage == null
+        ? AnimatedOpacity(opacity: isActive ? 1.0 : 0.2, duration: _animationDuration, child: navPage)
+        : _currentPage.runtimeType == navPage.runtimeType
+            ? navPage
+            : AnimatedSwitcher(duration: _animationDuration, child: navPage);
+
+    _currentPage = navPage;
+
+    return AnimatedOpacity(
+        opacity: isActive ? 1.0 : 0.2,
+        duration: _animationDuration,
+        child: IgnorePointer(ignoring: !isActive, child: navPageAnimated));
   }
 
   Widget _createAudioQualitySelector(bool visible) {
@@ -217,9 +230,10 @@ class _AppState extends State<AppPage> {
       child: Wrap(children: [Column(crossAxisAlignment: CrossAxisAlignment.start, children: children)]),
     );
 
-    return Visibility(
-      visible: visible,
-      child: widget,
+    return AnimatedOpacity(
+      opacity: visible ? 1.0 : 0.0,
+      duration: _animationDuration,
+      child: IgnorePointer(ignoring: !visible, child: widget),
     );
   }
 
