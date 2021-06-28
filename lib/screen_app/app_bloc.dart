@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:audio_service/audio_service.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -10,20 +11,19 @@ part 'app_event.dart';
 part 'app_state.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
-
   late final StreamSubscription _customSubscription;
   late final StreamSubscription _playerSubscription;
   late final StreamSubscription _queueSubscription;
 
-  AppBloc()
-      : super(AppState(0, false)) {
-
+  AppBloc() : super(AppState(0, DEFAULT_IS_PLAYING, DEFAULT_AUDIO_QUALITY_ID, false)) {
     // Timer.periodic(Duration(seconds: PLAYER_BUFFER_CHECK_DURATION),
     //     (Timer t) => _checkForBufferLoading());
 
     _customSubscription = AudioService.customEventStream.listen((error) => _onCustomEvent(error));
     _queueSubscription = AudioService.queueStream.listen((queue) => _onQueueEvent(queue));
     _playerSubscription = AudioService.playbackStateStream.listen((state) => _onPlaybackEvent(state));
+
+    _readAudioQualityIdFromSharedPreferences();
   }
 
   void _onCustomEvent(error) {
@@ -62,33 +62,53 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         AudioService.play();
       }
     } else if (event is AppNavEvent) {
-      yield AppState(event.navIndex, state.playingState, //state.processingState,
-          isScheduleLoaded: state.isScheduleLoaded,
-          presentTitle: state.presentTitle,
-          presentArtist: state.presentArtist,
-          nextTitle: state.nextTitle,
-          nextArtist: state.nextArtist);
+      yield state.copyWith(navIndex: event.navIndex);
     } else if (event is AppPlayerEvent) {
-      yield AppState(state.navIndex, event.playingState, //event.processingState,
-          isScheduleLoaded: state.isScheduleLoaded,
-          presentTitle: state.presentTitle,
-          presentArtist: state.presentArtist,
-          nextTitle: state.nextTitle,
-          nextArtist: state.nextArtist);
+      yield state.copyWith(playingState: event.playingState);
     } else if (event is AppScheduleEvent) {
       if (event.items == null || event.items!.length < 2) {
-        yield AppState(state.navIndex, state.playingState, ); //state.processingState);
+        yield state.copyWith(isScheduleLoaded: false);
       } else {
         final presentItem = event.items![0];
         final nextItem = event.items![1];
-        yield AppState(state.navIndex, state.playingState, //state.processingState,
+        yield state.copyWith(
             isScheduleLoaded: true,
             presentArtist: presentItem.artist ?? "",
             presentTitle: presentItem.title,
             nextArtist: nextItem.artist ?? "",
             nextTitle: nextItem.title);
       }
+    } else if (event is AppAudioQualitySelectorEvent) {
+      yield state.copyWith(isAudioQualitySelectorOpen: !state.isAudioQualitySelectorOpen);
+    } else if (event is AppAudioQualityButtonEvent) {
+      _doAudioQualityChanged(event.audioQualityId);
+      yield state.copyWith(isAudioQualitySelectorOpen: false, audioQualityId: event.audioQualityId);
+    } else if (event is AppAudioQualityInitEvent) {
+      yield state.copyWith(audioQualityId: event.audioQualityId);
     }
+  }
+
+  void _doAudioQualityChanged(int audioQualityId) {
+    Map<String, dynamic> params = {
+      KEY_AUDIO_QUALITY: audioQualityId,
+      KEY_IS_PLAYING: AudioService.playbackState.playing,
+    };
+    AudioService.customAction(PLAYER_TASK_ACTION_SET_AUDIO_QUALITY, params)
+        .then((value) => writeIntToSharedPreferences(KEY_AUDIO_QUALITY, audioQualityId));
+  }
+
+  void _readAudioQualityIdFromSharedPreferences() async {
+      readIntFromSharedPreferences(KEY_AUDIO_QUALITY)
+        .then((audioQualityId) => _onSharedPreferencesReadSuccess(audioQualityId))
+        .catchError((error) => _onSharedPreferencesReadError(error));
+  }
+
+  _onSharedPreferencesReadSuccess(int? audioQualityId) {
+    add(AppAudioQualityInitEvent(audioQualityId ?? DEFAULT_AUDIO_QUALITY_ID));
+  }
+
+  _onSharedPreferencesReadError(error) {
+    log("shared preferences read error: $error", name: LOG_TAG);
   }
 
 // Future<void> _checkForBufferLoading() async {

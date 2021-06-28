@@ -28,7 +28,6 @@ class SettingsPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _createWidgetTheme(context, state),
-        _createWidgetAudioQuality(context, state),
         _createWidgetStartPlaying(context, state),
         _createWidgetLang(context, state),
       ],
@@ -43,17 +42,6 @@ class SettingsPage extends StatelessWidget {
           [THEME_LIGHT, THEME_DARK, THEME_SYSTEM],
           state.theme,
           (int? value) => get<SettingsBloc>().add(SettingsEventTheme(value ?? DEFAULT_THEME_ID)),
-        ),
-      );
-
-  Widget _createWidgetAudioQuality(BuildContext context, SettingsState state) => _createRow(
-        _createLabel(context, StringKeys.settings_quality_label),
-        _createButton(
-          context,
-          [StringKeys.settings_quality_low, StringKeys.settings_quality_medium, StringKeys.settings_quality_high],
-          [AUDIO_QUALITY_LOW, AUDIO_QUALITY_MEDIUM, AUDIO_QUALITY_HIGH],
-          state.audioQuality,
-          (int? value) => get<SettingsBloc>().add(SettingsEventAudioQuality(value ?? DEFAULT_AUDIO_QUALITY_ID)),
         ),
       );
 
