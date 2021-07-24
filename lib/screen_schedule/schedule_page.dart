@@ -42,17 +42,21 @@ class SchedulePage extends StatelessWidget {
   }
 
   Widget _loadErrorPage(BuildContext context, ScheduleLoadErrorState state) {
+    final header = Text(translate(StringKeys.loading_error, context), style: Theme.of(context).textTheme.headline6);
+    final body = Text(state.errorMessage, style: Theme.of(context).textTheme.bodyText2, textAlign: TextAlign.center);
     return Center(
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-          Text("${translate(StringKeys.loading_error, context)}"),
-          Text(state.errorMessage),
+              header,
+          Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: body
+          ),
         ]));
   }
 
-  Widget _loadSuccessPage(
-      BuildContext context, ScheduleLoadSuccessState state) {
+  Widget _loadSuccessPage(BuildContext context, ScheduleLoadSuccessState state) {
     return RefreshIndicator(
         onRefresh: () async {
           //TODO: отправить событие на принудительную загрзку данных
@@ -63,11 +67,11 @@ class SchedulePage extends StatelessWidget {
                 Divider(height: listViewDividerHeight),
             itemCount: state.items.length,
             itemBuilder: (BuildContext context, int index) {
-              return _programElement(state.items[index]);
+              return _programElement(context, state.items[index]);
             }));
   }
 
-  Widget _programElement(ScheduleItemView element) {
+  Widget _programElement(BuildContext context, ScheduleItemView element) {
     late final Image image;
     if (element.imageUri != null && element.imageUri!.path != '') {
       final file = File.fromUri(element.imageUri!);
@@ -102,7 +106,7 @@ class SchedulePage extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       )),
                       Text(element.start,
-                          style: TextStyle(fontSize: titleFontSize),
+                          style: Theme.of(context).textTheme.headline6,
                           overflow: TextOverflow.ellipsis),
                     ]),
                     Container(

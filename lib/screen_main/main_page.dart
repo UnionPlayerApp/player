@@ -27,7 +27,7 @@ class MainPage extends StatelessWidget {
   List<Widget> _createStateRows(BuildContext context, MainState state) {
     final list = List<Widget>.empty(growable: true);
 
-    list.add(_createStateRow(context, translate(state.itemLabelKey, context)));
+    list.add(_createStateRow(context, translate(state.itemLabelKey, context), Theme.of(context).textTheme.headline6));
 
     switch (state.imageSourceType) {
       case ImageSourceType.none:
@@ -44,18 +44,18 @@ class MainPage extends StatelessWidget {
     }
 
     if (state.isTitleVisible) {
-      list.add(_createStateRow(context, state.itemTitle));
+      list.add(_createStateRow(context, state.itemTitle, Theme.of(context).textTheme.bodyText2));
     }
 
     if (state.isArtistVisible) {
-      list.add(_createStateRow(context, state.itemArtist));
+      list.add(_createStateRow(context, state.itemArtist, Theme.of(context).textTheme.bodyText2));
     }
 
     return list;
   }
 
-  Widget _createStateRow(BuildContext context, String stateStr) {
-    final text = Text(stateStr, style: Theme.of(context).textTheme.bodyText2);
+  Widget _createStateRow(BuildContext context, String stateStr, TextStyle? style) {
+    final text = Text(stateStr, style: style, textAlign: TextAlign.center);
     return Container(margin: EdgeInsets.only(bottom: mainMarginBottom), child: text);
   }
 
