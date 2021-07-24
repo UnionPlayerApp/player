@@ -5,13 +5,14 @@ import 'package:union_player_app/screen_feedback/feedback_state.dart';
 import 'package:union_player_app/utils/app_logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+const _EMAIL_SCHEME = 'mailto';
+const _EMAIL_SUBJECT = 'subject';
 
 class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
   final AppLogger _logger;
   final SystemData _systemData;
 
-  FeedbackBloc(this._logger, this._systemData)
-      : super(AboutInfoUrlLoadAwaitState()) {
+  FeedbackBloc(this._logger, this._systemData) : super(AboutInfoUrlLoadAwaitState()) {
     add(InitialEvent());
   }
 
@@ -21,8 +22,8 @@ class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
 
   @override
   Future<void> close() {
-     log("#CLOSE#");
-     return super.close();
+    log("#CLOSE#");
+    return super.close();
   }
 
   // Method for debug: called whenever an event is added to the Bloc:
@@ -37,40 +38,36 @@ class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
     if (event is InitialEvent) {
       yield AboutInfoUrlLoadAwaitState();
     }
-    if (event is GotCurrentLocaleEvent){
+    if (event is GotCurrentLocaleEvent) {
       yield await _getAboutInfoUrl(event.locale);
     }
-    if (event is WebViewLoadStartedEvent){
+    if (event is WebViewLoadStartedEvent) {
       yield WebViewLoadAwaitState(event.url);
     }
-    if(event is WebViewLoadSuccessEvent){
+    if (event is WebViewLoadSuccessEvent) {
       yield WebViewLoadSuccessState(event.url);
     }
-    if(event is WebViewLoadErrorEvent){
+    if (event is WebViewLoadErrorEvent) {
       log("WebViewLoadErrorEvent is processing...");
-      yield WebViewLoadErrorState(event.errorDescription);
+      yield ErrorState(event.errorDescription);
     }
     if (event is WriteEmailButtonPressedEvent) {
-      // OPEN MAIL CLIENT
-      final Uri _emailLaunchUri = Uri(
-          scheme: 'mailto',
-          path: 'lena.kurasheva@gmail.com',
-          queryParameters: {
-            'subject': ''
-          }
-      );
-      launch(_emailLaunchUri.toString());
+      final path = _systemData.emailData.mailingList.join(",");
+      final query = "$_EMAIL_SUBJECT=${event.subject}";
+      final url = Uri(scheme: _EMAIL_SCHEME, path: path, query: query).toString();
+      launch(url);
     }
   }
 
   Future<FeedbackState> _getAboutInfoUrl(String locale) async {
     _logger.logDebug("Localization: $locale");
     switch (locale) {
-      case "be_BY": return WebViewLoadAwaitState(_systemData.aboutData.urlBy);
-      case "ru_RU": return WebViewLoadAwaitState(_systemData.aboutData.urlRu);
-      default : return WebViewLoadAwaitState(_systemData.aboutData.urlEn);
-      // default : return WebViewLoadAwaitState("https://belros.tv/about/contacts");
+      case "be_BY":
+        return WebViewLoadAwaitState(_systemData.aboutData.urlBy);
+      case "ru_RU":
+        return WebViewLoadAwaitState(_systemData.aboutData.urlRu);
+      default:
+        return WebViewLoadAwaitState(_systemData.aboutData.urlEn);
     }
   }
-
 }

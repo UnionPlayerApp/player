@@ -6,6 +6,8 @@
   "message_us": "Калі ласка, напішыце нам. Мы любім чытаць вашыя лісты!",
   "write": "НАПІСАТЬ",
   "hide": "СКРЫТЬ",
+  "feedback_subject": "Ад слухача Першага Саюзнай радыё",
+  "feedback_email_launch_error": "Памылка запуску паштовай праграмы. Праверце карэктнасць яе установак",
 
   "press_again_to_exit": "Для выхаду націсніце яшчэ раз",
 
@@ -20,6 +22,8 @@
   "information_not_loaded": "Інфармацыя не загружана",
 
   "loading_error": "Памылка загрузкі",
+  "any_error" : "У нас праблема!",
+
   "settings_theme_label": "Тэма",
   "settings_theme_light": "светлая",
   "settings_theme_dark": "цёмная",

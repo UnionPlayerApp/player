@@ -16,7 +16,15 @@ class GotCurrentLocaleEvent extends FeedbackEvent {
   List<Object?> get props => [locale];
 }
 
-class WriteEmailButtonPressedEvent extends FeedbackEvent {}
+class WriteEmailButtonPressedEvent extends FeedbackEvent {
+  final String subject;
+  final String emailLaunchError;
+
+  WriteEmailButtonPressedEvent(this.subject, this.emailLaunchError);
+
+  @override
+  List<Object?> get props => [subject, emailLaunchError];
+}
 
 class WebViewLoadStartedEvent extends FeedbackEvent {
   final String url;

@@ -6,6 +6,8 @@
   "message_us" : "Please write to us. We love reading your letters!",
   "write" : "WRITE",
   "hide" : "HIDE",
+  "feedback_subject": "From Union Radio 1 listener",
+  "feedback_email_launch_error": "Error starting the mail program. Check the correctness of its settings",
 
   "press_again_to_exit": "Press again to exit",
 
@@ -20,6 +22,7 @@
   "information_not_loaded": "Information is not loaded",
 
   "loading_error" : "Loading error",
+  "any_error" : "We have a problem!",
 
   "settings_theme_label": "Theme",
   "settings_theme_light": "light",

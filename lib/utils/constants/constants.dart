@@ -6,7 +6,13 @@ const LOGO_IMAGE_1 = "assets/images/union_radio_logo_1.png";
 const IC_AUDIO_QUALITY_LOW = "assets/images/audio_quality_low.png";
 const IC_AUDIO_QUALITY_HIGH = "assets/images/audio_quality_high.png";
 const IC_AUDIO_QUALITY_MEDIUM = "assets/images/audio_quality_medium.png";
+
+const IC_AUDIO_QUALITY_LOW_WHITE = "assets/images/audio_quality_low_white.png";
+const IC_AUDIO_QUALITY_HIGH_WHITE = "assets/images/audio_quality_high_white.png";
+const IC_AUDIO_QUALITY_MEDIUM_WHITE = "assets/images/audio_quality_medium_white.png";
+
 const IC_AUDIO_QUALITY_DEFAULT = IC_AUDIO_QUALITY_MEDIUM;
+const IC_AUDIO_QUALITY_DEFAULT_WHITE = IC_AUDIO_QUALITY_MEDIUM_WHITE;
 
 //Streams IDs
 const ID_STREAM_LOW = 0;

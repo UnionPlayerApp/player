@@ -77,10 +77,12 @@ class FeedbackPage extends StatelessWidget {
   }
 
   void _writeEmailBottomPressed(BuildContext context) {
-    context.read<FeedbackBloc>().add(WriteEmailButtonPressedEvent());
+    final subject = translate(StringKeys.feedback_subject, context);
+    final emailLaunchError = translate(StringKeys.feedback_email_launch_error, context);
+    context.read<FeedbackBloc>().add(WriteEmailButtonPressedEvent(subject, emailLaunchError));
   }
 
-  void _getCurrentLocale(BuildContext context) async {
+  void _gotCurrentLocale(BuildContext context) async {
     _logger.logDebug("Locale = ${Localizations.localeOf(context).toString()}");
     Locale currentLocale = Localizations.localeOf(context);
     context.read<FeedbackBloc>().add(GotCurrentLocaleEvent(currentLocale.toString()));
@@ -89,11 +91,10 @@ class FeedbackPage extends StatelessWidget {
   _getCurrentStateWidget(BuildContext context, FeedbackState state) {
     if (state is WebViewLoadSuccessState) {
       return _loadAboutInfoWidget(context, state);
-    } else if (state is WebViewLoadErrorState) {
-      _logger.logDebug("State is WebViewLoadErrorState, load error Widget.");
+    } else if (state is ErrorState) {
       return _loadErrorWidget(context, state);
     } else if (state is AboutInfoUrlLoadAwaitState) {
-      _getCurrentLocale(context);
+      _gotCurrentLocale(context);
       return _loadAwaitWidget();
     } else if (state is WebViewLoadAwaitState) {
       return _loadAboutInfoWidget(context, state);
@@ -110,11 +111,18 @@ class FeedbackPage extends StatelessWidget {
     );
   }
 
-  Widget _loadErrorWidget(BuildContext context, WebViewLoadErrorState state) {
+  Widget _loadErrorWidget(BuildContext context, ErrorState state) {
+    final headerStyle = Theme.of(context).textTheme.headline6;
+    final bodyStyle = Theme.of(context).textTheme.bodyText2;
+    final header = Text("${translate(StringKeys.any_error, context)}", style: headerStyle);
+    final body = Text(state.errorType, style: bodyStyle, textAlign: TextAlign.center);
+    final padding = const EdgeInsets.all(8.0);
     return Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-          Text("${translate(StringKeys.loading_error, context)}"),
-          Text(state.errorType),
+          header,
+          Padding(
+              padding: padding,
+              child: body),
         ]));
   }
 

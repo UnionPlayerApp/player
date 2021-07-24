@@ -156,16 +156,16 @@ class _AppState extends State<AppPage> {
     late final String assetName;
     switch (state.audioQualityId) {
       case AUDIO_QUALITY_LOW:
-        assetName = IC_AUDIO_QUALITY_LOW;
+        assetName = IC_AUDIO_QUALITY_LOW_WHITE;
         break;
       case AUDIO_QUALITY_MEDIUM:
-        assetName = IC_AUDIO_QUALITY_MEDIUM;
+        assetName = IC_AUDIO_QUALITY_MEDIUM_WHITE;
         break;
       case AUDIO_QUALITY_HIGH:
-        assetName = IC_AUDIO_QUALITY_HIGH;
+        assetName = IC_AUDIO_QUALITY_HIGH_WHITE;
         break;
       default:
-        assetName = IC_AUDIO_QUALITY_DEFAULT;
+        assetName = IC_AUDIO_QUALITY_DEFAULT_WHITE;
         break;
     }
     return MaterialButton(
