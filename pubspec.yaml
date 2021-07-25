@@ -3,7 +3,7 @@ description: A Union Player Flutter application.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.1.2
+version: 0.1.4
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -15,9 +15,9 @@ dependencies:
   connectivity: ^3.0.3
   cupertino_icons: ^1.0.2
   equatable:
-  firebase_analytics:
-  firebase_core:
-  firebase_crashlytics:
+  firebase_analytics: 8.1.2
+  firebase_core: 1.3.0
+  firebase_crashlytics: 2.0.6
   flutter:
     sdk: flutter
   flutter_bloc:
@@ -37,7 +37,7 @@ dependencies:
   shared_preferences:
   url_launcher: ^6.0.3
   uuid:
-  webview_flutter: 2.0.4
+  webview_flutter:
   xml:
 
 dev_dependencies:
