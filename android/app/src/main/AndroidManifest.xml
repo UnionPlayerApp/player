@@ -9,7 +9,7 @@
 
     <application
         android:icon="@mipmap/ic_launcher"
-        android:label="Union Radio 1"
+        android:label="Первое Союзное радио"
         android:usesCleartextTraffic="true">
 
         <activity

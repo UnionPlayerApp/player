@@ -36,10 +36,10 @@ class WebViewLoadSuccessState extends WebViewState{
   List<Object> get props => [indexedStackPosition];
 }
 
-class WebViewLoadErrorState extends FeedbackState{
+class ErrorState extends FeedbackState{
   final String errorType;
 
-  WebViewLoadErrorState(this.errorType);
+  ErrorState(this.errorType);
 
   @override
   List<Object> get props => [errorType];

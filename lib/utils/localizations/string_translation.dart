@@ -17,6 +17,8 @@ enum  StringKeys{
   message_us,
   write,
   hide,
+  feedback_subject,
+  feedback_email_launch_error,
   // AppScreen
   press_again_to_exit,
   // AppScreen - AppBar
@@ -30,6 +32,7 @@ enum  StringKeys{
   feedback,
   settings,
   loading_error,
+  any_error,
   // Settings - Theme
   settings_theme_label,
   settings_theme_light,
