@@ -27,7 +27,7 @@ final double listViewDividerHeight = 2.h;
 final double scheduleItemHeight = 105.h;
 final double scheduleImageSide = 100.h;
 final double titleFontSize = 16.0;
-final double bodyFontSize = 13.0;
+final double artistFontSize = 13.0;
 final EdgeInsets programTextLeftPadding = EdgeInsets.only(left: 10.w);
 final EdgeInsets programBodyTopPadding = EdgeInsets.only(top: 10.h);
 

@@ -48,7 +48,7 @@ class MainPage extends StatelessWidget {
     }
 
     if (state.isArtistVisible) {
-      list.add(_createStateRow(context, state.itemArtist, Theme.of(context).textTheme.bodyText2));
+      list.add(_createStateRow(context, state.itemArtist, Theme.of(context).textTheme.bodyText1));
     }
 
     return list;

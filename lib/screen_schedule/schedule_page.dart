@@ -85,6 +85,8 @@ class SchedulePage extends StatelessWidget {
           height: scheduleImageSide,
           fit: BoxFit.cover);
     }
+    final titleStyle = Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: titleFontSize);
+    final artistStyle = Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: artistFontSize);
     return Container(
         color: Colors.white10,
         margin: allSidesMargin,
@@ -99,7 +101,7 @@ class SchedulePage extends StatelessWidget {
                       Expanded(
                           child: Text(
                         element.title,
-                        style: TextStyle(fontSize: titleFontSize),
+                        style: titleStyle,
                         softWrap: true,
                         textAlign: TextAlign.start,
                         maxLines: 1,
@@ -114,7 +116,7 @@ class SchedulePage extends StatelessWidget {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           element.artist,
-                          style: TextStyle(fontSize: bodyFontSize),
+                          style: artistStyle,
                           softWrap: true,
                           textAlign: TextAlign.start,
                           overflow: TextOverflow.ellipsis,
