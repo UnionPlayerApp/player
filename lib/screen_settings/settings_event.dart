@@ -1,11 +1,5 @@
 class SettingsEvent {}
 
-class SettingsEventAudioQuality extends SettingsEvent {
-  final int audioQualityId;
-
-  SettingsEventAudioQuality(this.audioQualityId);
-}
-
 class SettingsEventLang extends SettingsEvent {
   final int langId;
 
@@ -25,10 +19,9 @@ class SettingsEventTheme extends SettingsEvent {
 }
 
 class SettingsEventSharedPreferencesRead extends SettingsEvent {
-  final int audioQualityId;
   final int langId;
   final int startPlayingId;
   final int themeId;
 
-  SettingsEventSharedPreferencesRead(this.audioQualityId, this.langId, this.startPlayingId, this.themeId);
+  SettingsEventSharedPreferencesRead(this.langId, this.startPlayingId, this.themeId);
 }
