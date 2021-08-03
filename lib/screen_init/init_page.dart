@@ -31,7 +31,6 @@ class InitPage extends StatefulWidget {
 
 class _InitPageState extends State<InitPage> {
   late final SystemData _systemData;
-  late final bool _isPlaying;
 
   @override
   void initState() {
@@ -41,10 +40,12 @@ class _InitPageState extends State<InitPage> {
   }
 
   Future _initSystemData() async {
+    log("_initSystemData() -> start", name: LOG_TAG);
     try {
       await Firebase.initializeApp();
       if (kDebugMode) {
-        await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+        await FirebaseCrashlytics.instance
+            .setCrashlyticsCollectionEnabled(false);
       }
       if (kReleaseMode) {
         FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
@@ -88,48 +89,56 @@ class _InitPageState extends State<InitPage> {
     } catch (error) {
       throw Exception("Stream data read error: $error");
     }
+
+    log("_initSystemData() -> finish", name: LOG_TAG);
   }
 
-  Future _initPlayer() async {
-    if (AudioService.running && AudioService.connected) {
-      return;
-    }
+  Future<bool> _initPlayer() async {
+    log("_initPlayer() -> start", name: LOG_TAG);
 
-    log("_initPlayer()", name: LOG_TAG);
     _systemData.playerData.appTitle = translate(StringKeys.app_title, context);
 
     final SharedPreferences sp = await SharedPreferences.getInstance();
 
-    final int audioQualityId = sp.getInt(KEY_AUDIO_QUALITY) ?? DEFAULT_AUDIO_QUALITY_ID;
-    final int startPlayingId = sp.getInt(KEY_START_PLAYING) ?? DEFAULT_START_PLAYING_ID;
+    final int audioQualityId =
+        sp.getInt(KEY_AUDIO_QUALITY) ?? DEFAULT_AUDIO_QUALITY_ID;
+    final int startPlayingId =
+        sp.getInt(KEY_START_PLAYING) ?? DEFAULT_START_PLAYING_ID;
 
+    late final bool isPlaying;
     switch (startPlayingId) {
       case START_PLAYING_START:
-        _isPlaying = true;
+        isPlaying = true;
         break;
       case START_PLAYING_STOP:
-        _isPlaying = false;
+        isPlaying = false;
         break;
       case START_PLAYING_LAST:
-        _isPlaying = sp.getBool(KEY_IS_PLAYING) ?? DEFAULT_IS_PLAYING;
+        isPlaying = sp.getBool(KEY_IS_PLAYING) ?? DEFAULT_IS_PLAYING;
         break;
       default:
-        _isPlaying = DEFAULT_IS_PLAYING;
+        isPlaying = DEFAULT_IS_PLAYING;
         break;
     }
 
+    log("_initPlayer() -> AudioService.start()", name: LOG_TAG);
     await AudioService.start(
       backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
-      params: _createPlayerTaskParams(audioQualityId),
+      params: _createPlayerTaskParams(audioQualityId, isPlaying),
       androidNotificationChannelName: AUDIO_NOTIFICATION_CHANNEL_NAME,
       androidNotificationColor: Colors.lightGreenAccent.value,
       androidNotificationIcon: AUDIO_NOTIFICATION_ICON,
       androidShowNotificationBadge: true,
       androidEnableQueue: true,
     );
+
+    log("_initPlayer() -> finish (isPlaying = $isPlaying)", name: LOG_TAG);
+
+    return isPlaying;
   }
 
-  Map<String, dynamic> _createPlayerTaskParams(int audioQualityId) {
+  Map<String, dynamic> _createPlayerTaskParams(int audioQualityId,
+      bool isPlaying) {
     final Map<String, dynamic> params = {
       KEY_APP_TITLE: _systemData.playerData.appTitle,
       KEY_URL_STREAM_LOW: _systemData.streamData.streamLow,
@@ -137,37 +146,26 @@ class _InitPageState extends State<InitPage> {
       KEY_URL_STREAM_HIGH: _systemData.streamData.streamHigh,
       KEY_URL_SCHEDULE: _systemData.xmlData.url,
       KEY_AUDIO_QUALITY: audioQualityId,
-      KEY_IS_PLAYING: _isPlaying,
+      KEY_IS_PLAYING: isPlaying,
     };
     return params;
   }
 
-  Future _initApp() async {
-    log("init app start", name: LOG_TAG);
-    await _initSystemData()
-        .then((v) => _handleSuccess("System data init success"))
-        .catchError((e) => _handleError("System data init error", e));
-    await _initPlayer()
-        .then((v) => _handleSuccessInitPlayer("Player init success"))
-        .catchError((e) => _handleError("Player init error", e));
+  Future<bool> _initApp() async {
+    log("_initApp() -> start", name: LOG_TAG);
+
+    final bool isPlaying = await _initSystemData()
+        .then((_) => _initPlayer())
+        .catchError((e) => _handleError(e));
+
+    log("_initApp() -> finish (isPlaying = $isPlaying)", name: LOG_TAG);
+    return isPlaying;
   }
 
-  FutureOr<Null> _handleSuccess(String msg) {
-    log(msg, name: LOG_TAG);
-  }
-
-  FutureOr<Null> _handleSuccessInitPlayer(String msg) {
-    if (_isPlaying) {
-      AudioService.play();
-    } else {
-      AudioService.pause();
-    }
-    return _handleSuccess(msg);
-  }
-
-  FutureOr<Null> _handleError(String msg, dynamic error) {
-    log("$msg: $error", name: LOG_TAG);
-    throw Exception(["App initialisation error", error]);
+  FutureOr<Null> _handleError(dynamic error) {
+    final String MSG = "App initialisation error";
+    log("$MSG: $error", name: LOG_TAG);
+    throw Exception([MSG, error]);
   }
 
   @override
@@ -177,29 +175,48 @@ class _InitPageState extends State<InitPage> {
   }
 
   @override
-  Widget build(BuildContext context) => FutureBuilder(
-        future: _initApp(),
-        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-          late final Widget homePage;
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasError) {
-              homePage = getWithParam<InfoPage, List<String>>(_createInfoPageStrings());
-            } else {
-              log("FutureBuilder() -> builder -> no error -> AppPage start", name: LOG_TAG);
-              homePage = _createAppPage();
-            }
+  Widget build(BuildContext context) {
+    log("_InitPageState.build()", name: LOG_TAG);
+    return FutureBuilder(
+      initialData: DEFAULT_IS_PLAYING,
+      future: _initApp(),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        late final Widget homePage;
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasData) {
+            log("FutureBuilder() -> hasData -> AppPage start", name: LOG_TAG);
+            final bool isPlaying = snapshot.data;
+            homePage = _createAppPage(isPlaying);
+          } else if (snapshot.hasError) {
+            log("FutureBuilder() -> hasError -> InfoPage start",
+                name: LOG_TAG);
+            homePage = getWithParam<InfoPage, List<String>>(
+                _createInfoPageStrings());
           } else {
+            log(
+                "FutureBuilder() -> has no data or error -> ProgressPage start",
+                name: LOG_TAG);
             homePage = _createProgressPage();
           }
-          return _wrapScreenUtilInit(homePage);
-        },
-      );
-
-  Widget _wrapScreenUtilInit(Widget homePage) {
-    return ScreenUtilInit(designSize: Size(PROTOTYPE_DEVICE_WIDTH, PROTOTYPE_DEVICE_HEIGHT), builder: () => homePage);
+        } else {
+          log(
+              "FutureBuilder() -> connectionState not done -> ProgressPage start",
+              name: LOG_TAG);
+          homePage = _createProgressPage();
+        }
+        return _wrapScreenUtilInit(homePage);
+      },
+    );
   }
 
-  List<String> _createInfoPageStrings() => ([
+  Widget _wrapScreenUtilInit(Widget homePage) {
+    return ScreenUtilInit(
+        designSize: Size(PROTOTYPE_DEVICE_WIDTH, PROTOTYPE_DEVICE_HEIGHT),
+        builder: () => homePage);
+  }
+
+  List<String> _createInfoPageStrings() =>
+      ([
         translate(StringKeys.app_is_not_init_1, context),
         translate(StringKeys.app_is_not_init_2, context),
         translate(StringKeys.app_is_not_init_3, context),
@@ -207,9 +224,13 @@ class _InitPageState extends State<InitPage> {
         translate(StringKeys.app_is_not_init_5, context),
       ]);
 
-  Widget _createAppPage() => BlocProvider.value(value: get<AppBloc>(), child: get<AppPage>());
+  Widget _createAppPage(bool isPlaying) =>
+      BlocProvider.value(
+          value: getWithParam<AppBloc, bool>(isPlaying), child: get<AppPage>());
 
-  Widget _createProgressPage() => getWithParam<ProgressPage, String>(translate(StringKeys.app_init_title, context));
+  Widget _createProgressPage() =>
+      getWithParam<ProgressPage, String>(
+          translate(StringKeys.app_init_title, context));
 }
 
 void _audioPlayerTaskEntrypoint() async {
