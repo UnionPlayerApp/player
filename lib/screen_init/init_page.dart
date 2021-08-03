@@ -162,10 +162,10 @@ class _InitPageState extends State<InitPage> {
     return isPlaying;
   }
 
-  FutureOr<Null> _handleError(dynamic error) {
-    final String MSG = "App initialisation error";
-    log("$MSG: $error", name: LOG_TAG);
-    throw Exception([MSG, error]);
+  FutureOr<bool> _handleError(dynamic error) {
+    final String msg = "App initialisation error";
+    log("$msg: $error", name: LOG_TAG);
+    throw Exception([msg, error]);
   }
 
   @override
