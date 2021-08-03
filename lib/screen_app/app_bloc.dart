@@ -15,7 +15,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   late final StreamSubscription _playerSubscription;
   late final StreamSubscription _queueSubscription;
 
-  AppBloc() : super(AppState(0, DEFAULT_IS_PLAYING, DEFAULT_AUDIO_QUALITY_ID, false)) {
+  AppBloc(bool isPlaying) : super(AppState(0, DEFAULT_IS_PLAYING, DEFAULT_AUDIO_QUALITY_ID, false)) {
     // Timer.periodic(Duration(seconds: PLAYER_BUFFER_CHECK_DURATION),
     //     (Timer t) => _checkForBufferLoading());
 
@@ -24,6 +24,12 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     _playerSubscription = AudioService.playbackStateStream.listen((state) => _onPlaybackEvent(state));
 
     _readAudioQualityIdFromSharedPreferences();
+
+    if (isPlaying) {
+      AudioService.play();
+    } else {
+      AudioService.pause();
+    }
   }
 
   void _onCustomEvent(error) {
