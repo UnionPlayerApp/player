@@ -26,10 +26,13 @@ class InitPage extends StatefulWidget {
   InitPage({Key? key}) : super(key: key);
 
   @override
-  _InitPageState createState() => _InitPageState();
+  _InitPageState createState() {
+    log("InitPage.createState()", name: LOG_TAG);
+    return _InitPageState();
+  }
 }
 
-class _InitPageState extends State<InitPage> {
+class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
   late final SystemData _systemData;
 
   @override
@@ -38,6 +41,9 @@ class _InitPageState extends State<InitPage> {
 
     _systemData = get<SystemData>();
   }
+
+  @override
+  bool get wantKeepAlive => true;
 
   Future _initSystemData() async {
     log("_initSystemData() -> start", name: LOG_TAG);
@@ -137,8 +143,8 @@ class _InitPageState extends State<InitPage> {
     return isPlaying;
   }
 
-  Map<String, dynamic> _createPlayerTaskParams(int audioQualityId,
-      bool isPlaying) {
+  Map<String, dynamic> _createPlayerTaskParams(
+      int audioQualityId, bool isPlaying) {
     final Map<String, dynamic> params = {
       KEY_APP_TITLE: _systemData.playerData.appTitle,
       KEY_URL_STREAM_LOW: _systemData.streamData.streamLow,
@@ -188,19 +194,16 @@ class _InitPageState extends State<InitPage> {
             final bool isPlaying = snapshot.data;
             homePage = _createAppPage(isPlaying);
           } else if (snapshot.hasError) {
-            log("FutureBuilder() -> hasError -> InfoPage start",
-                name: LOG_TAG);
-            homePage = getWithParam<InfoPage, List<String>>(
-                _createInfoPageStrings());
+            log("FutureBuilder() -> hasError -> InfoPage start", name: LOG_TAG);
+            homePage =
+                getWithParam<InfoPage, List<String>>(_createInfoPageStrings());
           } else {
-            log(
-                "FutureBuilder() -> has no data or error -> ProgressPage start",
+            log("FutureBuilder() -> has no data or error -> ProgressPage start",
                 name: LOG_TAG);
             homePage = _createProgressPage();
           }
         } else {
-          log(
-              "FutureBuilder() -> connectionState not done -> ProgressPage start",
+          log("FutureBuilder() -> connectionState not done -> ProgressPage start",
               name: LOG_TAG);
           homePage = _createProgressPage();
         }
@@ -215,8 +218,7 @@ class _InitPageState extends State<InitPage> {
         builder: () => homePage);
   }
 
-  List<String> _createInfoPageStrings() =>
-      ([
+  List<String> _createInfoPageStrings() => ([
         translate(StringKeys.app_is_not_init_1, context),
         translate(StringKeys.app_is_not_init_2, context),
         translate(StringKeys.app_is_not_init_3, context),
@@ -224,13 +226,11 @@ class _InitPageState extends State<InitPage> {
         translate(StringKeys.app_is_not_init_5, context),
       ]);
 
-  Widget _createAppPage(bool isPlaying) =>
-      BlocProvider.value(
-          value: getWithParam<AppBloc, bool>(isPlaying), child: get<AppPage>());
+  Widget _createAppPage(bool isPlaying) => BlocProvider.value(
+      value: getWithParam<AppBloc, bool>(isPlaying), child: get<AppPage>());
 
-  Widget _createProgressPage() =>
-      getWithParam<ProgressPage, String>(
-          translate(StringKeys.app_init_title, context));
+  Widget _createProgressPage() => getWithParam<ProgressPage, String>(
+      translate(StringKeys.app_init_title, context));
 }
 
 void _audioPlayerTaskEntrypoint() async {
