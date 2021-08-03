@@ -1,60 +1,93 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/screen_main/main_bloc.dart';
-import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
+import 'package:union_player_app/utils/core/image_source_type.dart';
+import 'package:union_player_app/utils/dimensions/dimensions.dart';
+import 'package:union_player_app/utils/localizations/string_translation.dart';
 
 class MainPage extends StatelessWidget {
-  MainPage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-  late final MainBloc mainBloc;
-
-  AppBar createAppBar() =>
-      AppBar(
-        title: Text(title),
-      );
-
-  Text createStateRow(BuildContext context, String stateStr) =>
-      Text(
-        stateStr,
-        style: Theme
-            .of(context)
-            .textTheme
-            .bodyText2,
-      );
-
-  FloatingActionButton createFAB(IconData iconData) =>
-      FloatingActionButton(
-        onPressed: () => mainBloc.add(PlayPauseFabPressed()),
-        tooltip: 'Play / Pause',
-        child: Icon(iconData),
-      );
-
   @override
   Widget build(BuildContext context) {
-    mainBloc = BlocProvider.of<MainBloc>(context);
-    return Scaffold(
-        appBar: createAppBar(),
-        body: Center(
-          child: BlocBuilder<MainBloc, MainState>(
-            builder: (_, mainState) =>
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    createStateRow(context, mainState.stateStr01),
-                    createStateRow(context, mainState.stateStr02)
-                  ],
-                ),
-          ),
-        ),
-        floatingActionButton: BlocBuilder<MainBloc, MainState>(
-            buildWhen: (oldState, newState) =>
-            oldState.stateStr01 != newState.stateStr01,
-            builder: (_, mainState) =>
-                createFAB(mainState.iconData)
-        )
+    return BlocBuilder<MainBloc, MainState>(
+      builder: (context, state) => _createWidget(context, state),
+      bloc: get<MainBloc>(),
     );
+  }
+
+  Widget _createWidget(BuildContext context, MainState state) => Center(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: _createStateRows(context, state),
+      ));
+
+  List<Widget> _createStateRows(BuildContext context, MainState state) {
+    final list = List<Widget>.empty(growable: true);
+
+    list.add(_createStateRow(context, translate(state.itemLabelKey, context), Theme.of(context).textTheme.headline6));
+
+    switch (state.imageSourceType) {
+      case ImageSourceType.none:
+        break;
+      case ImageSourceType.file:
+        list.add(_createImageFromFile(state.imageSource));
+        break;
+      case ImageSourceType.network:
+        list.add(_createImageFromNetwork(state.imageSource));
+        break;
+      case ImageSourceType.assets:
+        list.add(_createImageFromAssets(state.imageSource));
+        break;
+    }
+
+    if (state.isTitleVisible) {
+      list.add(_createStateRow(context, state.itemTitle, Theme.of(context).textTheme.bodyText2));
+    }
+
+    if (state.isArtistVisible) {
+      list.add(_createStateRow(context, state.itemArtist, Theme.of(context).textTheme.bodyText1));
+    }
+
+    return list;
+  }
+
+  Widget _createStateRow(BuildContext context, String stateStr, TextStyle? style) {
+    final text = Text(stateStr, style: style, textAlign: TextAlign.center);
+    return Container(margin: EdgeInsets.only(bottom: mainMarginBottom), child: text);
+  }
+
+  Widget _createImageFromFile(String imageSource) {
+    final file = File(imageSource);
+    return _createContainer(Image.file(
+      file,
+      width: mainImageSide,
+      height: mainImageSide,
+      fit: BoxFit.cover,
+    ));
+  }
+
+  Widget _createImageFromAssets(String imageSource) {
+    return _createContainer(Image.asset(
+      imageSource,
+      width: mainImageSide,
+      height: mainImageSide,
+      fit: BoxFit.cover,
+    ));
+  }
+
+  Widget _createImageFromNetwork(String imageSource) {
+    return _createContainer(Image.network(
+      imageSource,
+      width: mainImageSide,
+      height: mainImageSide,
+      fit: BoxFit.cover,
+    ));
+  }
+
+  Widget _createContainer(Image image) {
+    return Container(margin: EdgeInsets.only(bottom: mainMarginBottom), child: image);
   }
 }

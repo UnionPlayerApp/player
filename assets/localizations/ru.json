@@ -1,0 +1,58 @@
+{
+  "app_title": "Первое союзное радио",
+
+  "empty": "",
+
+  "message_us" : "Пожалуйста, напишите нам. Мы любим читать ваши письма!",
+  "write" : "НАПИСАТЬ",
+  "hide" : "СКРЫТЬ",
+  "feedback_subject": "От слушателя Первого Союзного Радио",
+  "feedback_email_launch_error": "Ошибка запуска почтовой программы. Проверьте корректность её установок",
+
+  "press_again_to_exit": "Для выхода нажмите ещё раз",
+
+  "home" : "Главная",
+  "schedule" : "Расписание",
+  "feedback" : "Написать",
+  "settings" : "Настройки",
+
+  "present_label": "СЕЙЧАС в эфире",
+  "next_label": "ПОТОМ в эфире",
+  "information_is_loading": "Информация загружается",
+  "information_not_loaded": "Информация не загружена",
+
+  "loading_error" : "Ошибка загрузки",
+  "any_error" : "У нас проблема!",
+
+  "settings_theme_label": "Тема",
+  "settings_theme_light": "светлая",
+  "settings_theme_dark": "тёмная",
+  "settings_theme_system": "системная",
+
+  "settings_quality_label": "Качество звука",
+  "settings_quality_low": "низкое",
+  "settings_quality_medium": "среднее",
+  "settings_quality_high": "высокое",
+  "settings_quality_auto": "автоматическое",
+
+  "settings_start_playing_label": "Воспроизведение при старте",
+  "settings_start_playing_start": "включено",
+  "settings_start_playing_stop": "выключено",
+  "settings_start_playing_last": "как было",
+
+  "settings_lang_label": "Язык",
+  "settings_lang_ru": "русский",
+  "settings_lang_be": "белорусский",
+  "settings_lang_en": "английский",
+  "settings_lang_system": "системный",
+
+  "app_is_not_init_1": "Ошибка запуска приложения",
+  "app_is_not_init_2": "К сожалению, сейчас нет возможности запустить приложение.",
+  "app_is_not_init_3": "Специалисты уже работают над устранением проблемы.",
+  "app_is_not_init_4": "Попробуйте запустить приложение позже.",
+  "app_is_not_init_5": "Приносим извинения за предоставленные неудобства!",
+
+  "app_init_title": "Инициализация приложения",
+
+  "will_made_next_release": "В следующей версии..."
+}

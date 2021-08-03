@@ -1,0 +1,58 @@
+{
+  "app_title": "Union Radio 1",
+
+  "empty": "",
+
+  "message_us" : "Please write to us. We love reading your letters!",
+  "write" : "WRITE",
+  "hide" : "HIDE",
+  "feedback_subject": "From Union Radio 1 listener",
+  "feedback_email_launch_error": "Error starting the mail program. Check the correctness of its settings",
+
+  "press_again_to_exit": "Press again to exit",
+
+  "home" : "Home",
+  "schedule" : "Schedule",
+  "feedback" : "Feedback",
+  "settings" : "Settings",
+
+  "present_label": "NOW is",
+  "next_label": "NEXT will",
+  "information_is_loading": "Information is loading",
+  "information_not_loaded": "Information is not loaded",
+
+  "loading_error" : "Loading error",
+  "any_error" : "We have a problem!",
+
+  "settings_theme_label": "Theme",
+  "settings_theme_light": "light",
+  "settings_theme_dark": "dark",
+  "settings_theme_system": "system",
+
+  "settings_quality_label": "Sound quality",
+  "settings_quality_low": "low",
+  "settings_quality_medium": "medium",
+  "settings_quality_high": "high",
+  "settings_quality_auto": "auto",
+
+  "settings_start_playing_label": "Playing on start",
+  "settings_start_playing_start": "on (play)",
+  "settings_start_playing_stop": "off (stop)",
+  "settings_start_playing_last": "last mode",
+
+  "settings_lang_label": "Language",
+  "settings_lang_ru": "russian",
+  "settings_lang_be": "belorussian",
+  "settings_lang_en": "english",
+  "settings_lang_system": "system",
+
+  "app_is_not_init_1": "Application launch error",
+  "app_is_not_init_2": "Unfortunately, there is currently no way to launch the application.",
+  "app_is_not_init_3": "Experts are already working on fixing the problem.",
+  "app_is_not_init_4": "Please try to launch the application later.",
+  "app_is_not_init_5": "We apologize for any inconvenience this may cause!",
+
+  "app_init_title": "Application initialization...",
+
+  "will_made_next_release": "At next release..."
+}

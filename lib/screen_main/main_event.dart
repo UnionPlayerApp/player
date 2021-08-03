@@ -1,35 +1,14 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:equatable/equatable.dart';
 
-abstract class MainEvent extends Equatable {
+class MainEvent extends Equatable {
+  final bool isScheduleLoaded;
+  final List<MediaItem> mediaItems;
+  final String loadingError;
+
+  MainEvent(this.isScheduleLoaded,
+      {this.mediaItems = const [], this.loadingError = ""});
+
   @override
-  List<Object?> get props => [];
-}
-
-class UserPressEvent extends MainEvent {}
-class PlayPauseFabPressed extends UserPressEvent {}
-
-class PlayerStateChangedEvent extends MainEvent {
-   final bool isPlaying;
-
-   PlayerStateChangedEvent(this.isPlaying);
-}
-
-class PlayerStateChangedToBuffering extends PlayerStateChangedEvent {
-  PlayerStateChangedToBuffering(bool isPlaying) : super(isPlaying);
-}
-
-class PlayerStateChangedToCompleted extends PlayerStateChangedEvent {
-  PlayerStateChangedToCompleted(bool isPlaying) : super(isPlaying);
-}
-
-class PlayerStateChangedToIdle extends PlayerStateChangedEvent {
-  PlayerStateChangedToIdle(bool isPlaying) : super(isPlaying);
-}
-
-class PlayerStateChangedToLoading extends PlayerStateChangedEvent {
-  PlayerStateChangedToLoading(bool isPlaying) : super(isPlaying);
-}
-
-class PlayerStateChangedToReady extends PlayerStateChangedEvent {
-  PlayerStateChangedToReady(bool isPlaying) : super(isPlaying);
+  List<Object?> get props => [isScheduleLoaded, mediaItems, loadingError];
 }

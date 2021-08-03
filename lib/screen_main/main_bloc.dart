@@ -1,170 +1,94 @@
-import 'package:audio_session/audio_session.dart';
+import 'dart:async';
+import 'dart:developer';
+import 'package:audio_service/audio_service.dart';
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
-import 'package:logger/logger.dart';
+import 'package:union_player_app/player/player_task.dart';
+import 'package:union_player_app/repository/schedule_item_type.dart';
 import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
-
-const LOG_TAG = "UPA -> ";
-const STREAM_URL = "http://78.155.222.238:8010/souz_radio";
+import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/core/image_source_type.dart';
+import 'package:union_player_app/utils/localizations/string_translation.dart';
 
 class MainBloc extends Bloc<MainEvent, MainState> {
+  late final StreamSubscription _queueSubscription;
+  late final StreamSubscription _customSubscription;
 
-  final AudioPlayer _player = AudioPlayer();
-  final Logger _logger = Logger();
-
-  MainBloc() : super(MainState(
-        "Pausing",
-        "Initialising",
-        Icons.play_arrow_rounded)) {
-    _initPlayer();
+  MainBloc() : super(MainState()) {
+    _customSubscription = AudioService.customEventStream.listen((error) => _onCustom(error));
+    _queueSubscription = AudioService.queueStream.listen((queue) => _onQueue(queue));
   }
 
-  Future<void> _initPlayer() async {
-    final _source = AudioSource.uri(Uri.parse(STREAM_URL));
-    final session = await AudioSession.instance;
-    await session.configure(AudioSessionConfiguration.music());
+  void _onCustom(error) {
+    log("MainBloc._onCustom(error), error = $error", name: LOG_TAG);
+    add(MainEvent(false, loadingError: error));
+  }
 
-    _player.playerStateStream.listen((playerState) {
-      switch (playerState.processingState) {
-        case ProcessingState.idle:
-          add(PlayerStateChangedToIdle(playerState.playing));
-          break;
-        case ProcessingState.loading:
-          add(PlayerStateChangedToLoading(playerState.playing));
-          break;
-        case ProcessingState.buffering:
-          add(PlayerStateChangedToBuffering(playerState.playing));
-          break;
-        case ProcessingState.ready:
-          add(PlayerStateChangedToReady(playerState.playing));
-          break;
-        case ProcessingState.completed:
-          add(PlayerStateChangedToCompleted(playerState.playing));
-          break;
-      }
-    });
-
-    _player.playbackEventStream.listen((event) {},
-        onError: (Object e, StackTrace stackTrace) {
-          _showError("A stream error occurred", e);
-        });
-
-    try {
-      await _player.setAudioSource(_source);
-    } catch (e) {
-      _showError("Stream load error happens", e);
+  _onQueue(List<MediaItem>? queue) {
+    if (queue == null) {
+      log("MainBloc._onQueue(queue) -> queue is null", name: LOG_TAG);
+      _onCustom("Schedule load error: queue is null");
+    } else if (queue.isEmpty) {
+      log("MainBloc._onQueue(queue) -> queue is empty", name: LOG_TAG);
+      _onCustom("Schedule load error: queue is empty");
+    } else {
+      log("MainBloc._onQueue(queue) -> queue has ${queue.length} items", name: LOG_TAG);
+      add(MainEvent(true, mediaItems: queue));
     }
+  }
+
+  @override
+  Future<void> close() {
+    log("MainBloc.close()", name: LOG_TAG);
+    _customSubscription.cancel();
+    _queueSubscription.cancel();
+    return super.close();
   }
 
   @override
   Stream<MainState> mapEventToState(MainEvent event) async* {
-    if (event is PlayPauseFabPressed) {
-      yield* _mapPlayPauseFabPressedToState();
-      return;
-    }
-    if (event is PlayerStateChangedToBuffering) {
-      yield* _mapPlayerStateChangedBufferingToState(event.isPlaying);
-      return;
-    }
-    if (event is PlayerStateChangedToCompleted) {
-      yield* _mapPlayerStateChangedCompletedToState(event.isPlaying);
-      return;
-    }
-    if (event is PlayerStateChangedToIdle) {
-      yield* _mapPlayerStateChangedIdleToState(event.isPlaying);
-      return;
-    }
-    if (event is PlayerStateChangedToLoading) {
-      yield* _mapPlayerStateChangedLoadingToState(event.isPlaying);
-      return;
-    }
-    if (event is PlayerStateChangedToReady) {
-      yield* _mapPlayerStateChangedReadyToState(event.isPlaying);
-      return;
-    }
-    _log("Unknown event may be from user, may be from player");
-  }
+    log("MainBloc.mapEventToState()", name: LOG_TAG);
 
-  Stream<MainState> _mapPlayPauseFabPressedToState() async* {
-    String stateStr01 = state.stateStr01;
-    IconData iconData = state.iconData;
+    var isScheduleLoaded = false;
+    var isTitleVisible = false;
+    var isArtistVisible = false;
+    var itemTitle = "";
+    var itemArtist = "";
+    var itemLabelKey = StringKeys.information_is_loading;
+    var imageSourceType = ImageSourceType.assets;
+    var imageSource = LOGO_IMAGE;
 
-    if (_player.processingState == ProcessingState.ready) {
-      stateStr01 = _createStateStr01(!_player.playing);
-      iconData = _createIconData(!_player.playing);
-      _setPlayerMode(!_player.playing);
+    if (event.isScheduleLoaded && event.mediaItems.isNotEmpty) {
+      itemLabelKey = StringKeys.present_label;
+
+      final mediaItem = event.mediaItems[0];
+
+      isScheduleLoaded = true;
+      isTitleVisible = true;
+
+      itemTitle = mediaItem.title;
+
+      if (mediaItem.type.toScheduleItemType == ScheduleItemType.music) {
+        isArtistVisible = true;
+        itemArtist = mediaItem.artist!;
+      }
+
+      if (mediaItem.artUri != null) {
+        imageSource = mediaItem.artUri!.path;
+        imageSourceType = ImageSourceType.file;
+      }
     }
 
-    yield MainState(
-      stateStr01,
-      state.stateStr02,
-      iconData
-    );
+    final state = MainState(
+        isScheduleLoaded: isScheduleLoaded,
+        isTitleVisible: isTitleVisible,
+        isArtistVisible: isArtistVisible,
+        itemLabelKey: itemLabelKey,
+        itemTitle: itemTitle,
+        itemArtist: itemArtist,
+        imageSourceType: imageSourceType,
+        imageSource: imageSource);
+
+    yield state;
   }
-
-  Stream<MainState> _mapPlayerStateChangedBufferingToState(bool isPlaying) async* {
-    yield MainState(
-        state.stateStr01,
-        "Buffering",
-        _createIconData(isPlaying)
-    );
-  }
-
-  Stream<MainState> _mapPlayerStateChangedCompletedToState(bool isPlaying) async* {
-    yield MainState(
-        state.stateStr01,
-        "Completed",
-        _createIconData(isPlaying)
-    );
-  }
-
-  Stream<MainState> _mapPlayerStateChangedLoadingToState(bool isPlaying) async* {
-    yield MainState(
-        state.stateStr01,
-        "Loading",
-        _createIconData(isPlaying)
-    );
-  }
-
-  Stream<MainState> _mapPlayerStateChangedIdleToState(bool isPlaying) async* {
-    yield MainState(
-        state.stateStr01,
-        "Idle",
-        _createIconData(isPlaying)
-    );
-  }
-
-  Stream<MainState> _mapPlayerStateChangedReadyToState(bool isPlaying) async* {
-    yield MainState(
-        state.stateStr01,
-        "Ready",
-        _createIconData(isPlaying)
-    );
-  }
-
-  void _setPlayerMode(bool isPlaying) =>
-      isPlaying ? _player.play() : _player.pause();
-
-  String _createStateStr01(bool isPlaying) =>
-      isPlaying ? "Playing" : "Pausing";
-
-  IconData _createIconData(bool isPlaying) =>
-      isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded;
-
-  //TODO: нужно понять, вызывается ли этот метод автоматом,
-  //TODO: или нужно сделать вызов явно
-  @override
-  Future<void> close() async {
-    _player.dispose();
-    super.close();
-  }
-
-  //TODO: нужно сделать отображение ошибок на экране
-  void _showError(String msg, Object error) {
-    _log("$msg: $error");
-  }
-
-  void _log(String msg) => _logger.d("$LOG_TAG $msg");
 }

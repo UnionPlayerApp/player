@@ -1,17 +1,36 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
+import 'package:union_player_app/utils/core/image_source_type.dart';
+import 'package:union_player_app/utils/localizations/string_translation.dart';
 
 class MainState extends Equatable {
-  final String stateStr01;
-  final String stateStr02;
-  final IconData iconData;
+  final bool isScheduleLoaded;
+  final StringKeys itemLabelKey;
+  final bool isTitleVisible;
+  final bool isArtistVisible;
+  final String itemTitle;
+  final String itemArtist;
+  final ImageSourceType imageSourceType;
+  final String imageSource;
 
   const MainState(
-    this.stateStr01,
-    this.stateStr02,
-    this.iconData,
-  );
+      {this.isScheduleLoaded = false,
+      this.itemLabelKey = StringKeys.empty,
+      this.isTitleVisible = false,
+      this.isArtistVisible = false,
+      this.itemTitle = "",
+      this.itemArtist = "",
+      this.imageSourceType = ImageSourceType.none,
+      this.imageSource = ""});
 
   @override
-  List<Object?> get props => [stateStr01, stateStr02, iconData];
+  List<Object?> get props => [
+        isScheduleLoaded,
+        itemLabelKey,
+        isTitleVisible,
+        isArtistVisible,
+        itemTitle,
+        itemArtist,
+        imageSourceType,
+        imageSource
+      ];
 }
