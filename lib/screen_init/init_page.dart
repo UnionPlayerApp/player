@@ -31,6 +31,7 @@ class InitPage extends StatefulWidget {
 
 class _InitPageState extends State<InitPage> {
   late final SystemData _systemData;
+  late final bool _isPlaying;
 
   @override
   void initState() {
@@ -90,6 +91,11 @@ class _InitPageState extends State<InitPage> {
   }
 
   Future _initPlayer() async {
+    if (AudioService.running && AudioService.connected) {
+      return;
+    }
+
+    log("_initPlayer()", name: LOG_TAG);
     _systemData.playerData.appTitle = translate(StringKeys.app_title, context);
 
     final SharedPreferences sp = await SharedPreferences.getInstance();
@@ -97,26 +103,24 @@ class _InitPageState extends State<InitPage> {
     final int audioQualityId = sp.getInt(KEY_AUDIO_QUALITY) ?? DEFAULT_AUDIO_QUALITY_ID;
     final int startPlayingId = sp.getInt(KEY_START_PLAYING) ?? DEFAULT_START_PLAYING_ID;
 
-    late final bool isPlaying;
-
     switch (startPlayingId) {
       case START_PLAYING_START:
-        isPlaying = true;
+        _isPlaying = true;
         break;
       case START_PLAYING_STOP:
-        isPlaying = false;
+        _isPlaying = false;
         break;
       case START_PLAYING_LAST:
-        isPlaying = sp.getBool(KEY_IS_PLAYING) ?? DEFAULT_IS_PLAYING;
+        _isPlaying = sp.getBool(KEY_IS_PLAYING) ?? DEFAULT_IS_PLAYING;
         break;
       default:
-        isPlaying = DEFAULT_IS_PLAYING;
+        _isPlaying = DEFAULT_IS_PLAYING;
         break;
     }
 
     await AudioService.start(
       backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
-      params: _createPlayerTaskParams(audioQualityId, isPlaying),
+      params: _createPlayerTaskParams(audioQualityId),
       androidNotificationChannelName: AUDIO_NOTIFICATION_CHANNEL_NAME,
       androidNotificationColor: Colors.lightGreenAccent.value,
       androidNotificationIcon: AUDIO_NOTIFICATION_ICON,
@@ -125,7 +129,7 @@ class _InitPageState extends State<InitPage> {
     );
   }
 
-  Map<String, dynamic> _createPlayerTaskParams(int audioQualityId, bool isPlaying) {
+  Map<String, dynamic> _createPlayerTaskParams(int audioQualityId) {
     final Map<String, dynamic> params = {
       KEY_APP_TITLE: _systemData.playerData.appTitle,
       KEY_URL_STREAM_LOW: _systemData.streamData.streamLow,
@@ -133,7 +137,7 @@ class _InitPageState extends State<InitPage> {
       KEY_URL_STREAM_HIGH: _systemData.streamData.streamHigh,
       KEY_URL_SCHEDULE: _systemData.xmlData.url,
       KEY_AUDIO_QUALITY: audioQualityId,
-      KEY_IS_PLAYING: isPlaying,
+      KEY_IS_PLAYING: _isPlaying,
     };
     return params;
   }
@@ -144,12 +148,21 @@ class _InitPageState extends State<InitPage> {
         .then((v) => _handleSuccess("System data init success"))
         .catchError((e) => _handleError("System data init error", e));
     await _initPlayer()
-        .then((v) => _handleSuccess("Player init success"))
+        .then((v) => _handleSuccessInitPlayer("Player init success"))
         .catchError((e) => _handleError("Player init error", e));
   }
 
   FutureOr<Null> _handleSuccess(String msg) {
     log(msg, name: LOG_TAG);
+  }
+
+  FutureOr<Null> _handleSuccessInitPlayer(String msg) {
+    if (_isPlaying) {
+      AudioService.play();
+    } else {
+      AudioService.pause();
+    }
+    return _handleSuccess(msg);
   }
 
   FutureOr<Null> _handleError(String msg, dynamic error) {
