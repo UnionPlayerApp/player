@@ -183,6 +183,7 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
   @override
   Widget build(BuildContext context) {
     log("_InitPageState.build()", name: LOG_TAG);
+    super.build(context);
     return FutureBuilder(
       initialData: DEFAULT_IS_PLAYING,
       future: _initApp(),
