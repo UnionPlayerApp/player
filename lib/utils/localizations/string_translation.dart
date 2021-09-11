@@ -65,4 +65,9 @@ enum  StringKeys{
   app_init_title,
 
   will_made_next_release,
+  // Custom App Tracking Transparency Dialog
+  tracking_dialog_title,
+  tracking_dialog_text,
+  tracking_dialog_button_later,
+  tracking_dialog_button_allow,
 }
