@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -39,12 +40,65 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
 
     _systemData = get<SystemData>();
     _initAppFuture = _initApp();
+
+    // Can't show a dialog in initState, delaying initialization
+    WidgetsBinding.instance?.addPostFrameCallback((_) => _initAppTrackingTransparency());
   }
 
   @override
   bool get wantKeepAlive => true;
 
-  Future _initAppTrackingTransparency() async {}
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future _initAppTrackingTransparency() async {
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      final TrackingStatus status = await AppTrackingTransparency.trackingAuthorizationStatus;
+      log("AppTrackingTransparency.trackingAuthorizationStatus -> Tracking status = $status", name: LOG_TAG);
+      // If the system can show an authorization request dialog
+      if (status == TrackingStatus.notDetermined) {
+        // Show a custom explainer dialog before the system dialog
+        if (await showCustomTrackingDialog(context)) {
+          // Wait for dialog popping animation
+          await Future.delayed(const Duration(milliseconds: 200));
+          // Request system's tracking authorization dialog
+          final TrackingStatus status = await AppTrackingTransparency.requestTrackingAuthorization();
+          log("AppTrackingTransparency.requestTrackingAuthorization() -> Tracking status = $status", name: LOG_TAG);
+          if (status == TrackingStatus.authorized) {
+            final uuid = await AppTrackingTransparency.getAdvertisingIdentifier();
+            log("AppTrackingTransparency.getAdvertisingIdentifier() -> UUID = $uuid", name: LOG_TAG);
+          }
+        }
+      }
+    } catch(error) {
+      log("App tracking transparency init error: $error", name: LOG_TAG);
+    }
+  }
+
+  Future<bool> showCustomTrackingDialog(BuildContext context) async {
+    final title = Text(translate(StringKeys.tracking_dialog_title, context));
+    final content = Text(translate(StringKeys.tracking_dialog_text, context));
+    final buttonLater = TextButton(
+      child: Text(translate(StringKeys.tracking_dialog_button_later, context)),
+      onPressed: () => Navigator.pop(context, false),
+    );
+    final buttonAllow = TextButton(
+      child: Text(translate(StringKeys.tracking_dialog_button_allow, context)),
+      onPressed: () => Navigator.pop(context, true),
+    );
+    final dialogWidget = AlertDialog(
+      title: title,
+      content: content,
+      actions: [
+        buttonAllow,
+        buttonLater,
+      ],
+    );
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) => dialogWidget,
+        ) ??
+        false;
+  }
 
   Future _initSystemData() async {
     try {
@@ -148,8 +202,7 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
   }
 
   Future<bool> _initApp() async {
-    final bool isPlaying = await _initAppTrackingTransparency()
-        .then((_) => _initSystemData())
+    final bool isPlaying = await _initSystemData()
         .then((_) => _initPlayer())
         .catchError((e) => _handleError(e));
     return isPlaying;

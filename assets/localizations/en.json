@@ -54,5 +54,10 @@
 
   "app_init_title": "Application initialization...",
 
-  "will_made_next_release": "At next release..."
+  "will_made_next_release": "At next release...",
+
+  "tracking_dialog_title": "Dear Listener!",
+  "tracking_dialog_text": "We care about your privacy and data security. We keep this app free by showing ads.\n\nCan we continue to use your data to tailor ads for you?\n\nYou can change your choice anytime in the app settings.\n\nOur partners will collect only the most necessary data and use a unique identifier of your device to show you the most useful ads.",
+  "tracking_dialog_button_later": "I'll decide later",
+  "tracking_dialog_button_allow": "Allow tracking"
 }
