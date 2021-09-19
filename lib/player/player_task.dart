@@ -80,14 +80,18 @@ class PlayerTask extends BackgroundAudioTask {
 
   @override
   Future<void> onPlay() async {
-    _isPlayingBeforeInterruption = true;
-    return _player.play();
+    if (!_player.playing) {
+      _isPlayingBeforeInterruption = true;
+      return _player.play();
+    }
   }
 
   @override
   Future<void> onPause() async {
-    _isPlayingBeforeInterruption = false;
-    return _player.stop();
+    if (_player.playing) {
+      _isPlayingBeforeInterruption = false;
+      return _player.stop();
+    }
   }
 
   @override
@@ -118,7 +122,7 @@ class PlayerTask extends BackgroundAudioTask {
       }
       _isPlayingBeforeInterruption = isPlaying;
     } catch (error) {
-      log("Audio stream ($audioUrl) load (set url) or stop/play error: $error");
+      log("Audio stream ($audioUrl) load (set url) or stop/play error: $error", name: LOG_TAG);
     }
   }
 
@@ -258,7 +262,8 @@ class PlayerTask extends BackgroundAudioTask {
 
   _handleAudioInterruptionEvent(AudioInterruptionEvent event) {
     if (event.begin) {
-      log("_handleAudioInterruptionEvent() => event.begin = true => _isPlayingBeforeInterruption = $_isPlayingBeforeInterruption", name: LOG_TAG);
+      log("_handleAudioInterruptionEvent() => event.begin = true => _isPlayingBeforeInterruption = $_isPlayingBeforeInterruption",
+          name: LOG_TAG);
       switch (event.type) {
         case AudioInterruptionType.duck:
           break;
@@ -272,7 +277,8 @@ class PlayerTask extends BackgroundAudioTask {
           break;
       }
     } else {
-      log("_handleAudioInterruptionEvent() => event.begin = false => _isPlayingBeforeInterruption = $_isPlayingBeforeInterruption", name: LOG_TAG);
+      log("_handleAudioInterruptionEvent() => event.begin = false => _isPlayingBeforeInterruption = $_isPlayingBeforeInterruption",
+          name: LOG_TAG);
       switch (event.type) {
         case AudioInterruptionType.duck:
           break;
