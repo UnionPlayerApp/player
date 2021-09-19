@@ -9,6 +9,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, kReleaseMode;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:koin_flutter/koin_flutter.dart';
@@ -52,8 +53,11 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
   Future _initAppTrackingTransparency() async {
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      final TrackingStatus status = await AppTrackingTransparency.trackingAuthorizationStatus;
-      log("AppTrackingTransparency.trackingAuthorizationStatus -> Tracking status = $status", name: LOG_TAG);
+      final TrackingStatus status = await AppTrackingTransparency
+          .trackingAuthorizationStatus;
+      log(
+          "AppTrackingTransparency.trackingAuthorizationStatus -> Tracking status = $status",
+          name: LOG_TAG);
       // If the system can show an authorization request dialog
       if (status == TrackingStatus.notDetermined) {
         // Show a custom explainer dialog before the system dialog
@@ -61,15 +65,27 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
           // Wait for dialog popping animation
           await Future.delayed(const Duration(milliseconds: 200));
           // Request system's tracking authorization dialog
-          final TrackingStatus status = await AppTrackingTransparency.requestTrackingAuthorization();
-          log("AppTrackingTransparency.requestTrackingAuthorization() -> Tracking status = $status", name: LOG_TAG);
+          log(
+              "AppTrackingTransparency.requestTrackingAuthorization() -> starting",
+              name: LOG_TAG);
+          final TrackingStatus status = await AppTrackingTransparency
+              .requestTrackingAuthorization();
+          log(
+              "AppTrackingTransparency.requestTrackingAuthorization() -> Tracking status = $status",
+              name: LOG_TAG);
           if (status == TrackingStatus.authorized) {
-            final uuid = await AppTrackingTransparency.getAdvertisingIdentifier();
-            log("AppTrackingTransparency.getAdvertisingIdentifier() -> UUID = $uuid", name: LOG_TAG);
+            final uuid = await AppTrackingTransparency
+                .getAdvertisingIdentifier();
+            log(
+                "AppTrackingTransparency.getAdvertisingIdentifier() -> UUID = $uuid",
+                name: LOG_TAG);
           }
         }
       }
-    } catch(error) {
+    } on PlatformException {
+      log("App tracking transparency init error: platform exception",
+          name: LOG_TAG);
+    } catch (error) {
       log("App tracking transparency init error: $error", name: LOG_TAG);
     }
   }
