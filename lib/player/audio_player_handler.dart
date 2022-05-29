@@ -6,9 +6,10 @@ import 'dart:math' as Math;
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:union_player_app/model/system_data/system_data.dart';
 import 'package:union_player_app/repository/schedule_item.dart';
 import 'package:union_player_app/repository/schedule_item_type.dart';
-import 'package:union_player_app/repository/schedule_repository_impl.dart';
+import 'package:union_player_app/repository/schedule_repository_interface.dart';
 import 'package:union_player_app/repository/schedule_repository_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/file_utils.dart';
@@ -16,11 +17,11 @@ import 'package:uuid/uuid.dart';
 
 import 'app_player.dart';
 
-class PlayerTask extends BackgroundAudioTask {
-  final _player = AppPlayer();
-  final _schedule = ScheduleRepositoryImpl();
-  final _uuid = Uuid();
-  final _random = Math.Random();
+class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
+  final AppPlayer player;
+  final IScheduleRepository schedule;
+  final Uuid uuid;
+  final Math.Random random;
 
   late final String _appTitle;
   late final Uri _appArtUri;
@@ -38,11 +39,111 @@ class PlayerTask extends BackgroundAudioTask {
 
   bool _isPlayingBeforeInterruption = false;
 
-  @override
-  Future<void> onStart(Map<String, dynamic>? params) async {
-    assert(params != null, "PlayerTask.onStart() params must be not null");
+  AppPlayerHandler({required this.player, required this.schedule, required this.random, required this.uuid}) {
+    player.playbackEventStream.map(_transformEvent).pipe(playbackState);
+  }
 
-    _appTitle = params![KEY_APP_TITLE];
+  @override
+  Future<void> play() => player.play();
+
+  @override
+  Future<void> pause() => player.pause();
+
+  @override
+  Future<void> seek(Duration position) => player.seek(position);
+
+  @override
+  Future<void> stop() => player.stop();
+
+  /// Transform a just_audio event into an audio_service state.
+  ///
+  /// This method is used from the constructor. Every event received from the
+  /// just_audio player will be transformed into an audio_service state so that
+  /// it can be broadcast to audio_service clients.
+  PlaybackState _transformEvent(PlaybackEvent event) {
+    return PlaybackState(
+      controls: [
+        MediaControl.rewind,
+        if (player.playing) MediaControl.pause else MediaControl.play,
+        MediaControl.stop,
+        MediaControl.fastForward,
+      ],
+      systemActions: const {
+        MediaAction.seek,
+        MediaAction.seekForward,
+        MediaAction.seekBackward,
+      },
+      androidCompactActionIndices: const [0, 1, 3],
+      processingState: const {
+        ProcessingState.idle: AudioProcessingState.idle,
+        ProcessingState.loading: AudioProcessingState.loading,
+        ProcessingState.buffering: AudioProcessingState.buffering,
+        ProcessingState.ready: AudioProcessingState.ready,
+        ProcessingState.completed: AudioProcessingState.completed,
+      }[player.processingState]!,
+      playing: player.playing,
+      updatePosition: player.position,
+      bufferedPosition: player.bufferedPosition,
+      speed: player.speed,
+      queueIndex: event.currentIndex,
+    );
+  }
+
+  Future<Uri> _createUriFromAsset(String asset) async {
+    try {
+      File file = await loadAssetFile(asset);
+      return Uri.file(file.path);
+    } catch (error) {
+      log("Load asset file ($asset) error: $error", name: LOG_TAG);
+      return Uri();
+    }
+  }
+
+  Future<List<Uri>> _createUriListFromAssetList(List<String> assetList) async {
+    final List<Uri> uriList = List.empty(growable: true);
+    assetList.forEach((asset) async {
+      final path = await _createUriFromAsset(asset);
+      uriList.add(path);
+    });
+    return uriList;
+  }
+
+  @override
+  Future<dynamic> customAction(String name, [Map<String, dynamic>? extras]) {
+    switch (name) {
+      case PLAYER_TASK_ACTION_SET_AUDIO_QUALITY:
+        return onSetAudioQuality(extras);
+      case PLAYER_TASK_ACTION_SET_PARAMS:
+        return onSetParams(extras);
+      default:
+        return super.customAction(name, extras);
+    }
+  }
+
+  // Set audio quality and start / pause audio stream
+  Future<void> onSetAudioQuality(dynamic arguments) async {
+    final Map<String, dynamic> params = Map.from(arguments);
+    final int audioQuality = params[KEY_AUDIO_QUALITY] ?? DEFAULT_AUDIO_QUALITY_ID;
+    final bool isPlaying = params[KEY_IS_PLAYING] ?? DEFAULT_IS_PLAYING;
+    final audioUrl = _mapAudioQualityToUrl(audioQuality);
+    log("PlayerTask.onCustomAction(), set audio stream = $audioUrl", name: LOG_TAG);
+    try {
+      await player.stop();
+      await player.setUrl(audioUrl);
+      if (isPlaying) {
+        await player.play();
+      }
+      _isPlayingBeforeInterruption = isPlaying;
+    } catch (error) {
+      log("Audio stream ($audioUrl) load (set url) or stop/play error: $error", name: LOG_TAG);
+    }
+  }
+
+  // Set audio quality and start / pause audio stream
+  Future<void> onSetParams(dynamic arguments) async {
+    final Map<String, dynamic> params = Map.from(arguments);
+
+    _appTitle = params[KEY_APP_TITLE];
     _urlStreamLow = params[KEY_URL_STREAM_LOW];
     _urlStreamMedium = params[KEY_URL_STREAM_MEDIUM];
     _urlStreamHigh = params[KEY_URL_STREAM_HIGH];
@@ -57,123 +158,13 @@ class PlayerTask extends BackgroundAudioTask {
     final configuration = AudioSessionConfiguration.music().copyWith(androidWillPauseWhenDucked: false);
     await session.configure(configuration);
 
-    _playerStateSubscription = _player.playerStateStream.listen((state) => _broadcastPlayerState());
-    _scheduleStateSubscription = _schedule.stateStream().listen((state) => _broadcastScheduleState(state));
+    _playerStateSubscription = player.playerStateStream.listen((state) => _broadcastPlayerState());
+    _scheduleStateSubscription = schedule.stateStream().listen((state) => _broadcastScheduleState(state));
     _sessionEventSubscription = session.interruptionEventStream.listen((event) => _handleAudioInterruptionEvent(event));
 
-    _schedule.onStart(_urlSchedule);
+    schedule.onStart(_urlSchedule);
 
-    onCustomAction(PLAYER_TASK_ACTION_SET_AUDIO_QUALITY, params);
-  }
-
-  @override
-  Future<void> onStop() async {
-    log("AudioPlayerTask.onStop()", name: LOG_TAG);
-    await _scheduleStateSubscription.cancel();
-    await _playerStateSubscription.cancel();
-    await _sessionEventSubscription.cancel();
-    await _player.dispose();
-    await _schedule.onStop();
-    await _broadcastPlayerState();
-    await super.onStop();
-  }
-
-  @override
-  Future<void> onPlay() async {
-    if (!_player.playing) {
-      _isPlayingBeforeInterruption = true;
-      return _player.play();
-    }
-  }
-
-  @override
-  Future<void> onPause() async {
-    if (_player.playing) {
-      _isPlayingBeforeInterruption = false;
-      return _player.stop();
-    }
-  }
-
-  @override
-  Future<void> onPlayMediaItem(MediaItem mediaItem) async => await AudioServiceBackground.setMediaItem(mediaItem);
-
-  @override
-  Future<void> onCustomAction(String name, dynamic arguments) async {
-    switch (name) {
-      case PLAYER_TASK_ACTION_SET_AUDIO_QUALITY:
-        return onSetAudioQuality(arguments);
-      default:
-        return super.onCustomAction(name, arguments);
-    }
-  }
-
-  // Set audio quality and start / pause audio stream
-  Future<void> onSetAudioQuality(dynamic arguments) async {
-    final Map<String, dynamic> params = Map.from(arguments);
-    final int audioQuality = params[KEY_AUDIO_QUALITY] ?? DEFAULT_AUDIO_QUALITY_ID;
-    final bool isPlaying = params[KEY_IS_PLAYING] ?? DEFAULT_IS_PLAYING;
-    final audioUrl = _mapAudioQualityToUrl(audioQuality);
-    log("PlayerTask.onCustomAction(), set audio stream = $audioUrl", name: LOG_TAG);
-    try {
-      await _player.stop();
-      await _player.setUrl(audioUrl);
-      if (isPlaying) {
-        await _player.play();
-      }
-      _isPlayingBeforeInterruption = isPlaying;
-    } catch (error) {
-      log("Audio stream ($audioUrl) load (set url) or stop/play error: $error", name: LOG_TAG);
-    }
-  }
-
-  /// Broadcasts the current player state to all clients.
-  Future<void> _broadcastPlayerState() async {
-    log("PlayerTask._broadcastPlayerState()", name: LOG_TAG);
-    await AudioServiceBackground.setState(
-      controls: [
-        if (_player.playing) MediaControl.pause else MediaControl.play,
-      ],
-      androidCompactActions: [0],
-      processingState: _getProcessingState(),
-      playing: _player.playing,
-      position: _player.position,
-      bufferedPosition: _player.bufferedPosition,
-      speed: _player.speed,
-    );
-  }
-
-  AudioProcessingState _getProcessingState() {
-    switch (_player.processingState) {
-      case ProcessingState.idle:
-        return AudioProcessingState.idle;
-      case ProcessingState.loading:
-        return AudioProcessingState.loading;
-      case ProcessingState.buffering:
-        return AudioProcessingState.buffering;
-      case ProcessingState.ready:
-        return AudioProcessingState.ready;
-      case ProcessingState.completed:
-        return AudioProcessingState.completed;
-      default:
-        throw Exception("Invalid state: ${_player.processingState}");
-    }
-  }
-
-  Future<void> _broadcastScheduleState(ScheduleRepositoryState state) async {
-    if (state is ScheduleRepositoryLoadSuccessState) {
-      log("PlayerTask._broadcastScheduleState() -> success -> is queue has ${state.items.length} items", name: LOG_TAG);
-      final queue = state.items.map((scheduleItem) => _mapScheduleItemToMediaItem(scheduleItem)).toList();
-      AudioServiceBackground.setQueue(queue);
-      if (queue.isNotEmpty) {
-        AudioServiceBackground.setMediaItem(queue[0]);
-        log("AudioServiceBackground.setMediaItem() -> artUri = ${queue[0].artUri}", name: LOG_TAG);
-      }
-    }
-
-    if (state is ScheduleRepositoryLoadErrorState) {
-      log("PlayerTask._broadcastScheduleState() -> error -> ${state.error}", name: LOG_TAG);
-      AudioServiceBackground.sendCustomEvent(state.error);
-    }
+    onSetAudioQuality(arguments);
   }
 
   String _mapAudioQualityToUrl(int audioQuality) {
@@ -191,6 +182,56 @@ class PlayerTask extends BackgroundAudioTask {
           log("Unknown AudioQualityType $audioQuality. Default quality (medium) used.", name: LOG_TAG);
           return _urlStreamMedium;
         }
+    }
+  }
+
+  /// Broadcasts the current player state to all clients.
+  Future<void> _broadcastPlayerState() async {
+    log("PlayerTask._broadcastPlayerState()", name: LOG_TAG);
+    await AudioServiceBackground.setState(
+      controls: [
+        if (player.playing) MediaControl.pause else MediaControl.play,
+      ],
+      androidCompactActions: [0],
+      processingState: _getProcessingState(),
+      playing: player.playing,
+      position: player.position,
+      bufferedPosition: player.bufferedPosition,
+      speed: player.speed,
+    );
+  }
+
+  AudioProcessingState _getProcessingState() {
+    switch (player.processingState) {
+      case ProcessingState.idle:
+        return AudioProcessingState.idle;
+      case ProcessingState.loading:
+        return AudioProcessingState.loading;
+      case ProcessingState.buffering:
+        return AudioProcessingState.buffering;
+      case ProcessingState.ready:
+        return AudioProcessingState.ready;
+      case ProcessingState.completed:
+        return AudioProcessingState.completed;
+      default:
+        throw Exception("Invalid state: ${player.processingState}");
+    }
+  }
+
+  Future<void> _broadcastScheduleState(ScheduleRepositoryState state) async {
+    if (state is ScheduleRepositoryLoadSuccessState) {
+      log("PlayerTask._broadcastScheduleState() -> success -> is queue has ${state.items.length} items", name: LOG_TAG);
+      final queue = state.items.map((scheduleItem) => _mapScheduleItemToMediaItem(scheduleItem)).toList();
+      AudioServiceBackground.setQueue(queue);
+      if (queue.isNotEmpty) {
+        AudioServiceBackground.setMediaItem(queue[0]);
+        log("AudioServiceBackground.setMediaItem() -> artUri = ${queue[0].artUri}", name: LOG_TAG);
+      }
+    }
+
+    if (state is ScheduleRepositoryLoadErrorState) {
+      log("PlayerTask._broadcastScheduleState() -> error -> ${state.error}", name: LOG_TAG);
+      AudioServiceBackground.sendCustomEvent(state.error);
     }
   }
 
@@ -221,7 +262,7 @@ class PlayerTask extends BackgroundAudioTask {
     }
 
     return MediaItem(
-      id: _uuid.v1(),
+      id: uuid.v1(),
       album: _appTitle,
       artUri: artUri,
       artist: scheduleItem.artist,
@@ -237,27 +278,8 @@ class PlayerTask extends BackgroundAudioTask {
 
   Uri _getRandomUri(List<Uri> uriList) {
     assert(uriList.isNotEmpty);
-    final int index = _random.nextInt(uriList.length - 1);
+    final int index = random.nextInt(uriList.length - 1);
     return uriList[index];
-  }
-
-  Future<Uri> _createUriFromAsset(String asset) async {
-    try {
-      File file = await loadAssetFile(asset);
-      return Uri.file(file.path);
-    } catch (error) {
-      log("Load asset file ($asset) error: $error", name: LOG_TAG);
-      return Uri();
-    }
-  }
-
-  Future<List<Uri>> _createUriListFromAssetList(List<String> assetList) async {
-    final List<Uri> uriList = List.empty(growable: true);
-    assetList.forEach((asset) async {
-      final path = await _createUriFromAsset(asset);
-      uriList.add(path);
-    });
-    return uriList;
   }
 
   _handleAudioInterruptionEvent(AudioInterruptionEvent event) {
@@ -272,7 +294,7 @@ class PlayerTask extends BackgroundAudioTask {
           log("_handleAudioInterruptionEvent() => check", name: LOG_TAG);
           if (_isPlayingBeforeInterruption) {
             log("_handleAudioInterruptionEvent() => _player.stop()", name: LOG_TAG);
-            _player.stop();
+            player.stop();
           }
           break;
       }
@@ -287,7 +309,7 @@ class PlayerTask extends BackgroundAudioTask {
           log("_handleAudioInterruptionEvent() => check", name: LOG_TAG);
           if (_isPlayingBeforeInterruption) {
             log("_handleAudioInterruptionEvent() => _player.play()", name: LOG_TAG);
-            _player.play();
+            player.play();
           }
           break;
       }
@@ -318,3 +340,4 @@ extension MediaItemExtensions on MediaItem {
 
   int get type => this.extras!["type"];
 }
+

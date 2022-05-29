@@ -84,6 +84,7 @@ const MUSIC_ART_ASSET_LIST = ["assets/images/music_01.png", "assets/images/music
 
 // Custom action name for AudioBackgroundService
 const PLAYER_TASK_ACTION_SET_AUDIO_QUALITY = "player_task_event_set_audio_quality";
+const PLAYER_TASK_ACTION_SET_PARAMS = "player_task_event_set_params";
 
 // Google/Firebase Analytics event names
 const GA_APP_START = "UPA_APP_START";
