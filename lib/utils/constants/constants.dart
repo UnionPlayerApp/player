@@ -82,9 +82,9 @@ const NEWS_ART_ASSET_LIST = ["assets/images/news_01.png", "assets/images/news_02
 const TALK_ART_ASSET_LIST = ["assets/images/talk_01.png", "assets/images/talk_02.png", "assets/images/talk_03.png"];
 const MUSIC_ART_ASSET_LIST = ["assets/images/music_01.png", "assets/images/music_02.png", "assets/images/music_03.png"];
 
-// Custom action name for AudioBackgroundService
-const PLAYER_TASK_ACTION_SET_AUDIO_QUALITY = "player_task_event_set_audio_quality";
-const PLAYER_TASK_ACTION_SET_PARAMS = "player_task_event_set_params";
+// Custom action name for AudioHandler
+const ACTION_SET_AUDIO_QUALITY = "upa_action_set_audio_quality";
+const ACTION_START = "upa_action_start";
 
 // Google/Firebase Analytics event names
 const GA_APP_START = "UPA_APP_START";

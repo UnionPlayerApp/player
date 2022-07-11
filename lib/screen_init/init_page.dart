@@ -180,7 +180,7 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
 
     log("_initPlayer() -> AudioService.init()", name: LOG_TAG);
     final playerHandler = await AudioService.init(
-      builder: () => getKoin().get<AppPlayerHandler>(),
+      builder: () => getKoin().get<AudioHandler>(),
       config: const AudioServiceConfig(
         androidNotificationChannelName: AUDIO_NOTIFICATION_CHANNEL_NAME,
         androidNotificationIcon: AUDIO_NOTIFICATION_ICON,
@@ -190,7 +190,7 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
       ),
     );
 
-    playerHandler.customAction(PLAYER_TASK_ACTION_SET_PARAMS, _createPlayerTaskParams(audioQualityId, isPlaying));
+    await playerHandler.customAction(ACTION_START, _createPlayerTaskParams(audioQualityId, isPlaying));
 
     return isPlaying;
   }

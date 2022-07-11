@@ -99,7 +99,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       KEY_AUDIO_QUALITY: audioQualityId,
       KEY_IS_PLAYING: AudioService.playbackState.playing,
     };
-    AudioService.customAction(PLAYER_TASK_ACTION_SET_AUDIO_QUALITY, params)
+    AudioService.customAction(ACTION_SET_AUDIO_QUALITY, params)
         .then((value) => writeIntToSharedPreferences(KEY_AUDIO_QUALITY, audioQualityId));
   }
 

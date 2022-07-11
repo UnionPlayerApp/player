@@ -9,7 +9,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:union_player_app/repository/schedule_item.dart';
 import 'package:union_player_app/repository/schedule_item_type.dart';
 import 'package:union_player_app/repository/schedule_repository_impl.dart';
-import 'package:union_player_app/repository/schedule_repository_state.dart';
+import 'package:union_player_app/repository/schedule_repository_event.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/file_utils.dart';
 import 'package:uuid/uuid.dart';
@@ -33,7 +33,7 @@ class PlayerTask extends BackgroundAudioTask {
   late final List<Uri> _musicArtUriList;
 
   late final StreamSubscription<PlayerState> _playerStateSubscription;
-  late final StreamSubscription<ScheduleRepositoryState> _scheduleStateSubscription;
+  late final StreamSubscription<ScheduleRepositoryEvent> _scheduleStateSubscription;
   late final StreamSubscription<AudioInterruptionEvent> _sessionEventSubscription;
 
   bool _isPlayingBeforeInterruption = false;
@@ -61,9 +61,9 @@ class PlayerTask extends BackgroundAudioTask {
     _scheduleStateSubscription = _schedule.stateStream().listen((state) => _broadcastScheduleState(state));
     _sessionEventSubscription = session.interruptionEventStream.listen((event) => _handleAudioInterruptionEvent(event));
 
-    _schedule.onStart(_urlSchedule);
+    _schedule.start(_urlSchedule);
 
-    onCustomAction(PLAYER_TASK_ACTION_SET_AUDIO_QUALITY, params);
+    onCustomAction(ACTION_SET_AUDIO_QUALITY, params);
   }
 
   @override
@@ -73,7 +73,7 @@ class PlayerTask extends BackgroundAudioTask {
     await _playerStateSubscription.cancel();
     await _sessionEventSubscription.cancel();
     await _player.dispose();
-    await _schedule.onStop();
+    await _schedule.stop();
     await _broadcastPlayerState();
     await super.onStop();
   }
@@ -100,7 +100,7 @@ class PlayerTask extends BackgroundAudioTask {
   @override
   Future<void> onCustomAction(String name, dynamic arguments) async {
     switch (name) {
-      case PLAYER_TASK_ACTION_SET_AUDIO_QUALITY:
+      case ACTION_SET_AUDIO_QUALITY:
         return onSetAudioQuality(arguments);
       default:
         return super.onCustomAction(name, arguments);
@@ -159,8 +159,8 @@ class PlayerTask extends BackgroundAudioTask {
     }
   }
 
-  Future<void> _broadcastScheduleState(ScheduleRepositoryState state) async {
-    if (state is ScheduleRepositoryLoadSuccessState) {
+  Future<void> _broadcastScheduleState(ScheduleRepositoryEvent state) async {
+    if (state is ScheduleRepositorySuccessEvent) {
       log("PlayerTask._broadcastScheduleState() -> success -> is queue has ${state.items.length} items", name: LOG_TAG);
       final queue = state.items.map((scheduleItem) => _mapScheduleItemToMediaItem(scheduleItem)).toList();
       AudioServiceBackground.setQueue(queue);
@@ -170,7 +170,7 @@ class PlayerTask extends BackgroundAudioTask {
       }
     }
 
-    if (state is ScheduleRepositoryLoadErrorState) {
+    if (state is ScheduleRepositoryErrorEvent) {
       log("PlayerTask._broadcastScheduleState() -> error -> ${state.error}", name: LOG_TAG);
       AudioServiceBackground.sendCustomEvent(state.error);
     }

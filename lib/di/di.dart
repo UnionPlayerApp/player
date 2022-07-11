@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:koin/koin.dart';
 import 'package:logger/logger.dart' as Logger;
@@ -25,7 +26,7 @@ import 'package:uuid/uuid.dart';
 import '../player/app_player.dart';
 
 final appModule = Module()
-  // pages and blocs
+// pages and blocs
   ..factoryWithParam((s, List<String> strings) => InfoPage(strings: strings))
   ..factoryWithParam((s, String title) => ProgressPage(title: title))
   ..singleWithParam((s, bool isPlaying) => AppBloc(isPlaying))
@@ -34,21 +35,19 @@ final appModule = Module()
   ..single((s) => FeedbackPage(s.get()))
   ..single((s) => MainBloc())
   ..single((s) => MainPage())
-  ..single((s) => ScheduleBloc())
+  ..single((s) => ScheduleBloc(audioHandler: s.get()))
   ..single((s) => SchedulePage())
   ..single((s) => SettingsBloc())
   ..single((s) => SettingsPage())
-  // system classes
+// system classes
   ..single<Logger.Logger>((s) => AppLogger())
   ..single<AudioPlayer>((s) => AppPlayer())
-  ..single<AppPlayerHandler>(
-    (s) => AppPlayerHandler(
-      player: s.get(),
-      schedule: s.get(),
-      random: s.get(),
-      uuid: s.get(),
-    ),
-  )
+  ..single<AudioHandler>((s) => AppPlayerHandler(
+        player: s.get(),
+        schedule: s.get(),
+        random: s.get(),
+        uuid: s.get(),
+      ))
   ..single<IScheduleRepository>((s) => ScheduleRepositoryImpl())
   ..single<SystemData>((s) => SystemData())
   ..factory<Uuid>((s) => Uuid())
