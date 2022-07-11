@@ -6,7 +6,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/foundation.dart' show kDebugMode, kReleaseMode;
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,8 +14,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:koin_flutter/koin_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:union_player_app/model/system_data/system_data.dart';
-import 'package:union_player_app/player/audio_player_handler.dart';
-import 'package:union_player_app/player/player_task.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_app/app_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
@@ -107,9 +105,7 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
   Future _initSystemData() async {
     try {
       await Firebase.initializeApp();
-      if (kDebugMode) {
-        await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
-      }
+      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(kReleaseMode);
       if (kReleaseMode) {
         FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
       }
@@ -180,7 +176,7 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
 
     log("_initPlayer() -> AudioService.init()", name: LOG_TAG);
     final playerHandler = await AudioService.init(
-      builder: () => getKoin().get<AudioHandler>(),
+      builder: () => get<AudioHandler>(),
       config: const AudioServiceConfig(
         androidNotificationChannelName: AUDIO_NOTIFICATION_CHANNEL_NAME,
         androidNotificationIcon: AUDIO_NOTIFICATION_ICON,
@@ -221,7 +217,7 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
 
   @override
   void dispose() {
-    AudioService.stop();
+    get<AudioHandler>().stop();
     super.dispose();
   }
 
@@ -255,7 +251,10 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
   }
 
   Widget _wrapScreenUtilInit(Widget homePage) {
-    return ScreenUtilInit(designSize: Size(PROTOTYPE_DEVICE_WIDTH, PROTOTYPE_DEVICE_HEIGHT), builder: () => homePage);
+    return ScreenUtilInit(
+      designSize: Size(PROTOTYPE_DEVICE_WIDTH, PROTOTYPE_DEVICE_HEIGHT),
+      builder: (_, __) => homePage,
+    );
   }
 
   List<String> _createInfoPageStrings() => ([
@@ -270,8 +269,4 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
       BlocProvider.value(value: getWithParam<AppBloc, bool>(isPlaying), child: get<AppPage>());
 
   Widget _createProgressPage() => getWithParam<ProgressPage, String>(translate(StringKeys.app_init_title, context));
-}
-
-void _audioPlayerTaskEntrypoint() async {
-  AudioServiceBackground.run(() => PlayerTask());
 }
