@@ -37,7 +37,7 @@ class _AppState extends State<AppPage> {
 
   @override
   Widget build(BuildContext context) {
-    FirebaseAnalytics().logEvent(name: GA_APP_START);
+    FirebaseAnalytics.instance.logEvent(name: GA_APP_START);
     return BlocBuilder<AppBloc, AppState>(builder: (BuildContext context, AppState state) {
       log("AppState.build(), AppState = $state", name: LOG_TAG);
       return WillPopScope(
@@ -114,8 +114,8 @@ class _AppState extends State<AppPage> {
       showSnackBar(context, StringKeys.press_again_to_exit, duration: duration);
       return Future.value(false);
     }
-    AudioService.stop();
-    FirebaseAnalytics().logEvent(name: GA_APP_STOP);
+    get<AudioHandler>().stop();
+    FirebaseAnalytics.instance.logEvent(name: GA_APP_STOP);
     return Future.value(true);
   }
 

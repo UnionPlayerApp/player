@@ -16,9 +16,9 @@ dependencies:
   connectivity: ^3.0.3
   cupertino_icons: ^1.0.2
   equatable:
-  firebase_analytics: 8.1.2
-  firebase_core: 1.3.0
-  firebase_crashlytics: 2.0.6
+  firebase_analytics: ^9.1.12
+  firebase_core: ^1.3.0
+  firebase_crashlytics: ^2.0.6
   flutter:
     sdk: flutter
   flutter_bloc:

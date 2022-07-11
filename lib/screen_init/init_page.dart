@@ -175,6 +175,7 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
     }
 
     log("_initPlayer() -> AudioService.init()", name: LOG_TAG);
+
     final playerHandler = await AudioService.init(
       builder: () => get<AudioHandler>(),
       config: const AudioServiceConfig(

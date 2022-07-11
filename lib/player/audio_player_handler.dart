@@ -8,16 +8,14 @@ import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:union_player_app/repository/schedule_item.dart';
 import 'package:union_player_app/repository/schedule_item_type.dart';
-import 'package:union_player_app/repository/schedule_repository_interface.dart';
 import 'package:union_player_app/repository/schedule_repository_event.dart';
+import 'package:union_player_app/repository/schedule_repository_interface.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/file_utils.dart';
 import 'package:uuid/uuid.dart';
 
-import 'app_player.dart';
-
 class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
-  final AppPlayer player;
+  final AudioPlayer player;
   final IScheduleRepository schedule;
   final Uuid uuid;
   final Math.Random random;
@@ -128,25 +126,25 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
   }
 
   PlaybackState _transformPlaybackEvent(PlaybackEvent event) => PlaybackState(
-    controls: [
-      if (player.playing) MediaControl.pause else MediaControl.play,
-    ],
-    androidCompactActionIndices: const [0],
-    processingState: _processingState(),
-    playing: player.playing,
-    updatePosition: player.position,
-    bufferedPosition: player.bufferedPosition,
-    speed: player.speed,
-    queueIndex: event.currentIndex,
-  );
+        controls: [
+          if (player.playing) MediaControl.pause else MediaControl.play,
+        ],
+        androidCompactActionIndices: const [0],
+        processingState: _processingState(),
+        playing: player.playing,
+        updatePosition: player.position,
+        bufferedPosition: player.bufferedPosition,
+        speed: player.speed,
+        queueIndex: event.currentIndex,
+      );
 
   AudioProcessingState _processingState() => const {
-    ProcessingState.idle: AudioProcessingState.idle,
-    ProcessingState.loading: AudioProcessingState.loading,
-    ProcessingState.buffering: AudioProcessingState.buffering,
-    ProcessingState.ready: AudioProcessingState.ready,
-    ProcessingState.completed: AudioProcessingState.completed,
-  }[player.processingState]!;
+        ProcessingState.idle: AudioProcessingState.idle,
+        ProcessingState.loading: AudioProcessingState.loading,
+        ProcessingState.buffering: AudioProcessingState.buffering,
+        ProcessingState.ready: AudioProcessingState.ready,
+        ProcessingState.completed: AudioProcessingState.completed,
+      }[player.processingState]!;
 
   Future<Uri> _createUriFromAsset(String asset) async {
     try {
