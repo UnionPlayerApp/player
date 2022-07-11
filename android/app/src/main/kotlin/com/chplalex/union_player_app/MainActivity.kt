@@ -1,6 +1,5 @@
 package com.chplalex.union_player_app
 
-import io.flutter.embedding.android.FlutterActivity
+import com.ryanheise.audioservice.AudioServiceActivity
 
-class MainActivity: FlutterActivity() {
-}
+class MainActivity: AudioServiceActivity()

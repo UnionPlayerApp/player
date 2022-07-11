@@ -145,9 +145,9 @@ class PlayerTask extends BackgroundAudioTask {
   AudioProcessingState _getProcessingState() {
     switch (_player.processingState) {
       case ProcessingState.idle:
-        return AudioProcessingState.stopped;
+        return AudioProcessingState.idle;
       case ProcessingState.loading:
-        return AudioProcessingState.connecting;
+        return AudioProcessingState.loading;
       case ProcessingState.buffering:
         return AudioProcessingState.buffering;
       case ProcessingState.ready:
