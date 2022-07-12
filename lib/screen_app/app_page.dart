@@ -2,10 +2,7 @@ import 'dart:developer';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:koin_flutter/koin_flutter.dart';
 import 'package:marquee/marquee.dart';

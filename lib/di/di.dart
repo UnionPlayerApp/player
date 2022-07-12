@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:koin/koin.dart';
-import 'package:logger/logger.dart' as Logger;
 import 'package:union_player_app/model/system_data/system_data.dart';
 import 'package:union_player_app/player/audio_player_handler.dart';
 import 'package:union_player_app/repository/schedule_repository_impl.dart';
@@ -29,7 +28,7 @@ final appModule = Module()
 // pages and blocs
   ..factoryWithParam((s, List<String> strings) => InfoPage(strings: strings))
   ..factoryWithParam((s, String title) => ProgressPage(title: title))
-  ..singleWithParam((s, bool isPlaying) => AppBloc(isPlaying))
+  ..singleWithParam((s, bool isPlaying) => AppBloc(s.get(), isPlaying))
   ..single((s) => AppPage())
   ..single((s) => FeedbackBloc(s.get(), s.get()))
   ..single((s) => FeedbackPage(s.get()))
@@ -40,7 +39,7 @@ final appModule = Module()
   ..single((s) => SettingsBloc())
   ..single((s) => SettingsPage())
 // system classes
-  ..single<Logger.Logger>((s) => AppLogger())
+  ..single<AppLogger>((s) => AppLogger())
   ..single<AudioPlayer>((s) => AppPlayer())
   ..single<AudioHandler>((s) => AppPlayerHandler(
         player: s.get(),

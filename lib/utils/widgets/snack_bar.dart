@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/ui/app_theme.dart';
 
