@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,31 +9,39 @@ import 'package:union_player_app/utils/core/shared_preferences.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
-  SettingsBloc(
-      {int langId: DEFAULT_LANG_ID, int startPlayingId: DEFAULT_START_PLAYING_ID, int themeId: DEFAULT_THEME_ID})
-      : super(SettingsState(langId, startPlayingId, themeId)) {
+  SettingsBloc({
+    int langId: DEFAULT_LANG_ID,
+    int startPlayingId: DEFAULT_START_PLAYING_ID,
+    int themeId: DEFAULT_THEME_ID,
+  }) : super(SettingsState(langId, startPlayingId, themeId)) {
+    on<SettingsEventSharedPreferencesRead>(_onSharedPreferencesRead);
+    on<SettingsEventTheme>(_onTheme);
+    on<SettingsEventLang>(_onLang);
+    on<SettingsEventStartPlaying>(_onStartPlaying);
     _readStateFromSharedPreferences();
   }
 
-  @override
-  Stream<SettingsState> mapEventToState(event) async* {
-    late final SettingsState newState;
-    if (event is SettingsEventSharedPreferencesRead) {
-      newState = SettingsState(event.langId, event.startPlayingId, event.themeId);
-    } else if (event is SettingsEventTheme) {
-      _doThemeChanged(event.themeId);
-      newState = state.copyWith(newTheme: event.themeId, newSnackBarKey: StringKeys.will_made_next_release);
-    } else if (event is SettingsEventLang) {
-      _doLangChanged(event.langId);
-      newState = state.copyWith(newLang: event.langId, newSnackBarKey: StringKeys.will_made_next_release);
-    } else if (event is SettingsEventStartPlaying) {
-      _doStartPlayingChanged(event.startPlayingId);
-      newState = state.copyWith(newStartPlaying: event.startPlayingId, newSnackBarKey: StringKeys.empty);
-    } else {
-      log("SettingsBloc -> mapEventToState -> unknown event type $event", name: LOG_TAG);
-      return;
-    }
-    yield newState;
+  FutureOr<void> _onSharedPreferencesRead(SettingsEventSharedPreferencesRead event, Emitter<SettingsState> emitter) {
+    final newState = SettingsState(event.langId, event.startPlayingId, event.themeId);
+    emitter(newState);
+  }
+
+  FutureOr<void> _onTheme(SettingsEventTheme event, Emitter<SettingsState> emitter) {
+    _doThemeChanged(event.themeId);
+    final newState = state.copyWith(newTheme: event.themeId, newSnackBarKey: StringKeys.will_made_next_release);
+    emitter(newState);
+  }
+
+  FutureOr<void> _onLang(SettingsEventLang event, Emitter<SettingsState> emitter) {
+    _doLangChanged(event.langId);
+    final newState = state.copyWith(newLang: event.langId, newSnackBarKey: StringKeys.will_made_next_release);
+    emitter(newState);
+  }
+
+  FutureOr<void> _onStartPlaying(SettingsEventStartPlaying event, Emitter<SettingsState> emitter) {
+    _doStartPlayingChanged(event.startPlayingId);
+    final newState = state.copyWith(newStartPlaying: event.startPlayingId, newSnackBarKey: StringKeys.empty);
+    emitter(newState);
   }
 
   void _doThemeChanged(int themeId) {
