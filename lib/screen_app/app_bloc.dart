@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -7,29 +8,89 @@ import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/shared_preferences.dart';
 
 part 'app_event.dart';
-
 part 'app_state.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
+  final AudioHandler _audioHandler;
+
   late final StreamSubscription _customSubscription;
   late final StreamSubscription _playerSubscription;
   late final StreamSubscription _queueSubscription;
 
-  AppBloc(bool isPlaying) : super(AppState(0, DEFAULT_IS_PLAYING, DEFAULT_AUDIO_QUALITY_ID, false)) {
-    // Timer.periodic(Duration(seconds: PLAYER_BUFFER_CHECK_DURATION),
-    //     (Timer t) => _checkForBufferLoading());
+  AppBloc(this._audioHandler, bool isPlaying)
+      : super(AppState(0, DEFAULT_IS_PLAYING, DEFAULT_AUDIO_QUALITY_ID, false)) {
+    on<AppFabEvent>(_onFab);
+    on<AppNavEvent>(_onNav);
+    on<AppPlayerEvent>(_onPlayer);
+    on<AppScheduleEvent>(_onSchedule);
+    on<AppAudioQualitySelectorEvent>(_onAudioQualitySelector);
+    on<AppAudioQualityButtonEvent>(_onAudioQualityButton);
+    on<AppAudioQualityInitEvent>(_onAudioQualityInit);
 
-    _customSubscription = AudioService.customEventStream.listen((error) => _onCustomEvent(error));
-    _queueSubscription = AudioService.queueStream.listen((queue) => _onQueueEvent(queue));
-    _playerSubscription = AudioService.playbackStateStream.listen((state) => _onPlaybackEvent(state));
+    _customSubscription = _audioHandler.customEvent.listen((error) => _onCustomEvent(error));
+    _queueSubscription = _audioHandler.queue.listen((queue) => _onQueueEvent(queue));
+    _playerSubscription = _audioHandler.playbackState.listen((state) => _onPlaybackEvent(state));
 
     _readAudioQualityIdFromSharedPreferences();
 
     if (isPlaying) {
-      AudioService.play();
+      _audioHandler.play();
     } else {
-      AudioService.pause();
+      _audioHandler.pause();
     }
+  }
+
+  FutureOr<void> _onFab(AppFabEvent event, Emitter<AppState> emitter) {
+    if (_audioHandler.playbackState.value.playing) {
+      _audioHandler.pause();
+    } else {
+      _audioHandler.play();
+    }
+  }
+
+  FutureOr<void> _onNav(AppNavEvent event, Emitter<AppState> emitter) {
+    final newState = state.copyWith(navIndex: event.navIndex);
+    emitter(newState);
+  }
+
+  FutureOr<void> _onPlayer(AppPlayerEvent event, Emitter<AppState> emitter) {
+    final newState = state.copyWith(playingState: event.playingState);
+    emitter(newState);
+  }
+
+  FutureOr<void> _onSchedule(AppScheduleEvent event, Emitter<AppState> emitter) {
+    late AppState newState;
+
+    if (event.items == null || event.items!.length < 2) {
+      newState = state.copyWith(isScheduleLoaded: false);
+    } else {
+      final presentItem = event.items![0];
+      final nextItem = event.items![1];
+      newState = state.copyWith(
+          isScheduleLoaded: true,
+          presentArtist: presentItem.artist ?? "",
+          presentTitle: presentItem.title,
+          nextArtist: nextItem.artist ?? "",
+          nextTitle: nextItem.title);
+    }
+
+    emitter(newState);
+  }
+
+  FutureOr<void> _onAudioQualitySelector(AppAudioQualitySelectorEvent event, Emitter<AppState> emitter) {
+    final newState = state.copyWith(isAudioQualitySelectorOpen: !state.isAudioQualitySelectorOpen);
+    emitter(newState);
+  }
+
+  FutureOr<void> _onAudioQualityButton(AppAudioQualityButtonEvent event, Emitter<AppState> emitter) {
+    _doAudioQualityChanged(event.audioQualityId);
+    final newState = state.copyWith(isAudioQualitySelectorOpen: false, audioQualityId: event.audioQualityId);
+    emitter(newState);
+  }
+
+  FutureOr<void> _onAudioQualityInit(AppAudioQualityInitEvent event, Emitter<AppState> emitter) {
+    final newState = state.copyWith(audioQualityId: event.audioQualityId);
+    emitter(newState);
   }
 
   void _onCustomEvent(error) {
@@ -59,52 +120,18 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     super.close();
   }
 
-  @override
-  Stream<AppState> mapEventToState(AppEvent event) async* {
-    if (event is AppFabEvent) {
-      if (AudioService.playbackState.playing) {
-        AudioService.pause();
-      } else {
-        AudioService.play();
-      }
-    } else if (event is AppNavEvent) {
-      yield state.copyWith(navIndex: event.navIndex);
-    } else if (event is AppPlayerEvent) {
-      yield state.copyWith(playingState: event.playingState);
-    } else if (event is AppScheduleEvent) {
-      if (event.items == null || event.items!.length < 2) {
-        yield state.copyWith(isScheduleLoaded: false);
-      } else {
-        final presentItem = event.items![0];
-        final nextItem = event.items![1];
-        yield state.copyWith(
-            isScheduleLoaded: true,
-            presentArtist: presentItem.artist ?? "",
-            presentTitle: presentItem.title,
-            nextArtist: nextItem.artist ?? "",
-            nextTitle: nextItem.title);
-      }
-    } else if (event is AppAudioQualitySelectorEvent) {
-      yield state.copyWith(isAudioQualitySelectorOpen: !state.isAudioQualitySelectorOpen);
-    } else if (event is AppAudioQualityButtonEvent) {
-      _doAudioQualityChanged(event.audioQualityId);
-      yield state.copyWith(isAudioQualitySelectorOpen: false, audioQualityId: event.audioQualityId);
-    } else if (event is AppAudioQualityInitEvent) {
-      yield state.copyWith(audioQualityId: event.audioQualityId);
-    }
-  }
-
   void _doAudioQualityChanged(int audioQualityId) {
     Map<String, dynamic> params = {
       KEY_AUDIO_QUALITY: audioQualityId,
-      KEY_IS_PLAYING: AudioService.playbackState.playing,
+      KEY_IS_PLAYING: _audioHandler.playbackState.value.playing,
     };
-    AudioService.customAction(ACTION_SET_AUDIO_QUALITY, params)
+    _audioHandler
+        .customAction(ACTION_SET_AUDIO_QUALITY, params)
         .then((value) => writeIntToSharedPreferences(KEY_AUDIO_QUALITY, audioQualityId));
   }
 
   void _readAudioQualityIdFromSharedPreferences() async {
-      readIntFromSharedPreferences(KEY_AUDIO_QUALITY)
+    readIntFromSharedPreferences(KEY_AUDIO_QUALITY)
         .then((audioQualityId) => _onSharedPreferencesReadSuccess(audioQualityId))
         .catchError((error) => _onSharedPreferencesReadError(error));
   }
