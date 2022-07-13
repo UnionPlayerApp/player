@@ -42,87 +42,99 @@ class SchedulePage extends StatelessWidget {
   }
 
   Widget _loadErrorPage(BuildContext context, ScheduleLoadErrorState state) {
-    final header = Text(translate(StringKeys.loading_error, context), style: Theme.of(context).textTheme.headline6);
-    final body = Text(state.errorMessage, style: Theme.of(context).textTheme.bodyText2, textAlign: TextAlign.center);
+    final header = Text(translate(StringKeys.loading_error, context), style: Theme
+        .of(context)
+        .textTheme
+        .headline6);
+    final body = Text(state.errorMessage, style: Theme
+        .of(context)
+        .textTheme
+        .bodyText2, textAlign: TextAlign.center);
     return Center(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              header,
-          Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: body
-          ),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+          header,
+          Padding(padding: const EdgeInsets.all(8.0), child: body),
         ]));
   }
 
   Widget _loadSuccessPage(BuildContext context, ScheduleLoadSuccessState state) {
     return RefreshIndicator(
-        onRefresh: () async {
-          //TODO: отправить событие на принудительную загрзку данных
-          //context.read<ScheduleBloc>().add();
-        },
-        child: ListView.separated(
-            separatorBuilder: (BuildContext context, int index) =>
-                Divider(height: listViewDividerHeight),
-            itemCount: state.items.length,
-            itemBuilder: (BuildContext context, int index) {
-              return _programElement(context, state.items[index]);
-            }));
+      onRefresh: () async {
+        //TODO: отправить событие на принудительную загрзку данных
+        //context.read<ScheduleBloc>().add();
+      },
+      child: ListView.separated(
+        separatorBuilder: (BuildContext context, int index) => Divider(height: listViewDividerHeight),
+        itemCount: state.items.length,
+        itemBuilder: (BuildContext context, int index) => _programElement(context, state.items[index]),
+      ),
+    );
   }
 
   Widget _programElement(BuildContext context, ScheduleItemView element) {
     late final Image image;
-    if (element.imageUri != null && element.imageUri!.path != '') {
+    if (element.imageUri != null && element.imageUri!.path.isNotEmpty) {
       final file = File.fromUri(element.imageUri!);
-      image = Image.file(file,
-          width: scheduleImageSide,
-          height: scheduleImageSide,
-          fit: BoxFit.cover);
+      image = Image.file(file, width: scheduleImageSide, height: scheduleImageSide, fit: BoxFit.cover);
     } else {
-      image = Image.asset(LOGO_IMAGE,
-          width: scheduleImageSide,
-          height: scheduleImageSide,
-          fit: BoxFit.cover);
+      image = Image.asset(LOGO_IMAGE, width: scheduleImageSide, height: scheduleImageSide, fit: BoxFit.cover);
     }
-    final titleStyle = Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: titleFontSize);
-    final artistStyle = Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: artistFontSize);
+    final imageWidget = ClipRRect(
+      borderRadius: BorderRadius.circular(6.0),
+      child: image,
+    );
+    final titleStyle = Theme
+        .of(context)
+        .textTheme
+        .bodyText2!
+        .copyWith(fontSize: titleFontSize);
+    final artistStyle = Theme
+        .of(context)
+        .textTheme
+        .bodyText1!
+        .copyWith(fontSize: artistFontSize);
     return Container(
-        color: Colors.white10,
-        margin: allSidesMargin,
-        height: scheduleItemHeight,
-        child: Row(children: [
-          image,
-          Expanded(
-              child: Container(
-                  padding: programTextLeftPadding,
-                  child: Column(children: [
-                    Row(children: [
-                      Expanded(
-                          child: Text(
-                        element.title,
-                        style: titleStyle,
-                        softWrap: true,
-                        textAlign: TextAlign.start,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      )),
-                      Text(element.start,
-                          style: Theme.of(context).textTheme.headline6,
-                          overflow: TextOverflow.ellipsis),
-                    ]),
-                    Container(
-                        padding: programBodyTopPadding,
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          element.artist,
-                          style: artistStyle,
-                          softWrap: true,
-                          textAlign: TextAlign.start,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 3,
-                        ))
-                  ])))
-        ]));
+      color: Colors.white10,
+      margin: allSidesMargin,
+      height: scheduleItemHeight,
+      child: Row(children: [
+        imageWidget,
+        Expanded(
+          child: Container(
+            padding: programTextLeftPadding,
+            child: Column(children: [
+              Row(children: [
+                Expanded(
+                  child: Text(
+                    element.title,
+                    style: titleStyle,
+                    softWrap: true,
+                    textAlign: TextAlign.start,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(element.start, style: Theme
+                    .of(context)
+                    .textTheme
+                    .headline6, overflow: TextOverflow.ellipsis),
+              ]),
+              Container(
+                padding: programBodyTopPadding,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  element.artist,
+                  style: artistStyle,
+                  softWrap: true,
+                  textAlign: TextAlign.start,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 3,
+                ),
+              )
+            ]),
+          ),
+        )
+      ]),
+    );
   }
 }
