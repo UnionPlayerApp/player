@@ -1,0 +1,3 @@
+Release 1.1.1+14, 13/07/2022
+- updated core libraries Firebase, Just_Audio, BLoC etc.
+- minor design improvements
