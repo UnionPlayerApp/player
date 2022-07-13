@@ -6,8 +6,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart' show kDebugMode, kReleaseMode;
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,7 +14,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:koin_flutter/koin_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:union_player_app/model/system_data/system_data.dart';
-import 'package:union_player_app/player/player_task.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_app/app_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
@@ -53,11 +51,8 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
   Future _initAppTrackingTransparency() async {
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      final TrackingStatus status = await AppTrackingTransparency
-          .trackingAuthorizationStatus;
-      log(
-          "AppTrackingTransparency.trackingAuthorizationStatus -> Tracking status = $status",
-          name: LOG_TAG);
+      final TrackingStatus status = await AppTrackingTransparency.trackingAuthorizationStatus;
+      log("AppTrackingTransparency.trackingAuthorizationStatus -> Tracking status = $status", name: LOG_TAG);
       // If the system can show an authorization request dialog
       if (status == TrackingStatus.notDetermined) {
         // Show a custom explainer dialog before the system dialog
@@ -65,26 +60,17 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
           // Wait for dialog popping animation
           await Future.delayed(const Duration(milliseconds: 200));
           // Request system's tracking authorization dialog
-          log(
-              "AppTrackingTransparency.requestTrackingAuthorization() -> starting",
-              name: LOG_TAG);
-          final TrackingStatus status = await AppTrackingTransparency
-              .requestTrackingAuthorization();
-          log(
-              "AppTrackingTransparency.requestTrackingAuthorization() -> Tracking status = $status",
-              name: LOG_TAG);
+          log("AppTrackingTransparency.requestTrackingAuthorization() -> starting", name: LOG_TAG);
+          final TrackingStatus status = await AppTrackingTransparency.requestTrackingAuthorization();
+          log("AppTrackingTransparency.requestTrackingAuthorization() -> Tracking status = $status", name: LOG_TAG);
           if (status == TrackingStatus.authorized) {
-            final uuid = await AppTrackingTransparency
-                .getAdvertisingIdentifier();
-            log(
-                "AppTrackingTransparency.getAdvertisingIdentifier() -> UUID = $uuid",
-                name: LOG_TAG);
+            final uuid = await AppTrackingTransparency.getAdvertisingIdentifier();
+            log("AppTrackingTransparency.getAdvertisingIdentifier() -> UUID = $uuid", name: LOG_TAG);
           }
         }
       }
     } on PlatformException {
-      log("App tracking transparency init error: platform exception",
-          name: LOG_TAG);
+      log("App tracking transparency init error: platform exception", name: LOG_TAG);
     } catch (error) {
       log("App tracking transparency init error: $error", name: LOG_TAG);
     }
@@ -119,9 +105,7 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
   Future _initSystemData() async {
     try {
       await Firebase.initializeApp();
-      if (kDebugMode) {
-        await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
-      }
+      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(kReleaseMode);
       if (kReleaseMode) {
         FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
       }
@@ -190,16 +174,20 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
         break;
     }
 
-    log("_initPlayer() -> AudioService.start()", name: LOG_TAG);
-    await AudioService.start(
-      backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
-      params: _createPlayerTaskParams(audioQualityId, isPlaying),
-      androidNotificationChannelName: AUDIO_NOTIFICATION_CHANNEL_NAME,
-      androidNotificationColor: Colors.lightGreenAccent.value,
-      androidNotificationIcon: AUDIO_NOTIFICATION_ICON,
-      androidShowNotificationBadge: true,
-      androidEnableQueue: true,
+    log("_initPlayer() -> AudioService.init()", name: LOG_TAG);
+
+    final playerHandler = await AudioService.init(
+      builder: () => get<AudioHandler>(),
+      config: const AudioServiceConfig(
+        androidNotificationChannelName: AUDIO_NOTIFICATION_CHANNEL_NAME,
+        androidNotificationIcon: AUDIO_NOTIFICATION_ICON,
+        androidNotificationOngoing: true,
+        androidShowNotificationBadge: true,
+        notificationColor: Colors.lightGreenAccent,
+      ),
     );
+
+    await playerHandler.customAction(ACTION_START, _createPlayerTaskParams(audioQualityId, isPlaying));
 
     return isPlaying;
   }
@@ -218,9 +206,7 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
   }
 
   Future<bool> _initApp() async {
-    final bool isPlaying = await _initSystemData()
-        .then((_) => _initPlayer())
-        .catchError((e) => _handleError(e));
+    final bool isPlaying = await _initSystemData().then((_) => _initPlayer()).catchError((e) => _handleError(e));
     return isPlaying;
   }
 
@@ -232,7 +218,7 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
 
   @override
   void dispose() {
-    AudioService.stop();
+    get<AudioHandler>().stop();
     super.dispose();
   }
 
@@ -266,7 +252,10 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
   }
 
   Widget _wrapScreenUtilInit(Widget homePage) {
-    return ScreenUtilInit(designSize: Size(PROTOTYPE_DEVICE_WIDTH, PROTOTYPE_DEVICE_HEIGHT), builder: () => homePage);
+    return ScreenUtilInit(
+      designSize: Size(PROTOTYPE_DEVICE_WIDTH, PROTOTYPE_DEVICE_HEIGHT),
+      builder: (_, __) => homePage,
+    );
   }
 
   List<String> _createInfoPageStrings() => ([
@@ -281,8 +270,4 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
       BlocProvider.value(value: getWithParam<AppBloc, bool>(isPlaying), child: get<AppPage>());
 
   Widget _createProgressPage() => getWithParam<ProgressPage, String>(translate(StringKeys.app_init_title, context));
-}
-
-void _audioPlayerTaskEntrypoint() async {
-  AudioServiceBackground.run(() => PlayerTask());
 }

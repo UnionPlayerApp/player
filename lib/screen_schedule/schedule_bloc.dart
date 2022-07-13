@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_event.dart';
@@ -6,12 +7,16 @@ import 'package:union_player_app/screen_schedule/schedule_item_view.dart';
 import 'package:union_player_app/screen_schedule/schedule_state.dart';
 
 class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
+  final AudioHandler audioHandler;
   late final StreamSubscription _queueSubscription;
   late final StreamSubscription _customSubscription;
 
-  ScheduleBloc() : super(ScheduleLoadAwaitState()) {
-    _queueSubscription = AudioService.queueStream.listen((queue) => _onQueueEvent(queue));
-    _customSubscription = AudioService.customEventStream.listen((error) => _onCustomEvent(error));
+  ScheduleBloc({required this.audioHandler}) : super(ScheduleLoadAwaitState()) {
+    on<ScheduleEventDataLoaded>((event, emit) => emit(ScheduleLoadSuccessState(event.items)));
+    on<ScheduleEventErrorMade>((event, emit) => emit(ScheduleLoadErrorState(event.error)));
+
+    _queueSubscription = audioHandler.queue.listen(_onQueueEvent);
+    _customSubscription = audioHandler.customEvent.listen(_onCustomEvent);
   }
 
   @override
@@ -23,7 +28,7 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
 
   void _onQueueEvent(List<MediaItem>? queue) {
     if (queue == null) {
-      _onCustomEvent("Unknown error - empty queue");
+      _onCustomEvent("Unknown error - queue is null");
     } else {
       final items = queue.map((mediaItem) => ScheduleItemView(mediaItem)).toList();
       add(ScheduleEventDataLoaded(items));
@@ -31,14 +36,4 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
   }
 
   void _onCustomEvent(error) => ScheduleEventErrorMade(error);
-
-  @override
-  Stream<ScheduleState> mapEventToState(ScheduleEvent event) async* {
-    if (event is ScheduleEventDataLoaded) {
-      yield ScheduleLoadSuccessState(event.items);
-    }
-    if (event is ScheduleEventErrorMade) {
-      yield ScheduleLoadErrorState(event.error);
-    }
-  }
 }

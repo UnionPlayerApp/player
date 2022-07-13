@@ -1,5 +1,5 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:union_player_app/player/player_task.dart';
+import 'package:union_player_app/player/audio_player_handler.dart';
 import 'package:union_player_app/utils/core/date_time.dart';
 import 'package:union_player_app/utils/core/duration.dart';
 
