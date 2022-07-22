@@ -41,7 +41,7 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
     _initAppFuture = _initApp();
 
     // Can't show a dialog in initState, delaying initialization
-    WidgetsBinding.instance?.addPostFrameCallback((_) => _initAppTrackingTransparency());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initAppTrackingTransparency());
   }
 
   @override
