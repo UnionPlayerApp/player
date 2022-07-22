@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:union_player_app/model/system_data/system_data.dart';
 import 'package:union_player_app/screen_feedback/feedback_event.dart';
@@ -13,6 +15,13 @@ class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
   final SystemData _systemData;
 
   FeedbackBloc(this._logger, this._systemData) : super(AboutInfoUrlLoadAwaitState()) {
+    on<InitialEvent>(_onInitial);
+    on<GotCurrentLocaleEvent>(_onGotCurrentLocale);
+    on<WebViewLoadStartedEvent>(_onWebViewLoadStarted);
+    on<WebViewLoadSuccessEvent>(_onWebViewLoadSuccess);
+    on<WebViewLoadErrorEvent>(_onWebViewLoadError);
+    on<WriteEmailButtonPressedEvent>(_onWriteEmailButtonPressed);
+
     add(InitialEvent());
   }
 
@@ -20,43 +29,36 @@ class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
     return _logger.logDebug(message);
   }
 
-  @override
-  Future<void> close() {
-    log("#CLOSE#");
-    return super.close();
+  FutureOr<void> _onInitial(InitialEvent event, Emitter<FeedbackState> emitter) {
+    final newState = AboutInfoUrlLoadAwaitState();
+    emitter(newState);
   }
 
-  // Method for debug: called whenever an event is added to the Bloc:
-  @override
-  void onEvent(FeedbackEvent event) {
-    super.onEvent(event);
-    log("NEW EVENT: ${event.toString()}");
+  FutureOr<void> _onGotCurrentLocale(GotCurrentLocaleEvent event, Emitter<FeedbackState> emitter) async {
+    final newState = await _getAboutInfoUrl(event.locale);
+    emitter(newState);
   }
 
-  @override
-  Stream<FeedbackState> mapEventToState(FeedbackEvent event) async* {
-    if (event is InitialEvent) {
-      yield AboutInfoUrlLoadAwaitState();
-    }
-    if (event is GotCurrentLocaleEvent) {
-      yield await _getAboutInfoUrl(event.locale);
-    }
-    if (event is WebViewLoadStartedEvent) {
-      yield WebViewLoadAwaitState(event.url);
-    }
-    if (event is WebViewLoadSuccessEvent) {
-      yield WebViewLoadSuccessState(event.url);
-    }
-    if (event is WebViewLoadErrorEvent) {
-      log("WebViewLoadErrorEvent is processing...");
-      yield ErrorState(event.errorDescription);
-    }
-    if (event is WriteEmailButtonPressedEvent) {
-      final path = _systemData.emailData.mailingList.join(",");
-      final query = "$_EMAIL_SUBJECT=${event.subject}";
-      final url = Uri(scheme: _EMAIL_SCHEME, path: path, query: query).toString();
-      launch(url);
-    }
+  FutureOr<void> _onWebViewLoadStarted(WebViewLoadStartedEvent event, Emitter<FeedbackState> emitter) {
+    final newState = WebViewLoadAwaitState(event.url);
+    emitter(newState);
+  }
+
+  FutureOr<void> _onWebViewLoadSuccess(WebViewLoadSuccessEvent event, Emitter<FeedbackState> emitter) {
+    final newState = WebViewLoadSuccessState(event.url);
+    emitter(newState);
+  }
+
+  FutureOr<void> _onWebViewLoadError(WebViewLoadErrorEvent event, Emitter<FeedbackState> emitter) {
+    final newState = ErrorState(event.errorDescription);
+    emitter(newState);
+  }
+
+  FutureOr<void> _onWriteEmailButtonPressed(WriteEmailButtonPressedEvent event, Emitter<FeedbackState> emitter) {
+    final path = _systemData.emailData.mailingList.join(",");
+    final query = "$_EMAIL_SUBJECT=${event.subject}";
+    final url = Uri(scheme: _EMAIL_SCHEME, path: path, query: query);
+    launchUrl(url);
   }
 
   Future<FeedbackState> _getAboutInfoUrl(String locale) async {

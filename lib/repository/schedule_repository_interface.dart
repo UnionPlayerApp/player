@@ -1,7 +1,7 @@
-import 'package:union_player_app/repository/schedule_repository_state.dart';
+import 'package:union_player_app/repository/schedule_repository_event.dart';
 
 abstract class IScheduleRepository {
-  Stream<ScheduleRepositoryState> stateStream();
-  void onStart(String url);
-  void onStop();
+  Stream<ScheduleRepositoryEvent> stateStream();
+  Future <void> start(String url);
+  Future <void> stop();
 }
