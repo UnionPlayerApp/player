@@ -88,6 +88,12 @@ class MainPage extends StatelessWidget {
   }
 
   Widget _createContainer(Image image) {
-    return Container(margin: EdgeInsets.only(bottom: mainMarginBottom), child: image);
+    return Container(
+      margin: EdgeInsets.only(bottom: mainMarginBottom),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12.0),
+        child: image,
+      ),
+    );
   }
 }
