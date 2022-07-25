@@ -26,8 +26,8 @@ import '../player/app_player.dart';
 
 final appModule = Module()
 // pages and blocs
-  ..factoryWithParam((s, List<String> strings) => InfoPage(strings: strings))
-  ..factoryWithParam((s, String title) => ProgressPage(title: title))
+  ..factoryWithParam((s, List<String> params) => InfoPage(params: params))
+  ..factoryWithParam((s, List<String> params) => ProgressPage(params: params))
   ..singleWithParam((s, bool isPlaying) => AppBloc(s.get(), isPlaying))
   ..single((s) => AppPage())
   ..single((s) => FeedbackBloc(s.get(), s.get()))

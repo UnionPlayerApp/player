@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:koin_flutter/koin_flutter.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:union_player_app/model/system_data/system_data.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
@@ -23,7 +24,11 @@ import 'package:union_player_app/utils/widgets/info_page.dart';
 import 'package:union_player_app/utils/widgets/loading_page.dart';
 
 class InitPage extends StatefulWidget {
-  InitPage({Key? key}) : super(key: key);
+  final PackageInfo _packageInfo;
+
+  InitPage({Key? key, required PackageInfo packageInfo})
+      : _packageInfo = packageInfo,
+        super(key: key);
 
   @override
   _InitPageState createState() => _InitPageState();
@@ -237,6 +242,7 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
 
   Widget _createHomePage(AsyncSnapshot<dynamic> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
+      return _progressPage();
       if (snapshot.hasData) {
         final bool isPlaying = snapshot.data;
         return _createAppPage(isPlaying);
@@ -245,9 +251,9 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
         final List<String> infoPageStrings = _createInfoPageStrings();
         return getWithParam<InfoPage, List<String>>(infoPageStrings);
       }
-      return _createProgressPage();
+      return _progressPage();
     } else {
-      return _createProgressPage();
+      return _progressPage();
     }
   }
 
@@ -269,5 +275,9 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
   Widget _createAppPage(bool isPlaying) =>
       BlocProvider.value(value: getWithParam<AppBloc, bool>(isPlaying), child: get<AppPage>());
 
-  Widget _createProgressPage() => getWithParam<ProgressPage, String>(translate(StringKeys.app_init_title, context));
+  Widget _progressPage() {
+    final title = translate(StringKeys.app_init_title, context);
+    final version = "${widget._packageInfo.version} (${widget._packageInfo.buildNumber})";
+    return getWithParam<ProgressPage, List<String>>([title, version]);
+  }
 }
