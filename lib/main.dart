@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:koin/koin.dart';
@@ -11,16 +15,27 @@ import 'utils/localizations/app_localizations_delegate.dart';
 import 'utils/ui/app_theme.dart';
 
 void main() async {
+  runZonedGuarded<Future<void>>(() async {
+    _initLocator();
+
+    WidgetsFlutterBinding.ensureInitialized();
+
+    final packageInfo = await PackageInfo.fromPlatform();
+
+    runApp(_app(packageInfo));
+  }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack));
+}
+
+void _initLocator() {
   startKoin((app) {
-    app.printLogger(level: Level.debug);
+    final level = kDebugMode ? Level.debug : Level.none;
+    app.printLogger(level: level);
     app.module(appModule);
   });
+}
 
-  WidgetsFlutterBinding.ensureInitialized();
-
-  final packageInfo = await PackageInfo.fromPlatform();
-
-  runApp(MaterialApp(
+MaterialApp _app(PackageInfo packageInfo) {
+  return MaterialApp(
     debugShowCheckedModeBanner: false,
     localizationsDelegates: [
       const AppLocalizationsDelegate(),
@@ -45,5 +60,5 @@ void main() async {
     onGenerateTitle: (context) => translate(StringKeys.app_title, context),
     theme: createAppTheme(),
     home: InitPage(packageInfo: packageInfo),
-  ));
+  );
 }
