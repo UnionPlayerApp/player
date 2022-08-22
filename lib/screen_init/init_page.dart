@@ -25,6 +25,7 @@ import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/widgets/info_page.dart';
 import 'package:union_player_app/utils/widgets/loading_page.dart';
 
+import '../firebase_options.dart';
 import '../utils/app_logger.dart';
 
 class InitPage extends StatefulWidget {
@@ -113,7 +114,9 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
 
   Future _initFirebase() async {
     try {
-      await Firebase.initializeApp();
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
       await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(kReleaseMode);
       if (kReleaseMode) {
         FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
