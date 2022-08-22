@@ -4,6 +4,8 @@ import 'dart:developer';
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart' show kReleaseMode;
@@ -12,6 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:koin_flutter/koin_flutter.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:union_player_app/model/system_data/system_data.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
@@ -22,8 +25,15 @@ import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/widgets/info_page.dart';
 import 'package:union_player_app/utils/widgets/loading_page.dart';
 
+import '../firebase_options.dart';
+import '../utils/app_logger.dart';
+
 class InitPage extends StatefulWidget {
-  InitPage({Key? key}) : super(key: key);
+  final PackageInfo _packageInfo;
+
+  InitPage({Key? key, required PackageInfo packageInfo})
+      : _packageInfo = packageInfo,
+        super(key: key);
 
   @override
   _InitPageState createState() => _InitPageState();
@@ -31,7 +41,7 @@ class InitPage extends StatefulWidget {
 
 class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
   late final SystemData _systemData;
-  late Future<bool> _initAppFuture;
+  late final Future<bool> _initAppFuture;
 
   @override
   void initState() {
@@ -41,7 +51,7 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
     _initAppFuture = _initApp();
 
     // Can't show a dialog in initState, delaying initialization
-    WidgetsBinding.instance?.addPostFrameCallback((_) => _initAppTrackingTransparency());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initAppTrackingTransparency());
   }
 
   @override
@@ -102,17 +112,27 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
         false;
   }
 
-  Future _initSystemData() async {
+  Future _initFirebase() async {
     try {
-      await Firebase.initializeApp();
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
       await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(kReleaseMode);
       if (kReleaseMode) {
         FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
       }
+      await FirebaseAppCheck.instance.activate();
+      final appCheckToken = await FirebaseAppCheck.instance.getToken();
+      appLog("Firebase AppCheck token = $appCheckToken");
+      await FirebaseAuth.instance.signInAnonymously();
+      appLog("Firebase initialize success");
     } catch (error) {
+      appLog("Firebase initialize error: $error");
       throw Exception("Firebase initialize error: $error");
     }
+  }
 
+  Future _initSystemData() async {
     late final CollectionReference collection;
 
     try {
@@ -205,10 +225,10 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
     return params;
   }
 
-  Future<bool> _initApp() async {
-    final bool isPlaying = await _initSystemData().then((_) => _initPlayer()).catchError((e) => _handleError(e));
-    return isPlaying;
-  }
+  Future<bool> _initApp() => _initFirebase()
+      .then((_) => _initSystemData())
+      .then((_) => _initPlayer())
+      .catchError((error) => _handleError(error));
 
   FutureOr<bool> _handleError(dynamic error) {
     final String msg = "App initialisation error";
@@ -245,10 +265,8 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
         final List<String> infoPageStrings = _createInfoPageStrings();
         return getWithParam<InfoPage, List<String>>(infoPageStrings);
       }
-      return _createProgressPage();
-    } else {
-      return _createProgressPage();
     }
+    return _progressPage();
   }
 
   Widget _wrapScreenUtilInit(Widget homePage) {
@@ -269,5 +287,9 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
   Widget _createAppPage(bool isPlaying) =>
       BlocProvider.value(value: getWithParam<AppBloc, bool>(isPlaying), child: get<AppPage>());
 
-  Widget _createProgressPage() => getWithParam<ProgressPage, String>(translate(StringKeys.app_init_title, context));
+  Widget _progressPage() {
+    final title = translate(StringKeys.app_init_title, context);
+    final version = "${widget._packageInfo.version} (${widget._packageInfo.buildNumber})";
+    return getWithParam<ProgressPage, List<String>>([title, version]);
+  }
 }

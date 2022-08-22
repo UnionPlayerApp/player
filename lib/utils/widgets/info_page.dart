@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 const _TEXT_PADDING = 5.0;
 
 class InfoPage extends StatelessWidget {
-  final List<String> strings;
+  final List<String> params;
 
-  InfoPage({Key? key, required this.strings})
-      : assert(strings.isNotEmpty),
+  InfoPage({Key? key, required this.params})
+      : assert(params.isNotEmpty),
         super(key: key);
 
   Widget mapStr(BuildContext context, String str) => Padding(
@@ -19,11 +19,11 @@ class InfoPage extends StatelessWidget {
       ));
 
   List<Widget> createChildren(BuildContext context) =>
-      strings.sublist(1).map((str) => mapStr(context, str)).toList();
+      params.sublist(1).map((str) => mapStr(context, str)).toList();
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: Text(strings[0])),
+        appBar: AppBar(title: Text(params[0])),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
