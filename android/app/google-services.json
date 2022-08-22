@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "272934751386-9a640u2rkrehhrf9u0ng6vqurpp4ahfg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chplalex.union_player_app",
+            "certificate_hash": "a1b1ebfd46e3e02495c0644053b6a01563dec290"
+          }
+        },
+        {
+          "client_id": "272934751386-v5hkkn6afc9qekdrtfp3gtvdn4apsof8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chplalex.union_player_app",
+            "certificate_hash": "750ef7863e34edefcd4f9741a11af599063635c0"
+          }
+        },
+        {
           "client_id": "272934751386-0dkf4uu9hflvsgg3qpl5bopbd9qg063i.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +45,13 @@
             {
               "client_id": "272934751386-0dkf4uu9hflvsgg3qpl5bopbd9qg063i.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "272934751386-musemj7ebpkml2mcgpl8dac29tlgk5qm.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.chplalex.unionPlayerApp"
+              }
             }
           ]
         }
