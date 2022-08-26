@@ -26,7 +26,6 @@ import 'package:union_player_app/utils/widgets/info_page.dart';
 import 'package:union_player_app/utils/widgets/loading_page.dart';
 
 import '../firebase_options.dart';
-import '../utils/app_logger.dart';
 
 class InitPage extends StatefulWidget {
   final PackageInfo _packageInfo;
@@ -49,29 +48,76 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
 
     _systemData = get<SystemData>();
     _initAppFuture = _initApp();
-
-    // Can't show a dialog in initState, delaying initialization
-    // WidgetsBinding.instance.addPostFrameCallback((_) => _initAppTrackingTransparency());
   }
 
   @override
   bool get wantKeepAlive => true;
 
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return FutureBuilder(
+      initialData: DEFAULT_IS_PLAYING,
+      future: _initAppFuture,
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        final Widget homePage = _createHomePage(snapshot);
+        return _wrapScreenUtilInit(homePage);
+      },
+    );
+  }
+
+  Future<bool> _initApp() => _initFirebase()
+      .then((_) => _initLogger())
+      .then((_) => _initAppTrackingTransparency())
+      .then((_) => _initSystemData())
+      .then((_) => _initPlayer())
+      .catchError((error) => _handleError(error));
+
+  FutureOr<bool> _handleError(dynamic error) {
+    final String msg = "App initialisation error";
+    debugPrint("$msg: $error");
+    throw Exception([msg, error]);
+  }
+
+  Future _initFirebase() async {
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(kReleaseMode);
+      await FirebaseAppCheck.instance.activate();
+      await FirebaseAuth.instance.signInAnonymously();
+      debugPrint("Firebase initialize success");
+    } catch (error) {
+      debugPrint("Firebase initialize error: $error");
+      throw Exception("Firebase initialize error: $error");
+    }
+  }
+
+  FutureOr<void> _initLogger() {
+    if (kReleaseMode) {
+      debugPrint = (String? message, {int? wrapWidth}) => FirebaseCrashlytics.instance.log(message ?? emptyLogMessage);
+      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+    } else {
+      debugPrint = (String? message, {int? wrapWidth}) => log(message ?? emptyLogMessage, name: logName);
+    }
+  }
+
   Future _initAppTrackingTransparency() async {
     try {
       var status = await AppTrackingTransparency.trackingAuthorizationStatus;
-      log("App tracking transparency status = $status", name: LOG_TAG);
+      debugPrint("App tracking transparency status = $status");
       if (status == TrackingStatus.notDetermined) {
         await _showAppTrackingInfoDialog();
         // Wait for dialog popping animation
         await Future.delayed(const Duration(milliseconds: 200));
         status = await AppTrackingTransparency.requestTrackingAuthorization();
-        log("App tracking transparency status = $status", name: LOG_TAG);
+        debugPrint("App tracking transparency status = $status");
       }
     } on PlatformException {
-      log("App tracking transparency init error: platform exception", name: LOG_TAG);
+      debugPrint("App tracking transparency init error: platform exception");
     } catch (error) {
-      log("App tracking transparency init error: $error", name: LOG_TAG);
+      debugPrint("App tracking transparency init error: $error");
     }
   }
 
@@ -91,26 +137,6 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
       context: context,
       builder: (context) => dialogWidget,
     );
-  }
-
-  Future _initFirebase() async {
-    try {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
-      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(kReleaseMode);
-      if (kReleaseMode) {
-        FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-      }
-      await FirebaseAppCheck.instance.activate();
-      final appCheckToken = await FirebaseAppCheck.instance.getToken();
-      appLog("Firebase AppCheck token = $appCheckToken");
-      await FirebaseAuth.instance.signInAnonymously();
-      appLog("Firebase initialize success");
-    } catch (error) {
-      appLog("Firebase initialize error: $error");
-      throw Exception("Firebase initialize error: $error");
-    }
   }
 
   Future _initSystemData() async {
@@ -175,7 +201,7 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
         break;
     }
 
-    log("_initPlayer() -> AudioService.init()", name: LOG_TAG);
+    debugPrint("_initPlayer() -> AudioService.init()");
 
     final playerHandler = await AudioService.init(
       builder: () => get<AudioHandler>(),
@@ -206,35 +232,10 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
     return params;
   }
 
-  Future<bool> _initApp() => _initAppTrackingTransparency()
-      .then((_) => _initFirebase())
-      .then((_) => _initSystemData())
-      .then((_) => _initPlayer())
-      .catchError((error) => _handleError(error));
-
-  FutureOr<bool> _handleError(dynamic error) {
-    final String msg = "App initialisation error";
-    log("$msg: $error", name: LOG_TAG);
-    throw Exception([msg, error]);
-  }
-
   @override
   void dispose() {
     get<AudioHandler>().stop();
     super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    return FutureBuilder(
-      initialData: DEFAULT_IS_PLAYING,
-      future: _initAppFuture,
-      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        final Widget homePage = _createHomePage(snapshot);
-        return _wrapScreenUtilInit(homePage);
-      },
-    );
   }
 
   Widget _createHomePage(AsyncSnapshot<dynamic> snapshot) {

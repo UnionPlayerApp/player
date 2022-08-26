@@ -1,13 +1,14 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/shared_preferences.dart';
 
 part 'app_event.dart';
+
 part 'app_state.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
@@ -141,7 +142,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   _onSharedPreferencesReadError(error) {
-    log("shared preferences read error: $error", name: LOG_TAG);
+    debugPrint("shared preferences read error: $error");
   }
 
 // Future<void> _checkForBufferLoading() async {
