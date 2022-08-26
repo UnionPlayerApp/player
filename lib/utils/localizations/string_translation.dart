@@ -68,6 +68,5 @@ enum  StringKeys{
   // Custom App Tracking Transparency Dialog
   tracking_dialog_title,
   tracking_dialog_text,
-  tracking_dialog_button_later,
-  tracking_dialog_button_allow,
+  tracking_dialog_button,
 }
