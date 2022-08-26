@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 import 'dart:math' as Math;
 
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
+import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:union_player_app/repository/schedule_item.dart';
 import 'package:union_player_app/repository/schedule_item_type.dart';
@@ -90,9 +90,9 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
         await player.play();
       }
       _isPlayingBeforeInterruption = isPlaying;
-      log("set audio stream = $audioUrl", name: LOG_TAG);
+      debugPrint("set audio stream = $audioUrl");
     } catch (error) {
-      log("audio stream ($audioUrl) load / stop / play error: $error", name: LOG_TAG);
+      debugPrint("audio stream ($audioUrl) load / stop / play error: $error");
       customEvent.add(error.toString());
     }
   }
@@ -151,7 +151,7 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
       File file = await loadAssetFile(asset);
       return Uri.file(file.path);
     } catch (error) {
-      log("Load asset file ($asset) error: $error", name: LOG_TAG);
+      debugPrint("Load asset file ($asset) error: $error");
       return Uri();
     }
   }
@@ -176,21 +176,21 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
       case AUDIO_QUALITY_UNDEFINED:
         return _urlStreamMedium;
       default:
-        log("Unknown AudioQualityType $audioQuality. Default quality (medium) used.", name: LOG_TAG);
+        debugPrint("Unknown AudioQualityType $audioQuality. Default quality (medium) used.");
         return _urlStreamMedium;
     }
   }
 
   Future<void> _handleScheduleEvent(ScheduleRepositoryEvent event) async {
     if (event is ScheduleRepositorySuccessEvent) {
-      log("schedule -> new queue has ${event.items.length} items", name: LOG_TAG);
+      debugPrint("schedule -> new queue has ${event.items.length} items");
       final nextItems = event.items.map(_mapScheduleItemToMediaItem).toList();
       queue.add(nextItems);
       if (nextItems.isNotEmpty) mediaItem.add(nextItems[0]);
     }
 
     if (event is ScheduleRepositoryErrorEvent) {
-      log("schedule -> load error -> ${event.error}", name: LOG_TAG);
+      debugPrint("schedule -> load error -> ${event.error}");
       customEvent.add(event.error);
     }
   }
@@ -244,29 +244,31 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
 
   _handleInterruptionEvent(AudioInterruptionEvent event) {
     if (event.begin) {
-      log("audio interruption event => begin => is playing before interruption = $_isPlayingBeforeInterruption",
-          name: LOG_TAG);
+      debugPrint(
+        "audio interruption event => begin => is playing before interruption = $_isPlayingBeforeInterruption",
+      );
       switch (event.type) {
         case AudioInterruptionType.duck:
           break;
         case AudioInterruptionType.pause:
         case AudioInterruptionType.unknown:
           if (_isPlayingBeforeInterruption) {
-            log("audio interruption event => player stop", name: LOG_TAG);
+            debugPrint("audio interruption event => player stop");
             player.stop();
           }
           break;
       }
     } else {
-      log("audio interruption event => finish => is playing before interruption = $_isPlayingBeforeInterruption",
-          name: LOG_TAG);
+      debugPrint(
+        "audio interruption event => finish => is playing before interruption = $_isPlayingBeforeInterruption",
+      );
       switch (event.type) {
         case AudioInterruptionType.duck:
           break;
         case AudioInterruptionType.pause:
         case AudioInterruptionType.unknown:
           if (_isPlayingBeforeInterruption) {
-            log("audio interruption event => player play", name: LOG_TAG);
+            debugPrint("audio interruption event => player play");
             player.play();
           }
           break;
@@ -286,7 +288,7 @@ extension _ScheduleItemRawExtension on ScheduleItem {
         return "talk";
       default:
         {
-          log("Unknown schedule item type $type. \"Unknown\" item type is used.", name: LOG_TAG);
+          debugPrint("Unknown schedule item type $type. \"Unknown\" item type is used.");
           return "unknown";
         }
     }

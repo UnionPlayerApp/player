@@ -16,9 +16,9 @@ import 'utils/ui/app_theme.dart';
 
 void main() async {
   runZonedGuarded<Future<void>>(() async {
-    _initLocator();
-
     WidgetsFlutterBinding.ensureInitialized();
+
+    _initLocator();
 
     final packageInfo = await PackageInfo.fromPlatform();
 
