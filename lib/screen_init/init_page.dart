@@ -51,33 +51,22 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
     _initAppFuture = _initApp();
 
     // Can't show a dialog in initState, delaying initialization
-    WidgetsBinding.instance.addPostFrameCallback((_) => _initAppTrackingTransparency());
+    // WidgetsBinding.instance.addPostFrameCallback((_) => _initAppTrackingTransparency());
   }
 
   @override
   bool get wantKeepAlive => true;
 
-  // Platform messages are asynchronous, so we initialize in an async method.
   Future _initAppTrackingTransparency() async {
-    // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      final TrackingStatus status = await AppTrackingTransparency.trackingAuthorizationStatus;
-      log("AppTrackingTransparency.trackingAuthorizationStatus -> Tracking status = $status", name: LOG_TAG);
-      // If the system can show an authorization request dialog
+      var status = await AppTrackingTransparency.trackingAuthorizationStatus;
+      log("App tracking transparency status = $status", name: LOG_TAG);
       if (status == TrackingStatus.notDetermined) {
-        // Show a custom explainer dialog before the system dialog
-        if (await showCustomTrackingDialog(context)) {
-          // Wait for dialog popping animation
-          await Future.delayed(const Duration(milliseconds: 200));
-          // Request system's tracking authorization dialog
-          log("AppTrackingTransparency.requestTrackingAuthorization() -> starting", name: LOG_TAG);
-          final TrackingStatus status = await AppTrackingTransparency.requestTrackingAuthorization();
-          log("AppTrackingTransparency.requestTrackingAuthorization() -> Tracking status = $status", name: LOG_TAG);
-          if (status == TrackingStatus.authorized) {
-            final uuid = await AppTrackingTransparency.getAdvertisingIdentifier();
-            log("AppTrackingTransparency.getAdvertisingIdentifier() -> UUID = $uuid", name: LOG_TAG);
-          }
-        }
+        await _showAppTrackingInfoDialog();
+        // Wait for dialog popping animation
+        await Future.delayed(const Duration(milliseconds: 200));
+        status = await AppTrackingTransparency.requestTrackingAuthorization();
+        log("App tracking transparency status = $status", name: LOG_TAG);
       }
     } on PlatformException {
       log("App tracking transparency init error: platform exception", name: LOG_TAG);
@@ -86,30 +75,22 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
     }
   }
 
-  Future<bool> showCustomTrackingDialog(BuildContext context) async {
+  Future<void> _showAppTrackingInfoDialog() async {
     final title = Text(translate(StringKeys.tracking_dialog_title, context));
     final content = Text(translate(StringKeys.tracking_dialog_text, context));
-    final buttonLater = TextButton(
-      child: Text(translate(StringKeys.tracking_dialog_button_later, context)),
-      onPressed: () => Navigator.pop(context, false),
-    );
-    final buttonAllow = TextButton(
-      child: Text(translate(StringKeys.tracking_dialog_button_allow, context)),
-      onPressed: () => Navigator.pop(context, true),
+    final button = TextButton(
+      child: Text(translate(StringKeys.tracking_dialog_button, context)),
+      onPressed: () => Navigator.pop(context),
     );
     final dialogWidget = AlertDialog(
       title: title,
       content: content,
-      actions: [
-        buttonAllow,
-        buttonLater,
-      ],
+      actions: [button],
     );
-    return await showDialog<bool>(
-          context: context,
-          builder: (context) => dialogWidget,
-        ) ??
-        false;
+    return showDialog<void>(
+      context: context,
+      builder: (context) => dialogWidget,
+    );
   }
 
   Future _initFirebase() async {
@@ -225,7 +206,8 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
     return params;
   }
 
-  Future<bool> _initApp() => _initFirebase()
+  Future<bool> _initApp() => _initAppTrackingTransparency()
+      .then((_) => _initFirebase())
       .then((_) => _initSystemData())
       .then((_) => _initPlayer())
       .catchError((error) => _handleError(error));
