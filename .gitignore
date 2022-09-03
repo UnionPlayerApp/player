@@ -33,6 +33,7 @@
 pubspec.lock
 /android/key.properties
 /android/upload-keystore.jks
+/android/gradle.properties
 
 # Web related
 lib/generated_plugin_registrant.dart

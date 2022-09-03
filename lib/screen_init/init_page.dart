@@ -1,13 +1,16 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -41,6 +44,7 @@ class InitPage extends StatefulWidget {
 class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
   late final SystemData _systemData;
   late final Future<bool> _initAppFuture;
+  late final UserCredential _userCredential;
 
   @override
   void initState() {
@@ -71,6 +75,7 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
       .then((_) => _initAppTrackingTransparency())
       .then((_) => _initSystemData())
       .then((_) => _initPlayer())
+      .then((isPlaying) => _logAppStatus(isPlaying))
       .catchError((error) => _handleError(error));
 
   FutureOr<bool> _handleError(dynamic error) {
@@ -84,14 +89,36 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
+      await FirebasePerformance.instance.setPerformanceCollectionEnabled(kReleaseMode);
       await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(kReleaseMode);
+      _userCredential = await FirebaseAuth.instance.signInAnonymously();
       await FirebaseAppCheck.instance.activate();
-      await FirebaseAuth.instance.signInAnonymously();
       debugPrint("Firebase initialize success");
     } catch (error) {
       debugPrint("Firebase initialize error: $error");
       throw Exception("Firebase initialize error: $error");
     }
+  }
+
+  Future <bool> _logAppStatus(bool isPlaying) async {
+    final appCheckToken = await FirebaseAppCheck.instance.getToken();
+    final params = {
+      "package_info_version": widget._packageInfo.version,
+      "package_info_build_number": widget._packageInfo.buildNumber,
+      "package_info_build_signature": widget._packageInfo.buildSignature,
+      "package_info_package_name": widget._packageInfo.packageName,
+      "platform_operating_system": Platform.operatingSystem,
+      "platform_operating_system_version": Platform.operatingSystemVersion,
+      "platform_version": Platform.version,
+      "platform_locale_Name": Platform.localeName,
+      "app_check_token": appCheckToken,
+      "auth_is_anonymous": _userCredential.user?.isAnonymous ?? "null",
+      "auth_refresh_token": _userCredential.user?.refreshToken ?? "null",
+      "auth_uid": _userCredential.user?.uid ?? "null",
+    };
+    FirebaseAnalytics.instance.logEvent(name: GA_APP_STATUS, parameters: params);
+    debugPrint("App initialize success, app params = $params");
+    return isPlaying;
   }
 
   FutureOr<void> _initLogger() {
@@ -175,9 +202,13 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
     } catch (error) {
       throw Exception("Stream data read error: $error");
     }
+
+    debugPrint("System data initialize success");
   }
 
   Future<bool> _initPlayer() async {
+    debugPrint("Player initialize start");
+
     _systemData.playerData.appTitle = translate(StringKeys.app_title, context);
 
     final SharedPreferences sp = await SharedPreferences.getInstance();
@@ -201,8 +232,6 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
         break;
     }
 
-    debugPrint("_initPlayer() -> AudioService.init()");
-
     final playerHandler = await AudioService.init(
       builder: () => get<AudioHandler>(),
       config: const AudioServiceConfig(
@@ -215,6 +244,8 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
     );
 
     await playerHandler.customAction(ACTION_START, _createPlayerTaskParams(audioQualityId, isPlaying));
+
+    debugPrint("Player initialize success");
 
     return isPlaying;
   }
@@ -267,8 +298,10 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
         translate(StringKeys.app_is_not_init_5, context),
       ]);
 
-  Widget _createAppPage(bool isPlaying) =>
-      BlocProvider.value(value: getWithParam<AppBloc, bool>(isPlaying), child: get<AppPage>());
+  Widget _createAppPage(bool isPlaying) => BlocProvider.value(
+        value: getWithParam<AppBloc, bool>(isPlaying),
+        child: get<AppPage>(),
+      );
 
   Widget _progressPage() {
     final title = translate(StringKeys.app_init_title, context);
