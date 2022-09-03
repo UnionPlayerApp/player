@@ -27,7 +27,8 @@ const PLAYER_BUFFER_LOW_CAPACITY = 2;
 const INTERNET_CONNECTION_CHECK_DURATION = 1;
 
 // Logger
-const LOG_TAG = "UPA -> ";
+const logName = "UPA";
+const emptyLogMessage = "Empty log message";
 
 // FeedbackScreen
 const String PHONE_PATTERN = r'(^(?:[+0]9)?[0-9]{10,12}$)';
@@ -91,3 +92,4 @@ const GA_APP_START = "UPA_APP_START";
 const GA_APP_STOP = "UPA_APP_STOP";
 const GA_PLAYER_START = "UPA_PLAYER_START";
 const GA_PLAYER_STOP = "UPA_PLAYER_STOP";
+const GA_APP_STATUS = "UPA_APP_STATUS";

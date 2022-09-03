@@ -1,12 +1,12 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:union_player_app/repository/schedule_file.dart';
-import 'package:union_player_app/repository/schedule_repository_interface.dart';
 import 'package:union_player_app/repository/schedule_item.dart';
 import 'package:union_player_app/repository/schedule_repository_event.dart';
-import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/repository/schedule_repository_interface.dart';
 import 'package:union_player_app/utils/core/file_utils.dart';
 
 const _ATTEMPT_MAX = 5;
@@ -20,7 +20,7 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
   Stream<ScheduleRepositoryEvent> stateStream() => _subject.stream;
 
   Future<void> start(String url) async {
-    log("schedule => start()", name: LOG_TAG);
+    debugPrint("schedule => start()");
 
     while (_isOpen) {
       ScheduleRepositoryEvent state;
@@ -28,23 +28,23 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
 
       do {
         if (attempt > 1) {
-          log("schedule stream() => delay for 1 second start", name: LOG_TAG);
+          debugPrint("schedule stream() => delay for 1 second start");
           await Future.delayed(const Duration(seconds: 1));
-          log("schedule stream() => delay for 1 second finish", name: LOG_TAG);
+          debugPrint("schedule stream() => delay for 1 second finish");
         }
 
-        log("schedule stream() => _load() start, attempt = $attempt", name: LOG_TAG);
+        debugPrint("schedule stream() => _load() start, attempt = $attempt");
         state = await _load(url);
-        log("schedule stream() => _load() finish, attempt = $attempt", name: LOG_TAG);
+        debugPrint("schedule stream() => _load() finish, attempt = $attempt");
       } while (state is ScheduleRepositoryErrorEvent && attempt++ < _ATTEMPT_MAX);
 
       _subject.add(state);
 
       int seconds = _secondsToNextLoad();
 
-      log("schedule stream() => delay for $seconds seconds start", name: LOG_TAG);
+      debugPrint("schedule stream() => delay for $seconds seconds start");
       await Future.delayed(Duration(seconds: seconds));
-      log("schedule stream() => delay for $seconds seconds finish", name: LOG_TAG);
+      debugPrint("schedule stream() => delay for $seconds seconds finish");
     }
   }
 
@@ -56,11 +56,11 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
     final now = DateTime.now();
     final rest = finish.difference(now).inSeconds;
 
-    log("schedule -> current start     = ${currentElement.start}", name: LOG_TAG);
-    log("schedule -> current finish    = $finish", name: LOG_TAG);
-    log("schedule -> current duration  = ${currentElement.duration}", name: LOG_TAG);
-    log("schedule -> now               = $now", name: LOG_TAG);
-    log("schedule -> rest to next load = ${rest > 0 ? rest : 1}", name: LOG_TAG);
+    debugPrint("schedule -> current start     = ${currentElement.start}");
+    debugPrint("schedule -> current finish    = $finish");
+    debugPrint("schedule -> current duration  = ${currentElement.duration}");
+    debugPrint("schedule -> now               = $now");
+    debugPrint("schedule -> rest to next load = ${rest > 0 ? rest : 1}");
 
     return rest > 0 ? rest : 1;
   }
@@ -73,10 +73,10 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
 
     try {
       file = await loadRemoteFile(url);
-      log("Schedule file load success -> File: $file", name: LOG_TAG);
+      debugPrint("Schedule file load success -> File: $file");
     } catch (error) {
       final msg = "Schedule file load error -> Url: $url -> Error: $error";
-      log(msg, name: LOG_TAG);
+      debugPrint(msg);
       return ScheduleRepositoryErrorEvent(msg);
     }
 
@@ -84,7 +84,7 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
       newItems = parseScheduleFile(file);
     } catch (error) {
       final msg = "Parse schedule file error -> Path: $file -> Error: $error";
-      log(msg, name: LOG_TAG);
+      debugPrint(msg);
       return ScheduleRepositoryErrorEvent(msg);
     }
 

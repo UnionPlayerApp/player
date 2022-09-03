@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:audio_service/audio_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +15,8 @@ import 'package:union_player_app/screen_settings/settings_bloc.dart';
 import 'package:union_player_app/screen_settings/settings_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
-import 'package:union_player_app/utils/ui/app_theme.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
+import 'package:union_player_app/utils/ui/app_theme.dart';
 import 'package:union_player_app/utils/widgets/info_page.dart';
 import 'package:union_player_app/utils/widgets/snack_bar.dart';
 
@@ -36,7 +34,7 @@ class _AppState extends State<AppPage> {
   Widget build(BuildContext context) {
     FirebaseAnalytics.instance.logEvent(name: GA_APP_START);
     return BlocBuilder<AppBloc, AppState>(builder: (BuildContext context, AppState state) {
-      log("AppState.build(), AppState = $state", name: LOG_TAG);
+      debugPrint("AppState.build(), AppState = $state");
       return WillPopScope(
         onWillPop: () => _onWillPop(),
         child: Scaffold(

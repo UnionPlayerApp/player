@@ -10,15 +10,14 @@ import 'package:union_player_app/di/di.dart';
 import 'package:union_player_app/screen_init/init_page.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 
-import 'screen_init/init_page.dart';
 import 'utils/localizations/app_localizations_delegate.dart';
 import 'utils/ui/app_theme.dart';
 
 void main() async {
   runZonedGuarded<Future<void>>(() async {
-    _initLocator();
-
     WidgetsFlutterBinding.ensureInitialized();
+
+    _initLocator();
 
     final packageInfo = await PackageInfo.fromPlatform();
 

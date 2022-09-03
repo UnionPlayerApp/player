@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:union_player_app/screen_settings/settings_event.dart';
 import 'package:union_player_app/screen_settings/settings_state.dart';
@@ -75,6 +75,6 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   }
 
   _onSharedPreferencesReadError(error) {
-    log("shared preferences read error: $error", name: LOG_TAG);
+    debugPrint("shared preferences read error: $error");
   }
 }

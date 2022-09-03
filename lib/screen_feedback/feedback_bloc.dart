@@ -1,20 +1,19 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:union_player_app/model/system_data/system_data.dart';
 import 'package:union_player_app/screen_feedback/feedback_event.dart';
 import 'package:union_player_app/screen_feedback/feedback_state.dart';
-import 'package:union_player_app/utils/app_logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 const _EMAIL_SCHEME = 'mailto';
 const _EMAIL_SUBJECT = 'subject';
 
 class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
-  final AppLogger _logger;
   final SystemData _systemData;
 
-  FeedbackBloc(this._logger, this._systemData) : super(AboutInfoUrlLoadAwaitState()) {
+  FeedbackBloc(this._systemData) : super(AboutInfoUrlLoadAwaitState()) {
     on<InitialEvent>(_onInitial);
     on<GotCurrentLocaleEvent>(_onGotCurrentLocale);
     on<WebViewLoadStartedEvent>(_onWebViewLoadStarted);
@@ -23,10 +22,6 @@ class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
     on<WriteEmailButtonPressedEvent>(_onWriteEmailButtonPressed);
 
     add(InitialEvent());
-  }
-
-  Future<void> log(String message) async {
-    return _logger.logDebug(message);
   }
 
   FutureOr<void> _onInitial(InitialEvent event, Emitter<FeedbackState> emitter) {
@@ -62,7 +57,7 @@ class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
   }
 
   Future<FeedbackState> _getAboutInfoUrl(String locale) async {
-    _logger.logDebug("Localization: $locale");
+    debugPrint("Localization: $locale");
     switch (locale) {
       case "be_BY":
         return WebViewLoadAwaitState(_systemData.aboutData.urlBy);

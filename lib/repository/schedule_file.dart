@@ -1,17 +1,16 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:union_player_app/repository/schedule_item.dart';
 import 'package:union_player_app/repository/schedule_item_type.dart';
-import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/date_time.dart';
 import 'package:union_player_app/utils/core/debug.dart';
 import 'package:union_player_app/utils/core/duration.dart';
 import 'package:xml/xml.dart';
 
 List<ScheduleItem> parseScheduleFile(File file) {
-  log("parseScheduleFile()", name: LOG_TAG);
+  debugPrint("parseScheduleFile()");
   try {
     final document = XmlDocument.parse(file.readAsStringSync());
     final elements = document.findAllElements("ELEM");
@@ -39,8 +38,8 @@ List<ScheduleItem> parseScheduleFile(File file) {
     });
     return newList;
   } catch (error) {
-    log("parseScheduleFile() => error", name: LOG_TAG, error: error);
-    throw Exception(error.toString());
+    debugPrint("parseScheduleFile() => error: $error");
+    rethrow;
   }
 }
 
@@ -68,7 +67,7 @@ DateTime? _createStart(XmlElement element, DateTime start) {
   if (eStartDate == null || eStartTime == null) return start;
 
   try {
-    log("_createStart() => date = ${eStartDate.innerText}, time = ${eStartTime.innerText}", name: LOG_TAG);
+    debugPrint("_createStart() => date = ${eStartDate.innerText}, time = ${eStartTime.innerText}");
     return parseDateTime(eStartDate.innerText, eStartTime.innerText);
   } catch (error) {
     return null;
@@ -97,5 +96,5 @@ String _createTitle(XmlElement element) {
 }
 
 void logScheduleFile(File file) {
-  file.openRead().transform(utf8.decoder).transform(LineSplitter()).forEach((line) => log(line, name: LOG_TAG));
+  file.openRead().transform(utf8.decoder).transform(LineSplitter()).forEach((line) => debugPrint(line));
 }
