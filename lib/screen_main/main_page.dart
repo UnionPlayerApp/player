@@ -88,10 +88,18 @@ class MainPage extends StatelessWidget {
   }
 
   Widget _createContainer(Image image) {
+    const radius = 12.0;
+    const offset = 10.0;
     return Container(
       margin: EdgeInsets.only(bottom: mainMarginBottom),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(radius),
+        boxShadow: const [
+          BoxShadow(color: Colors.black45, offset: Offset(offset, offset), blurRadius: 15, spreadRadius: 0),
+        ],
+      ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(12.0),
+        borderRadius: BorderRadius.circular(radius),
         child: image,
       ),
     );

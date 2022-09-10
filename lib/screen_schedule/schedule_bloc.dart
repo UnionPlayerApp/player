@@ -30,7 +30,7 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
     if (queue == null) {
       _onCustomEvent("Unknown error - queue is null");
     } else {
-      final items = queue.map((mediaItem) => ScheduleItemView(mediaItem)).toList();
+      final items = queue.map((mediaItem) => ScheduleItemView.fromMediaItem(mediaItem)).toList();
       add(ScheduleEventDataLoaded(items));
     }
   }

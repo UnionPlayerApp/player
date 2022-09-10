@@ -4,21 +4,31 @@ import 'package:union_player_app/utils/core/date_time.dart';
 import 'package:union_player_app/utils/core/duration.dart';
 
 class ScheduleItemView {
-  String artist = "";
-  String duration = "";
-  String finish = "";
-  String start = "";
-  String title = "";
-  String? description;
-  Uri? imageUri;
+  final String artist;
+  final String duration;
+  final String finish;
+  final String start;
+  final String title;
+  final String? description;
+  final Uri? imageUri;
 
-  ScheduleItemView(MediaItem item) {
-    this.artist = item.artist ?? "";
-    this.description = item.displayDescription;
-    this.duration = formatDuration(item.duration!);
-    this.finish = formatDateTime(item.start.add(item.duration!));
-    this.imageUri = item.artUri;
-    this.start = formatDateTime(item.start);
-    this.title = item.title;
-  }
+  ScheduleItemView._({
+    required this.artist,
+    required this.duration,
+    required this.finish,
+    required this.start,
+    required this.title,
+    required this.description,
+    required this.imageUri,
+  });
+
+  factory ScheduleItemView.fromMediaItem(MediaItem item) => ScheduleItemView._(
+        artist: item.artist ?? "",
+        description: item.displayDescription,
+        duration: formatDuration(item.duration!),
+        finish: formatDateTime(item.start.add(item.duration!)),
+        imageUri: item.artUri,
+        start: formatDateTime(item.start),
+        title: item.title,
+      );
 }

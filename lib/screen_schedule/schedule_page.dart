@@ -20,44 +20,38 @@ class SchedulePage extends StatelessWidget {
   }
 
   Widget _createWidget(BuildContext context, ScheduleState state) {
-    if (state is ScheduleLoadAwaitState) {
-      return _loadAwaitPage();
-    }
-    if (state is ScheduleLoadSuccessState) {
-      return _loadSuccessPage(context, state);
-    }
-    if (state is ScheduleLoadErrorState) {
-      return _loadErrorPage(context, state);
-    } else {
-      return Center(
-        child: CircularProgressIndicator(),
-      );
+    switch (state.runtimeType) {
+      case ScheduleLoadSuccessState:
+        return _successPage(context, state as ScheduleLoadSuccessState);
+      case ScheduleLoadErrorState:
+        return _errorPage(context, state as ScheduleLoadErrorState);
+      case ScheduleLoadAwaitState:
+      default:
+        return _awaitPage();
     }
   }
 
-  Widget _loadAwaitPage() {
-    return Center(
+  Widget _awaitPage() {
+    return const Center(
       child: CircularProgressIndicator(),
     );
   }
 
-  Widget _loadErrorPage(BuildContext context, ScheduleLoadErrorState state) {
-    final header = Text(translate(StringKeys.loading_error, context), style: Theme
-        .of(context)
-        .textTheme
-        .headline6);
-    final body = Text(state.errorMessage, style: Theme
-        .of(context)
-        .textTheme
-        .bodyText2, textAlign: TextAlign.center);
+  Widget _errorPage(BuildContext context, ScheduleLoadErrorState state) {
+    final header = Text(translate(StringKeys.loading_error, context), style: Theme.of(context).textTheme.headline6);
+    final body = Text(state.errorMessage, style: Theme.of(context).textTheme.bodyText2, textAlign: TextAlign.center);
     return Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
           header,
           Padding(padding: const EdgeInsets.all(8.0), child: body),
-        ]));
+        ],
+      ),
+    );
   }
 
-  Widget _loadSuccessPage(BuildContext context, ScheduleLoadSuccessState state) {
+  Widget _successPage(BuildContext context, ScheduleLoadSuccessState state) {
     return RefreshIndicator(
       onRefresh: () async {
         //TODO: отправить событие на принудительную загрзку данных
@@ -66,12 +60,56 @@ class SchedulePage extends StatelessWidget {
       child: ListView.separated(
         separatorBuilder: (BuildContext context, int index) => Divider(height: listViewDividerHeight),
         itemCount: state.items.length,
-        itemBuilder: (BuildContext context, int index) => _programElement(context, state.items[index]),
+        itemBuilder: (BuildContext context, int index) => Padding(
+          padding: EdgeInsets.all(scheduleItemPadding),
+          child: _programElement(context, state.items[index]),
+        ),
       ),
     );
   }
 
   Widget _programElement(BuildContext context, ScheduleItemView element) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _imageWidget(element),
+        Expanded(child: _textWidget(element, context)),
+        _startTimeWidget(element, context),
+      ],
+    );
+  }
+
+  Text _startTimeWidget(ScheduleItemView element, BuildContext context) =>
+      Text(element.start, style: Theme.of(context).textTheme.headline6, overflow: TextOverflow.ellipsis);
+
+  Text _titleWidget(ScheduleItemView element, BuildContext context) {
+    final titleStyle = Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: titleFontSize);
+    return Text(
+      element.title,
+      style: titleStyle,
+      softWrap: true,
+      textAlign: TextAlign.start,
+      maxLines: 3,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Text _artistWidget(ScheduleItemView element, BuildContext context) {
+    final artistStyle = Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: artistFontSize);
+    return Text(
+      element.artist,
+      style: artistStyle,
+      softWrap: true,
+      textAlign: TextAlign.start,
+      overflow: TextOverflow.ellipsis,
+      maxLines: 3,
+    );
+  }
+
+  Widget _imageWidget(ScheduleItemView element) {
+    const radius = 6.0;
+    const offset = 6.0;
+
     late final Image image;
     if (element.imageUri != null && element.imageUri!.path.isNotEmpty) {
       final file = File.fromUri(element.imageUri!);
@@ -79,62 +117,32 @@ class SchedulePage extends StatelessWidget {
     } else {
       image = Image.asset(LOGO_IMAGE, width: scheduleImageSide, height: scheduleImageSide, fit: BoxFit.cover);
     }
-    final imageWidget = ClipRRect(
-      borderRadius: BorderRadius.circular(6.0),
-      child: image,
-    );
-    final titleStyle = Theme
-        .of(context)
-        .textTheme
-        .bodyText2!
-        .copyWith(fontSize: titleFontSize);
-    final artistStyle = Theme
-        .of(context)
-        .textTheme
-        .bodyText1!
-        .copyWith(fontSize: artistFontSize);
+
     return Container(
-      color: Colors.white10,
-      margin: allSidesMargin,
-      height: scheduleItemHeight,
-      child: Row(children: [
-        imageWidget,
-        Expanded(
-          child: Container(
-            padding: programTextLeftPadding,
-            child: Column(children: [
-              Row(children: [
-                Expanded(
-                  child: Text(
-                    element.title,
-                    style: titleStyle,
-                    softWrap: true,
-                    textAlign: TextAlign.start,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Text(element.start, style: Theme
-                    .of(context)
-                    .textTheme
-                    .headline6, overflow: TextOverflow.ellipsis),
-              ]),
-              Container(
-                padding: programBodyTopPadding,
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  element.artist,
-                  style: artistStyle,
-                  softWrap: true,
-                  textAlign: TextAlign.start,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 3,
-                ),
-              )
-            ]),
-          ),
-        )
-      ]),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(radius),
+        boxShadow: const [
+          BoxShadow(color: Colors.black45, offset: Offset(offset, offset), blurRadius: 15, spreadRadius: 0),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(radius),
+        child: image,
+      ),
+    );
+  }
+
+  Widget _textWidget(ScheduleItemView element, BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: scheduleItemPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _titleWidget(element, context),
+          SizedBox(height: scheduleItemPadding),
+          _artistWidget(element, context),
+        ],
+      ),
     );
   }
 }
