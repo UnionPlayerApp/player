@@ -16,8 +16,8 @@
   "feedback" : "Feedback",
   "settings" : "Settings",
 
-  "present_label": "NOW is",
-  "next_label": "NEXT will",
+  "present_label": "On air now",
+  "next_label": "Next on the air",
   "information_is_loading": "Information is loading",
   "information_not_loaded": "Information is not loaded",
 
