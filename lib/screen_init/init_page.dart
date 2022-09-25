@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:koin_flutter/koin_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,25 +24,27 @@ import 'package:union_player_app/model/system_data/system_data.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_app/app_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/core/shared_preferences.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/widgets/info_page.dart';
 import 'package:union_player_app/utils/widgets/loading_page.dart';
 
 import '../firebase_options.dart';
+import '../utils/core/locale_utils.dart';
 
 class InitPage extends StatefulWidget {
   final PackageInfo _packageInfo;
 
-  InitPage({Key? key, required PackageInfo packageInfo})
+  const InitPage({Key? key, required PackageInfo packageInfo})
       : _packageInfo = packageInfo,
         super(key: key);
 
   @override
-  _InitPageState createState() => _InitPageState();
+  InitPageState createState() => InitPageState();
 }
 
-class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
+class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
   late final SystemData _systemData;
   late final Future<bool> _initAppFuture;
   late final UserCredential _userCredential;
@@ -73,13 +76,14 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
   Future<bool> _initApp() => _initFirebase()
       .then((_) => _initLogger())
       .then((_) => _initAppTrackingTransparency())
+      .then((_) => _initLocale())
       .then((_) => _initSystemData())
       .then((_) => _initPlayer())
       .then((isPlaying) => _logAppStatus(isPlaying))
       .catchError((error) => _handleError(error));
 
   FutureOr<bool> _handleError(dynamic error) {
-    final String msg = "App initialisation error";
+    const msg = "App initialisation error";
     debugPrint("$msg: $error");
     throw Exception([msg, error]);
   }
@@ -100,7 +104,7 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
     }
   }
 
-  Future <bool> _logAppStatus(bool isPlaying) async {
+  Future<bool> _logAppStatus(bool isPlaying) async {
     final appCheckToken = await FirebaseAppCheck.instance.getToken();
     final params = {
       "package_info_version": widget._packageInfo.version,
@@ -164,6 +168,12 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
       context: context,
       builder: (context) => dialogWidget,
     );
+  }
+
+  Future _initLocale() async {
+    final langId = await readIntFromSharedPreferences(KEY_LANG) ?? DEFAULT_LANG_ID;
+    final newLocale = getLocaleById(langId);
+    Get.updateLocale(newLocale);
   }
 
   Future _initSystemData() async {
@@ -285,7 +295,7 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
 
   Widget _wrapScreenUtilInit(Widget homePage) {
     return ScreenUtilInit(
-      designSize: Size(PROTOTYPE_DEVICE_WIDTH, PROTOTYPE_DEVICE_HEIGHT),
+      designSize: const Size(PROTOTYPE_DEVICE_WIDTH, PROTOTYPE_DEVICE_HEIGHT),
       builder: (_, __) => homePage,
     );
   }

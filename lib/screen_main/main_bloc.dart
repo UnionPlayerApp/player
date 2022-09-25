@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
-import 'package:union_player_app/player/audio_player_handler.dart';
+import 'package:union_player_app/player/app_player_handler.dart';
 import 'package:union_player_app/repository/schedule_item_type.dart';
 import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
@@ -16,7 +16,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   late final StreamSubscription _queueSubscription;
   late final StreamSubscription _customSubscription;
 
-  MainBloc(this._audioHandler) : super(MainState()) {
+  MainBloc(this._audioHandler) : super(const MainState()) {
     _customSubscription = _audioHandler.customEvent.listen((event) => _onCustom(event));
     _queueSubscription = _audioHandler.queue.listen((queue) => _onQueue(queue));
 

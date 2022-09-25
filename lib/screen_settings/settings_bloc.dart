@@ -2,17 +2,20 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:union_player_app/screen_settings/settings_event.dart';
 import 'package:union_player_app/screen_settings/settings_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/shared_preferences.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 
+import '../utils/core/locale_utils.dart';
+
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   SettingsBloc({
-    int langId: DEFAULT_LANG_ID,
-    int startPlayingId: DEFAULT_START_PLAYING_ID,
-    int themeId: DEFAULT_THEME_ID,
+    int langId = DEFAULT_LANG_ID,
+    int startPlayingId = DEFAULT_START_PLAYING_ID,
+    int themeId = DEFAULT_THEME_ID,
   }) : super(SettingsState(langId, startPlayingId, themeId)) {
     on<SettingsEventSharedPreferencesRead>(_onSharedPreferencesRead);
     on<SettingsEventTheme>(_onTheme);
@@ -32,9 +35,11 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     emitter(newState);
   }
 
-  FutureOr<void> _onLang(SettingsEventLang event, Emitter<SettingsState> emitter) {
-    _doLangChanged(event.langId);
-    final newState = state.copyWith(newLang: event.langId, newSnackBarKey: StringKeys.will_made_next_release);
+  FutureOr<void> _onLang(SettingsEventLang event, Emitter<SettingsState> emitter) async {
+    await writeIntToSharedPreferences(KEY_LANG, event.langId);
+    final newLocale = getLocaleById(event.langId);
+    Get.updateLocale(newLocale);
+    final newState = state.copyWith(newLang: event.langId);
     emitter(newState);
   }
 
@@ -46,10 +51,6 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   void _doThemeChanged(int themeId) {
     writeIntToSharedPreferences(KEY_THEME, themeId);
-  }
-
-  void _doLangChanged(int langId) {
-    writeIntToSharedPreferences(KEY_LANG, langId);
   }
 
   void _doStartPlayingChanged(int startPlayingId) {

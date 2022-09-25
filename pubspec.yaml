@@ -30,6 +30,7 @@ dependencies:
   flutter_screenutil: ^5.0.0
   flutter_svg: ^1.1.1
   form_field_validator: ^1.1.0
+  get: ^4.6.5
   intl: ^0.17.0
   just_audio: ^0.9.22
   koin_flutter: ^0.11.0-nullsafety.0
