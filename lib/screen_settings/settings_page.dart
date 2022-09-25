@@ -69,7 +69,7 @@ class SettingsPage extends StatelessWidget {
             StringKeys.settings_lang_be,
             StringKeys.settings_lang_en,
           ],
-          [LANG_SYSTEM, LANG_RU, LANG_BE, LANG_EN],
+          [langSystem, langRU, langBY, langUS],
           state.lang,
           (int? value) => get<SettingsBloc>().add(SettingsEventLang(value ?? DEFAULT_LANG_ID)),
         ),
@@ -77,7 +77,7 @@ class SettingsPage extends StatelessWidget {
 
   Widget _createRow(Widget label, Widget button) {
     final labelContainer = Container(
-      margin: EdgeInsets.only(left: 5.0, right: 5.0),
+      margin: const EdgeInsets.only(left: 5.0, right: 5.0),
       child: label,
     );
     return Row(children: [labelContainer, button]);
@@ -85,21 +85,26 @@ class SettingsPage extends StatelessWidget {
 
   Widget _createLabel(BuildContext context, StringKeys key) {
     final text = translate(key, context);
-    return Text(text, style: TextStyle(fontSize: titleFontSize), overflow: TextOverflow.ellipsis);
+    return Text(text, style: const TextStyle(fontSize: titleFontSize), overflow: TextOverflow.ellipsis);
   }
 
   Widget _createButton(
-      BuildContext context, List<StringKeys> keys, List<int> values, int selectedItem, Function(int?) onChanged) {
+    BuildContext context,
+    List<StringKeys> keys,
+    List<int> values,
+    int selectedItem,
+    Function(int?) onChanged,
+  ) {
     assert(keys.length == values.length);
     assert(selectedItem < values.length);
 
     final items = List<DropdownMenuItem<int>>.empty(growable: true);
 
     keys.asMap().forEach((index, key) {
-      items.add(DropdownMenuItem(child: Text(translate(key, context)), value: values[index]));
+      items.add(DropdownMenuItem(value: values[index], child: Text(translate(key, context))));
     });
 
-    return new DropdownButton<int>(
+    return DropdownButton<int>(
       value: selectedItem,
       icon: const Icon(Icons.arrow_downward_rounded),
       iconSize: 24,

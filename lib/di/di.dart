@@ -4,7 +4,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:koin/koin.dart';
 import 'package:union_player_app/model/system_data/system_data.dart';
-import 'package:union_player_app/player/audio_player_handler.dart';
+import 'package:union_player_app/player/app_player_handler.dart';
 import 'package:union_player_app/repository/schedule_repository_impl.dart';
 import 'package:union_player_app/repository/schedule_repository_interface.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';

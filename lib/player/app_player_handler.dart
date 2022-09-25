@@ -63,14 +63,14 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
   }
 
   @override
-  Future<dynamic> customAction(String action, [Map<String, dynamic>? extras]) {
-    switch (action) {
+  Future<dynamic> customAction(String name, [Map<String, dynamic>? extras]) {
+    switch (name) {
       case ACTION_SET_AUDIO_QUALITY:
         return _setAudioQuality(extras);
       case ACTION_START:
         return _start(extras);
       default:
-        return super.customAction(action, extras);
+        return super.customAction(name, extras);
     }
   }
 

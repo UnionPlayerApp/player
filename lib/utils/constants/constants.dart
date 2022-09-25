@@ -1,4 +1,6 @@
 // Asset Constants
+import 'dart:ui';
+
 const APP_BAR_LOGO_IMAGE = "assets/images/union_radio_logo_outline.svg";
 const LOGO_IMAGE = "assets/images/union_radio_logo.png";
 const LOGO_IMAGE_1 = "assets/images/union_radio_logo_1.png";
@@ -57,15 +59,15 @@ const START_PLAYING_START = 0;
 const START_PLAYING_STOP = 1;
 const START_PLAYING_LAST = 2;
 
-const LANG_SYSTEM = 0;
-const LANG_RU = 1;
-const LANG_BE = 2;
-const LANG_EN = 3;
+const langSystem = 0;
+const langRU = 1;
+const langBY = 2;
+const langUS = 3;
 
 const DEFAULT_AUDIO_QUALITY_ID = AUDIO_QUALITY_MEDIUM;
 const DEFAULT_THEME_ID = THEME_SYSTEM;
 const DEFAULT_START_PLAYING_ID = START_PLAYING_STOP;
-const DEFAULT_LANG_ID = LANG_SYSTEM;
+const DEFAULT_LANG_ID = langSystem;
 const DEFAULT_IS_PLAYING = false;
 
 const KEY_AUDIO_QUALITY = "AUDIO_QUALITY";
@@ -93,3 +95,13 @@ const GA_APP_STOP = "UPA_APP_STOP";
 const GA_PLAYER_START = "UPA_PLAYER_START";
 const GA_PLAYER_STOP = "UPA_PLAYER_STOP";
 const GA_APP_STATUS = "UPA_APP_STATUS";
+
+const localeUS = Locale('en', 'US');
+const localeRU = Locale('ru', 'RU');
+const localeBY = Locale('be', 'BY');
+
+const supportedLocales = [
+  localeUS,
+  localeRU,
+  localeBY,
+];
