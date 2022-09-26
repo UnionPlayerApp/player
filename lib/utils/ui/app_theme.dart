@@ -1,87 +1,113 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
-ThemeData createAppTheme() {
-  final ThemeData base = ThemeData.light();
-  return base.copyWith(
-    colorScheme: _appColorScheme,
-    primaryColorDark: primaryDarkColor,
-    primaryColor: primaryColor,
-    primaryColorLight: primaryLightColor,
-    accentColor: secondaryColor,
-    buttonColor: secondaryDarkColor,
-    scaffoldBackgroundColor: backgroundColor,
-    cardColor: surfaceColor,
+import '../constants/constants.dart';
+
+ThemeData appThemeLight() {
+  final baseThemeData = ThemeData.light();
+  return baseThemeData.copyWith(
+    appBarTheme: _appBarTheme(baseThemeData.appBarTheme),
+    bannerTheme: _appBannerTheme(baseThemeData.bannerTheme),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      selectedItemColor: primaryColor,
+      unselectedItemColor: Colors.grey,
+    ),
     buttonTheme: ButtonThemeData(
       buttonColor: secondaryColor,
       colorScheme: _appColorScheme.copyWith(secondary: secondaryColor),
       textTheme: ButtonTextTheme.normal,
     ),
-    textTheme: _createTextTheme(base.textTheme),
-    bannerTheme: _createBannerTheme(base.bannerTheme),
-    appBarTheme: _createAppBarTheme(base.appBarTheme),
+    cardColor: surfaceColor,
+    colorScheme: _appColorScheme.copyWith(secondary: secondaryColor),
+    primaryColor: primaryColor,
+    primaryColorDark: primaryDarkColor,
+    primaryColorLight: primaryLightColor,
+    scaffoldBackgroundColor: backgroundColor,
+    textTheme: _appTextTheme(baseThemeData.textTheme),
   );
 }
 
-ThemeData createAppThemeDark() {
-  final ThemeData base = ThemeData.dark();
-  return base.copyWith(
-    colorScheme: _appColorScheme,
-    // buttonTheme: ButtonThemeData(
-    //   buttonColor: secondaryColor,
-    //   colorScheme: _appColorScheme.copyWith(secondary: secondaryColor),
-    //   textTheme: ButtonTextTheme.normal,
-    // ),
+ThemeData appThemeDark() {
+  final baseThemeData = ThemeData.dark();
+  return baseThemeData.copyWith(
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      selectedItemColor: primaryLightColor,
+      unselectedItemColor: Colors.grey,
+    ),
+    colorScheme: _appColorSchemeDark,
   );
 }
 
-TextTheme _createTextTheme(TextTheme base) {
+TextTheme _appTextTheme(TextTheme base) {
   return base.apply(
     fontFamily: 'Rubik',
   );
 }
 
-MaterialBannerThemeData _createBannerTheme(MaterialBannerThemeData base) {
+MaterialBannerThemeData _appBannerTheme(MaterialBannerThemeData base) {
   return base.copyWith(
     backgroundColor: primaryLightColor,
-    contentTextStyle: TextStyle(color: colorOnSecondaryWithAlfa),
+    contentTextStyle: const TextStyle(color: colorOnSecondaryWithAlfa),
   );
 }
 
-AppBarTheme _createAppBarTheme(AppBarTheme base) {
+AppBarTheme _appBarTheme(AppBarTheme base) {
   return base.copyWith(centerTitle: true);
 }
 
-const ColorScheme _appColorScheme = ColorScheme(
+const _appColorScheme = ColorScheme(
   primary: primaryColor,
-  primaryVariant: primaryDarkColor,
   secondary: secondaryColor,
-  secondaryVariant: secondaryDarkColor,
   surface: surfaceColor,
   background: backgroundColor,
   error: errorColor,
   onPrimary: backgroundColor,
   onSecondary: backgroundColor,
   onSurface: secondaryDarkColor,
-  onBackground: backgroundColor,
+  onBackground: colorOnBackgroundLight,
   onError: colorOnPrimary,
   brightness: Brightness.light,
 );
 
-const Color primaryColor = Color(0xFF003e8d);
-const Color primaryDarkColor = Color(0xFF00195f);
-const Color primaryLightColor = Color(0xFF4b68be);
+final _appColorSchemeDark = _appColorScheme.copyWith(onBackground: colorOnBackgroundDark);
 
-const Color secondaryColor = Color(0xFFe8000a);
-const Color secondaryDarkColor = Color(0xFFad0000);
-const Color secondaryLightColor = Color(0xFFff5539);
+const primaryColor = Color(0xFF003e8d);
+const primaryDarkColor = Color(0xFF00195f);
+const primaryLightColor = Color(0xFF4b68be);
 
-const Color errorColor = Color(0xFFC5032B);
+const secondaryColor = Color(0xFFe8000a);
+const secondaryDarkColor = Color(0xFFad0000);
+const secondaryLightColor = Color(0xFFff5539);
 
-const Color colorOnPrimary = Colors.white;
-const Color colorOnSecondary = Colors.white;
-const Color colorOnSecondaryWithAlfa = Color(0xCEFFFFFF);
+const errorColor = Color(0xFFC5032B);
 
-const Color backgroundColor = Color(0xFFF1F1F1);
-const Color surfaceColor = Colors.white;
+const colorOnPrimary = Colors.white;
+const colorOnSecondary = Colors.white;
+const colorOnBackgroundLight = Colors.black;
+const colorOnBackgroundDark = Colors.grey;
+const colorOnSecondaryWithAlfa = Color(0xCEFFFFFF);
+
+const backgroundColor = Color(0xFFF1F1F1);
+const surfaceColor = Colors.white;
 
 const defaultLetterSpacing = 0.03;
+
+ThemeData getThemeById(int themeId) {
+  switch (themeId) {
+    case themeLight:
+      return appThemeLight();
+    case themeDark:
+      return appThemeDark();
+    default:
+      return _systemTheme();
+  }
+}
+
+ThemeData _systemTheme() {
+  switch (SchedulerBinding.instance.window.platformBrightness) {
+    case Brightness.light:
+      return appThemeLight();
+    case Brightness.dark:
+      return appThemeDark();
+  }
+}

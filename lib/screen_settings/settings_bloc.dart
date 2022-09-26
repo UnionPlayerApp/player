@@ -8,14 +8,15 @@ import 'package:union_player_app/screen_settings/settings_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/shared_preferences.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
+import 'package:union_player_app/utils/ui/app_theme.dart';
 
 import '../utils/core/locale_utils.dart';
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   SettingsBloc({
-    int langId = DEFAULT_LANG_ID,
-    int startPlayingId = DEFAULT_START_PLAYING_ID,
-    int themeId = DEFAULT_THEME_ID,
+    int langId = defaultLangId,
+    int startPlayingId = defaultStartPlayingId,
+    int themeId = defaultThemeId,
   }) : super(SettingsState(langId, startPlayingId, themeId)) {
     on<SettingsEventSharedPreferencesRead>(_onSharedPreferencesRead);
     on<SettingsEventTheme>(_onTheme);
@@ -29,14 +30,16 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     emitter(newState);
   }
 
-  FutureOr<void> _onTheme(SettingsEventTheme event, Emitter<SettingsState> emitter) {
-    _doThemeChanged(event.themeId);
-    final newState = state.copyWith(newTheme: event.themeId, newSnackBarKey: StringKeys.will_made_next_release);
+  FutureOr<void> _onTheme(SettingsEventTheme event, Emitter<SettingsState> emitter) async {
+    await writeIntToSharedPreferences(keyTheme, event.themeId);
+    final theme = getThemeById(event.themeId);
+    Get.changeTheme(theme);
+    final newState = state.copyWith(newTheme: event.themeId);
     emitter(newState);
   }
 
   FutureOr<void> _onLang(SettingsEventLang event, Emitter<SettingsState> emitter) async {
-    await writeIntToSharedPreferences(KEY_LANG, event.langId);
+    await writeIntToSharedPreferences(keyLang, event.langId);
     final newLocale = getLocaleById(event.langId);
     Get.updateLocale(newLocale);
     final newState = state.copyWith(newLang: event.langId);
@@ -49,19 +52,15 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     emitter(newState);
   }
 
-  void _doThemeChanged(int themeId) {
-    writeIntToSharedPreferences(KEY_THEME, themeId);
-  }
-
   void _doStartPlayingChanged(int startPlayingId) {
-    writeIntToSharedPreferences(KEY_START_PLAYING, startPlayingId);
+    writeIntToSharedPreferences(keyStartPlaying, startPlayingId);
   }
 
   void _readStateFromSharedPreferences() async {
     Future.wait([
-      readIntFromSharedPreferences(KEY_LANG),
-      readIntFromSharedPreferences(KEY_START_PLAYING),
-      readIntFromSharedPreferences(KEY_THEME),
+      readIntFromSharedPreferences(keyLang),
+      readIntFromSharedPreferences(keyStartPlaying),
+      readIntFromSharedPreferences(keyTheme),
     ])
         .then((params) => _onSharedPreferencesReadSuccess(params))
         .catchError((error) => _onSharedPreferencesReadError(error));
@@ -69,9 +68,9 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   _onSharedPreferencesReadSuccess(List<int?> params) {
     assert(params.length == 3);
-    final int langId = params[0] ?? DEFAULT_LANG_ID;
-    final int startPlayingId = params[1] ?? DEFAULT_START_PLAYING_ID;
-    final int themeId = params[2] ?? DEFAULT_THEME_ID;
+    final int langId = params[0] ?? defaultLangId;
+    final int startPlayingId = params[1] ?? defaultStartPlayingId;
+    final int themeId = params[2] ?? defaultThemeId;
     add(SettingsEventSharedPreferencesRead(langId, startPlayingId, themeId));
   }
 

@@ -13,7 +13,6 @@ import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 
 import 'utils/localizations/app_localizations_delegate.dart';
-import 'utils/ui/app_theme.dart';
 
 void main() async {
   runZonedGuarded<Future<void>>(() async {
@@ -54,8 +53,7 @@ Widget _app(PackageInfo packageInfo) {
       }
       return supportedLocales.first;
     },
-    onGenerateTitle: (context) => translate(StringKeys.app_title, context),
-    theme: createAppTheme(),
+    onGenerateTitle: (context) => translate(StringKeys.appTitle, context),
     home: InitPage(packageInfo: packageInfo),
   );
 }

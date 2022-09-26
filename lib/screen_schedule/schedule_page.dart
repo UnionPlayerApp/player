@@ -38,7 +38,7 @@ class SchedulePage extends StatelessWidget {
   }
 
   Widget _errorPage(BuildContext context, ScheduleLoadErrorState state) {
-    final header = Text(translate(StringKeys.loading_error, context), style: Theme.of(context).textTheme.headline6);
+    final header = Text(translate(StringKeys.loadingError, context), style: Theme.of(context).textTheme.headline6);
     final body = Text(state.errorMessage, style: Theme.of(context).textTheme.bodyText2, textAlign: TextAlign.center);
     return Center(
       child: Column(
@@ -115,7 +115,7 @@ class SchedulePage extends StatelessWidget {
       final file = File.fromUri(element.imageUri!);
       image = Image.file(file, width: scheduleImageSide, height: scheduleImageSide, fit: BoxFit.cover);
     } else {
-      image = Image.asset(LOGO_IMAGE, width: scheduleImageSide, height: scheduleImageSide, fit: BoxFit.cover);
+      image = Image.asset(logoImage, width: scheduleImageSide, height: scheduleImageSide, fit: BoxFit.cover);
     }
 
     return Container(

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math' as Math;
+import 'dart:math' as math;
 
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
@@ -18,7 +18,7 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
   final AudioPlayer player;
   final IScheduleRepository schedule;
   final Uuid uuid;
-  final Math.Random random;
+  final math.Random random;
 
   late final String _appTitle;
   late final Uri _appArtUri;
@@ -65,9 +65,9 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<dynamic> customAction(String name, [Map<String, dynamic>? extras]) {
     switch (name) {
-      case ACTION_SET_AUDIO_QUALITY:
+      case actionSetAudioQuality:
         return _setAudioQuality(extras);
-      case ACTION_START:
+      case actionStart:
         return _start(extras);
       default:
         return super.customAction(name, extras);
@@ -78,8 +78,8 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
   Future<void> _setAudioQuality(dynamic arguments) async {
     final Map<String, dynamic> params = Map.from(arguments);
 
-    final int audioQuality = params[KEY_AUDIO_QUALITY] ?? DEFAULT_AUDIO_QUALITY_ID;
-    final bool isPlaying = params[KEY_IS_PLAYING] ?? DEFAULT_IS_PLAYING;
+    final int audioQuality = params[keyAudioQuality] ?? defaultAudioQualityId;
+    final bool isPlaying = params[keyIsPlaying] ?? defaultIsPlaying;
 
     final audioUrl = _mapAudioQualityToUrl(audioQuality);
 
@@ -101,19 +101,19 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
   Future<void> _start(dynamic arguments) async {
     final Map<String, dynamic> params = Map.from(arguments);
 
-    _appTitle = params[KEY_APP_TITLE];
-    _urlStreamLow = params[KEY_URL_STREAM_LOW];
-    _urlStreamMedium = params[KEY_URL_STREAM_MEDIUM];
-    _urlStreamHigh = params[KEY_URL_STREAM_HIGH];
-    _urlSchedule = params[KEY_URL_SCHEDULE];
+    _appTitle = params[keyAppTitle];
+    _urlStreamLow = params[keyUrlStreamLow];
+    _urlStreamMedium = params[keyUrlStreamMedium];
+    _urlStreamHigh = params[keyUrlStreamHigh];
+    _urlSchedule = params[keyUrlSchedule];
 
-    _appArtUri = await _createUriFromAsset(AUDIO_BACKGROUND_TASK_LOGO_ASSET);
-    _newsArtUriList = await _createUriListFromAssetList(NEWS_ART_ASSET_LIST);
-    _talkArtUriList = await _createUriListFromAssetList(TALK_ART_ASSET_LIST);
-    _musicArtUriList = await _createUriListFromAssetList(MUSIC_ART_ASSET_LIST);
+    _appArtUri = await _createUriFromAsset(audioBackgroundTaskLogoAsset);
+    _newsArtUriList = await _createUriListFromAssetList(newsArtAssetList);
+    _talkArtUriList = await _createUriListFromAssetList(talkArtAssetList);
+    _musicArtUriList = await _createUriListFromAssetList(musicArtAssetList);
 
     final session = await AudioSession.instance;
-    final configuration = AudioSessionConfiguration.music().copyWith(androidWillPauseWhenDucked: false);
+    final configuration = const AudioSessionConfiguration.music().copyWith(androidWillPauseWhenDucked: false);
     await session.configure(configuration);
 
     player.playbackEventStream.map(_transformPlaybackEvent).pipe(playbackState);
@@ -167,13 +167,13 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
 
   String _mapAudioQualityToUrl(int audioQuality) {
     switch (audioQuality) {
-      case AUDIO_QUALITY_LOW:
+      case audioQualityLow:
         return _urlStreamLow;
-      case AUDIO_QUALITY_MEDIUM:
+      case audioQualityMedium:
         return _urlStreamMedium;
-      case AUDIO_QUALITY_HIGH:
+      case audioQualityHigh:
         return _urlStreamHigh;
-      case AUDIO_QUALITY_UNDEFINED:
+      case audioQualityUndefined:
         return _urlStreamMedium;
       default:
         debugPrint("Unknown AudioQualityType $audioQuality. Default quality (medium) used.");
@@ -296,7 +296,7 @@ extension _ScheduleItemRawExtension on ScheduleItem {
 }
 
 extension MediaItemExtensions on MediaItem {
-  DateTime get start => DateTime.fromMicrosecondsSinceEpoch(this.extras!["start"]);
+  DateTime get start => DateTime.fromMicrosecondsSinceEpoch(extras!["start"]);
 
-  int get type => this.extras!["type"];
+  int get type => extras!["type"];
 }
