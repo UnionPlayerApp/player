@@ -1,7 +1,7 @@
-const SCHEDULE_INDEFINITE_ITEM_TYPE_ID = 0;
-const SCHEDULE_MUSIC_ITEM_TYPE_ID = 1;
-const SCHEDULE_TALK_ITEM_TYPE_ID = 2;
-const SCHEDULE_NEWS_ITEM_TYPE_ID = 3;
+const scheduleIndefiniteItemTypeId = 0;
+const scheduleMusicItemTypeId = 1;
+const scheduleTalkItemTypeId = 2;
+const scheduleNewsItemTypeId = 3;
 
 enum ScheduleItemType {
   indefinite,
@@ -15,13 +15,13 @@ extension ScheduleItemTypeExtension on ScheduleItemType {
   int get toInt {
     switch (this) {
       case ScheduleItemType.music:
-        return SCHEDULE_MUSIC_ITEM_TYPE_ID;
+        return scheduleMusicItemTypeId;
       case ScheduleItemType.talk:
-        return SCHEDULE_TALK_ITEM_TYPE_ID;
+        return scheduleTalkItemTypeId;
       case ScheduleItemType.news:
-        return SCHEDULE_NEWS_ITEM_TYPE_ID;
+        return scheduleNewsItemTypeId;
       default:
-        return SCHEDULE_INDEFINITE_ITEM_TYPE_ID;
+        return scheduleIndefiniteItemTypeId;
     }
   }
 }
@@ -29,13 +29,13 @@ extension ScheduleItemTypeExtension on ScheduleItemType {
 extension IntExtension on int {
   ScheduleItemType get toScheduleItemType {
     switch (this) {
-      case SCHEDULE_INDEFINITE_ITEM_TYPE_ID:
+      case scheduleIndefiniteItemTypeId:
         return ScheduleItemType.indefinite;
-      case SCHEDULE_MUSIC_ITEM_TYPE_ID:
+      case scheduleMusicItemTypeId:
         return ScheduleItemType.music;
-      case SCHEDULE_TALK_ITEM_TYPE_ID:
+      case scheduleTalkItemTypeId:
         return ScheduleItemType.talk;
-      case SCHEDULE_NEWS_ITEM_TYPE_ID:
+      case scheduleNewsItemTypeId:
         return ScheduleItemType.news;
       default:
         return ScheduleItemType.indefinite;

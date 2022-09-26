@@ -56,7 +56,7 @@ class FeedbackPage extends StatelessWidget {
           child: ClipRRect(
               borderRadius: BorderRadius.only(bottomLeft: bannerBorderRadius, bottomRight: bannerBorderRadius),
               child: NoDividerBanner(
-                Text(translate(StringKeys.message_us, context)),
+                Text(translate(StringKeys.messageUs, context)),
                 CircleAvatar(child: Icon(Icons.mail_rounded)),
                 [
                   TextButton(
@@ -74,8 +74,8 @@ class FeedbackPage extends StatelessWidget {
   }
 
   void _writeEmailBottomPressed(BuildContext context) {
-    final subject = translate(StringKeys.feedback_subject, context);
-    final emailLaunchError = translate(StringKeys.feedback_email_launch_error, context);
+    final subject = translate(StringKeys.feedbackSubject, context);
+    final emailLaunchError = translate(StringKeys.feedbackEmailLaunchError, context);
     context.read<FeedbackBloc>().add(WriteEmailButtonPressedEvent(subject, emailLaunchError));
   }
 
@@ -111,7 +111,7 @@ class FeedbackPage extends StatelessWidget {
   Widget _loadErrorWidget(BuildContext context, ErrorState state) {
     final headerStyle = Theme.of(context).textTheme.headline6;
     final bodyStyle = Theme.of(context).textTheme.bodyText2;
-    final header = Text("${translate(StringKeys.any_error, context)}", style: headerStyle);
+    final header = Text("${translate(StringKeys.anyError, context)}", style: headerStyle);
     final body = Text(state.errorType, style: bodyStyle, textAlign: TextAlign.center);
     final padding = const EdgeInsets.all(8.0);
     return Center(

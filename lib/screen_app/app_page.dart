@@ -16,7 +16,6 @@ import 'package:union_player_app/screen_settings/settings_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
-import 'package:union_player_app/utils/ui/app_theme.dart';
 import 'package:union_player_app/utils/widgets/info_page.dart';
 import 'package:union_player_app/utils/widgets/snack_bar.dart';
 
@@ -28,31 +27,31 @@ class AppPage extends StatefulWidget {
 class _AppState extends State<AppPage> {
   DateTime? _backPressTime;
   Widget? _currentPage;
-  Duration _animationDuration = const Duration(milliseconds: 300);
+  static const _animationDuration = Duration(milliseconds: 300);
 
   @override
   Widget build(BuildContext context) {
-    FirebaseAnalytics.instance.logEvent(name: GA_APP_START);
+    FirebaseAnalytics.instance.logEvent(name: gaAppStart);
     return BlocBuilder<AppBloc, AppState>(builder: (BuildContext context, AppState state) {
       debugPrint("AppState.build(), AppState = $state");
       return WillPopScope(
         onWillPop: () => _onWillPop(),
         child: Scaffold(
-          appBar: _createAppBar(state),
-          body: _createPage(state),
+          appBar: _appBar(state),
+          body: _body(state),
           extendBody: true,
-          floatingActionButton: _createFAB(state),
+          floatingActionButton: _fab(state),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-          bottomNavigationBar: _createBottomNavigationBar(state),
+          bottomNavigationBar: _bottomNavigationBar(state),
         ),
       );
     });
   }
 
-  BottomAppBar _createBottomNavigationBar(AppState state) => BottomAppBar(
-        shape: CircularNotchedRectangle(),
+  Widget _bottomNavigationBar(AppState state) => BottomAppBar(
+        shape: const CircularNotchedRectangle(),
         notchMargin: 7,
-        child: Container(
+        child: SizedBox(
           height: 60,
           child: Row(
             children: [
@@ -81,8 +80,10 @@ class _AppState extends State<AppPage> {
         ),
       );
 
-  Expanded _buttonAppBar(BuildContext context, AppState state, int itemTab, IconData iconTab, StringKeys nameTab) {
-    final color = state.navIndex == itemTab ? primaryColor : Colors.grey;
+  Widget _buttonAppBar(BuildContext context, AppState state, int itemTab, IconData iconTab, StringKeys nameTab) {
+    final color = state.navIndex == itemTab
+        ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor
+        : Theme.of(context).bottomNavigationBarTheme.unselectedItemColor;
     return Expanded(
       child: MaterialButton(
         padding: const EdgeInsets.all(0),
@@ -103,18 +104,18 @@ class _AppState extends State<AppPage> {
 
   Future<bool> _onWillPop() {
     final DateTime now = DateTime.now();
-    const duration = const Duration(seconds: 2);
+    const duration = Duration(seconds: 2);
     if (_backPressTime == null || now.difference(_backPressTime!) > duration) {
       _backPressTime = now;
-      showSnackBar(context, StringKeys.press_again_to_exit, duration: duration);
+      showSnackBar(context, StringKeys.pressAgainToExit, duration: duration);
       return Future.value(false);
     }
     get<AudioHandler>().stop();
-    FirebaseAnalytics.instance.logEvent(name: GA_APP_STOP);
+    FirebaseAnalytics.instance.logEvent(name: gaAppStop);
     return Future.value(true);
   }
 
-  AppBar _createAppBar(AppState state) {
+  AppBar _appBar(AppState state) {
     final size = AppBar().preferredSize;
     return AppBar(
       title: _createTitle(state, size),
@@ -134,37 +135,37 @@ class _AppState extends State<AppPage> {
   }
 
   String _loadedTitle(AppState state) {
-    final presentArticle = translate(StringKeys.present_label, context);
+    final presentArticle = translate(StringKeys.presentLabel, context);
     final presentArtist = state.presentArtist;
     final presentTitle = state.presentTitle;
-    final nextArticle = translate(StringKeys.next_label, context);
+    final nextArticle = translate(StringKeys.nextLabel, context);
     final nextArtist = state.nextArtist;
     final nextTitle = state.nextTitle;
     return "$presentArticle: $presentArtist - $presentTitle. $nextArticle: $nextArtist - $nextTitle";
   }
 
   String _unloadedTitle() {
-    return translate(StringKeys.information_is_loading, context);
+    return translate(StringKeys.informationIsLoading, context);
   }
 
   Widget _createLeading(AppState state) {
     late final String assetName;
     switch (state.audioQualityId) {
-      case AUDIO_QUALITY_LOW:
-        assetName = IC_AUDIO_QUALITY_LOW_WHITE;
+      case audioQualityLow:
+        assetName = icAudioQualityLowWhite;
         break;
-      case AUDIO_QUALITY_MEDIUM:
-        assetName = IC_AUDIO_QUALITY_MEDIUM_WHITE;
+      case audioQualityMedium:
+        assetName = icAudioQualityMediumWhite;
         break;
-      case AUDIO_QUALITY_HIGH:
-        assetName = IC_AUDIO_QUALITY_HIGH_WHITE;
+      case audioQualityHigh:
+        assetName = icAudioQualityHighWhite;
         break;
       default:
-        assetName = IC_AUDIO_QUALITY_DEFAULT_WHITE;
+        assetName = icAudioQualityDefaultWhite;
         break;
     }
     return MaterialButton(
-      padding: EdgeInsets.only(left: 6.0, right: 6.0),
+      padding: const EdgeInsets.only(left: 6.0, right: 6.0),
       child: Image.asset(assetName),
       onPressed: () {
         context.read<AppBloc>().add(AppAudioQualitySelectorEvent());
@@ -172,7 +173,7 @@ class _AppState extends State<AppPage> {
     );
   }
 
-  Widget _createPage(AppState state) {
+  Widget _body(AppState state) {
     final navPage = _createNavPage(state.navIndex, !state.isAudioQualitySelectorOpen);
     final audioQualitySelector = _createAudioQualitySelector(state.isAudioQualitySelectorOpen);
 
@@ -215,14 +216,14 @@ class _AppState extends State<AppPage> {
 
   Widget _createAudioQualitySelector(bool visible) {
     final children = [
-      _createAudioQualitySelectorButton(IC_AUDIO_QUALITY_LOW, StringKeys.settings_quality_low, AUDIO_QUALITY_LOW),
+      _createAudioQualitySelectorButton(icAudioQualityLow, StringKeys.settingsQualityLow, audioQualityLow),
       _createAudioQualitySelectorButton(
-          IC_AUDIO_QUALITY_MEDIUM, StringKeys.settings_quality_medium, AUDIO_QUALITY_MEDIUM),
-      _createAudioQualitySelectorButton(IC_AUDIO_QUALITY_HIGH, StringKeys.settings_quality_high, AUDIO_QUALITY_HIGH),
+          icAudioQualityMedium, StringKeys.settingsQualityMedium, audioQualityMedium),
+      _createAudioQualitySelectorButton(icAudioQualityHigh, StringKeys.settingsQualityHigh, audioQualityHigh),
     ];
 
     final widget = Container(
-      margin: EdgeInsets.all(6.0),
+      margin: const EdgeInsets.all(6.0),
       child: Wrap(children: [Column(crossAxisAlignment: CrossAxisAlignment.start, children: children)]),
     );
 
@@ -234,41 +235,41 @@ class _AppState extends State<AppPage> {
   }
 
   Widget _createAudioQualitySelectorButton(String assetName, StringKeys key, int audioQualityId) {
-    final size = AppBar().preferredSize;
+    final size = AppBar().preferredSize.height;
 
     final image = Container(
         padding: appAudioQualitySelectorPadding,
         child: SizedBox(
-          height: size.height,
-          width: size.height,
+          height: size,
+          width: size,
           child: Image.asset(assetName),
         ));
 
-    final string = "${translate(StringKeys.settings_quality_label, context)} -> ${translate(key, context)}";
+    final string = "${translate(StringKeys.settingsQualityLabel, context)} -> ${translate(key, context)}";
 
     final textStyle = Theme.of(context).textTheme.button == null
         ? null
         : Theme.of(context).textTheme.button!.copyWith(color: Colors.white);
 
     final text = Container(
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(6.0)),
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(6.0)),
           color: Colors.grey,
         ),
-        margin: EdgeInsets.only(left: 6.0),
+        margin: const EdgeInsets.only(left: 6.0),
         padding: appAudioQualitySelectorPadding,
         child: Text(string, style: textStyle));
 
     final row = Row(mainAxisSize: MainAxisSize.min, children: [image, text]);
 
     return MaterialButton(
-      child: row,
       padding: const EdgeInsets.all(0),
       onPressed: () => context.read<AppBloc>().add(AppAudioQualityButtonEvent(audioQualityId)),
+      child: row,
     );
   }
 
-  FloatingActionButton _createFAB(AppState state) => FloatingActionButton(
+  FloatingActionButton _fab(AppState state) => FloatingActionButton(
         onPressed: () => context.read<AppBloc>().add(AppFabEvent()),
         tooltip: 'Play / Stop',
         child: Icon(state.playingState ? Icons.stop_rounded : Icons.play_arrow_rounded),

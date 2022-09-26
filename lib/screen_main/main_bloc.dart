@@ -31,12 +31,12 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     var isArtistVisible = false;
     var itemTitle = "";
     var itemArtist = "";
-    var itemLabelKey = StringKeys.information_is_loading;
+    var itemLabelKey = StringKeys.informationIsLoading;
     var imageSourceType = ImageSourceType.assets;
-    var imageSource = LOGO_IMAGE;
+    var imageSource = logoImage;
 
     if (event.isScheduleLoaded && event.mediaItems.isNotEmpty) {
-      itemLabelKey = StringKeys.present_label;
+      itemLabelKey = StringKeys.presentLabel;
 
       final mediaItem = event.mediaItems[0];
 

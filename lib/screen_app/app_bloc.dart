@@ -19,7 +19,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   late final StreamSubscription _queueSubscription;
 
   AppBloc(this._audioHandler, bool isPlaying)
-      : super(AppState(0, DEFAULT_IS_PLAYING, DEFAULT_AUDIO_QUALITY_ID, false)) {
+      : super(const AppState(0, defaultIsPlaying, defaultAudioQualityId, false)) {
     on<AppFabEvent>(_onFab);
     on<AppNavEvent>(_onNav);
     on<AppPlayerEvent>(_onPlayer);
@@ -110,7 +110,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   void _onPlaybackEvent(PlaybackState state) {
     add(AppPlayerEvent(state.playing));
-    writeBoolToSharedPreferences(KEY_IS_PLAYING, state.playing);
+    writeBoolToSharedPreferences(keyIsPlaying, state.playing);
   }
 
   @override
@@ -123,22 +123,22 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   void _doAudioQualityChanged(int audioQualityId) {
     Map<String, dynamic> params = {
-      KEY_AUDIO_QUALITY: audioQualityId,
-      KEY_IS_PLAYING: _audioHandler.playbackState.value.playing,
+      keyAudioQuality: audioQualityId,
+      keyIsPlaying: _audioHandler.playbackState.value.playing,
     };
     _audioHandler
-        .customAction(ACTION_SET_AUDIO_QUALITY, params)
-        .then((value) => writeIntToSharedPreferences(KEY_AUDIO_QUALITY, audioQualityId));
+        .customAction(actionSetAudioQuality, params)
+        .then((value) => writeIntToSharedPreferences(keyAudioQuality, audioQualityId));
   }
 
   void _readAudioQualityIdFromSharedPreferences() async {
-    readIntFromSharedPreferences(KEY_AUDIO_QUALITY)
+    readIntFromSharedPreferences(keyAudioQuality)
         .then((audioQualityId) => _onSharedPreferencesReadSuccess(audioQualityId))
         .catchError((error) => _onSharedPreferencesReadError(error));
   }
 
   _onSharedPreferencesReadSuccess(int? audioQualityId) {
-    add(AppAudioQualityInitEvent(audioQualityId ?? DEFAULT_AUDIO_QUALITY_ID));
+    add(AppAudioQualityInitEvent(audioQualityId ?? defaultAudioQualityId));
   }
 
   _onSharedPreferencesReadError(error) {

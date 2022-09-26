@@ -17,7 +17,9 @@ abstract class WebViewState extends FeedbackState {
 }
 
 class WebViewLoadAwaitState extends WebViewState{
+  @override
   final String url;
+  @override
   final int indexedStackPosition = 1;
 
   WebViewLoadAwaitState(this.url);
@@ -27,7 +29,9 @@ class WebViewLoadAwaitState extends WebViewState{
 }
 
 class WebViewLoadSuccessState extends WebViewState{
+  @override
   final String url;
+  @override
   final int indexedStackPosition = 0;
 
   WebViewLoadSuccessState(this.url);

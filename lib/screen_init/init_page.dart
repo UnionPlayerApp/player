@@ -32,6 +32,7 @@ import 'package:union_player_app/utils/widgets/loading_page.dart';
 
 import '../firebase_options.dart';
 import '../utils/core/locale_utils.dart';
+import '../utils/ui/app_theme.dart';
 
 class InitPage extends StatefulWidget {
   final PackageInfo _packageInfo;
@@ -64,7 +65,7 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
     return FutureBuilder(
-      initialData: DEFAULT_IS_PLAYING,
+      initialData: defaultIsPlaying,
       future: _initAppFuture,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         final Widget homePage = _createHomePage(snapshot);
@@ -75,8 +76,9 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
 
   Future<bool> _initApp() => _initFirebase()
       .then((_) => _initLogger())
-      .then((_) => _initAppTrackingTransparency())
       .then((_) => _initLocale())
+      .then((_) => _initTheme())
+      .then((_) => _initAppTrackingTransparency())
       .then((_) => _initSystemData())
       .then((_) => _initPlayer())
       .then((isPlaying) => _logAppStatus(isPlaying))
@@ -120,7 +122,7 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
       "auth_refresh_token": _userCredential.user?.refreshToken ?? "null",
       "auth_uid": _userCredential.user?.uid ?? "null",
     };
-    FirebaseAnalytics.instance.logEvent(name: GA_APP_STATUS, parameters: params);
+    FirebaseAnalytics.instance.logEvent(name: gaAppStatus, parameters: params);
     debugPrint("App initialize success, app params = $params");
     return isPlaying;
   }
@@ -132,6 +134,18 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
     } else {
       debugPrint = (String? message, {int? wrapWidth}) => log(message ?? emptyLogMessage, name: logName);
     }
+  }
+
+  Future _initLocale() async {
+    final langId = await readIntFromSharedPreferences(keyLang) ?? defaultLangId;
+    final newLocale = getLocaleById(langId);
+    Get.updateLocale(newLocale);
+  }
+
+  Future _initTheme() async {
+    final themeId = await readIntFromSharedPreferences(keyTheme) ?? defaultThemeId;
+    final newTheme = getThemeById(themeId);
+    Get.changeTheme(newTheme);
   }
 
   Future _initAppTrackingTransparency() async {
@@ -153,10 +167,10 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
   }
 
   Future<void> _showAppTrackingInfoDialog() async {
-    final title = Text(translate(StringKeys.tracking_dialog_title, context));
-    final content = Text(translate(StringKeys.tracking_dialog_text, context));
+    final title = Text(translate(StringKeys.trackingDialogTitle, context));
+    final content = Text(translate(StringKeys.trackingDialogText, context));
     final button = TextButton(
-      child: Text(translate(StringKeys.tracking_dialog_button, context)),
+      child: Text(translate(StringKeys.trackingDialogButton, context)),
       onPressed: () => Navigator.pop(context),
     );
     final dialogWidget = AlertDialog(
@@ -168,12 +182,6 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
       context: context,
       builder: (context) => dialogWidget,
     );
-  }
-
-  Future _initLocale() async {
-    final langId = await readIntFromSharedPreferences(KEY_LANG) ?? DEFAULT_LANG_ID;
-    final newLocale = getLocaleById(langId);
-    Get.updateLocale(newLocale);
   }
 
   Future _initSystemData() async {
@@ -219,41 +227,41 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
   Future<bool> _initPlayer() async {
     debugPrint("Player initialize start");
 
-    _systemData.playerData.appTitle = translate(StringKeys.app_title, context);
+    _systemData.playerData.appTitle = translate(StringKeys.appTitle, context);
 
     final SharedPreferences sp = await SharedPreferences.getInstance();
 
-    final int audioQualityId = sp.getInt(KEY_AUDIO_QUALITY) ?? DEFAULT_AUDIO_QUALITY_ID;
-    final int startPlayingId = sp.getInt(KEY_START_PLAYING) ?? DEFAULT_START_PLAYING_ID;
+    final int audioQualityId = sp.getInt(keyAudioQuality) ?? defaultAudioQualityId;
+    final int startPlayingId = sp.getInt(keyStartPlaying) ?? defaultStartPlayingId;
 
     late final bool isPlaying;
     switch (startPlayingId) {
-      case START_PLAYING_START:
+      case startPlayingStart:
         isPlaying = true;
         break;
-      case START_PLAYING_STOP:
+      case startPlayingStop:
         isPlaying = false;
         break;
-      case START_PLAYING_LAST:
-        isPlaying = sp.getBool(KEY_IS_PLAYING) ?? DEFAULT_IS_PLAYING;
+      case startPlayingLast:
+        isPlaying = sp.getBool(keyIsPlaying) ?? defaultIsPlaying;
         break;
       default:
-        isPlaying = DEFAULT_IS_PLAYING;
+        isPlaying = defaultIsPlaying;
         break;
     }
 
     final playerHandler = await AudioService.init(
       builder: () => get<AudioHandler>(),
       config: const AudioServiceConfig(
-        androidNotificationChannelName: AUDIO_NOTIFICATION_CHANNEL_NAME,
-        androidNotificationIcon: AUDIO_NOTIFICATION_ICON,
+        androidNotificationChannelName: audioNotificationChannelName,
+        androidNotificationIcon: audioNotificationIcon,
         androidNotificationOngoing: true,
         androidShowNotificationBadge: true,
         notificationColor: Colors.lightGreenAccent,
       ),
     );
 
-    await playerHandler.customAction(ACTION_START, _createPlayerTaskParams(audioQualityId, isPlaying));
+    await playerHandler.customAction(actionStart, _createPlayerTaskParams(audioQualityId, isPlaying));
 
     debugPrint("Player initialize success");
 
@@ -262,13 +270,13 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
 
   Map<String, dynamic> _createPlayerTaskParams(int audioQualityId, bool isPlaying) {
     final Map<String, dynamic> params = {
-      KEY_APP_TITLE: _systemData.playerData.appTitle,
-      KEY_URL_STREAM_LOW: _systemData.streamData.streamLow,
-      KEY_URL_STREAM_MEDIUM: _systemData.streamData.streamMedium,
-      KEY_URL_STREAM_HIGH: _systemData.streamData.streamHigh,
-      KEY_URL_SCHEDULE: _systemData.xmlData.url,
-      KEY_AUDIO_QUALITY: audioQualityId,
-      KEY_IS_PLAYING: isPlaying,
+      keyAppTitle: _systemData.playerData.appTitle,
+      keyUrlStreamLow: _systemData.streamData.streamLow,
+      keyUrlStreamMedium: _systemData.streamData.streamMedium,
+      keyUrlStreamHigh: _systemData.streamData.streamHigh,
+      keyUrlSchedule: _systemData.xmlData.url,
+      keyAudioQuality: audioQualityId,
+      keyIsPlaying: isPlaying,
     };
     return params;
   }
@@ -301,11 +309,11 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
   }
 
   List<String> _createInfoPageStrings() => ([
-        translate(StringKeys.app_is_not_init_1, context),
-        translate(StringKeys.app_is_not_init_2, context),
-        translate(StringKeys.app_is_not_init_3, context),
-        translate(StringKeys.app_is_not_init_4, context),
-        translate(StringKeys.app_is_not_init_5, context),
+        translate(StringKeys.appIsNotInit1, context),
+        translate(StringKeys.appIsNotInit2, context),
+        translate(StringKeys.appIsNotInit3, context),
+        translate(StringKeys.appIsNotInit4, context),
+        translate(StringKeys.appIsNotInit5, context),
       ]);
 
   Widget _createAppPage(bool isPlaying) => BlocProvider.value(
@@ -314,7 +322,7 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
       );
 
   Widget _progressPage() {
-    final title = translate(StringKeys.app_init_title, context);
+    final title = translate(StringKeys.appInitTitle, context);
     final version = "${widget._packageInfo.version} (${widget._packageInfo.buildNumber})";
     return getWithParam<ProgressPage, List<String>>([title, version]);
   }
