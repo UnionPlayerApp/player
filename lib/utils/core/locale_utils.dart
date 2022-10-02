@@ -19,6 +19,6 @@ Locale getLocaleById(int id) {
 Locale _systemLocale() {
   final localeCodes = Platform.localeName.split("_");
   final languageCode = localeCodes[0];
-  final countryCode = localeCodes[1];
+  final countryCode = localeCodes.length > 1 ? localeCodes[1] : null;
   return Locale(languageCode, countryCode);
 }
