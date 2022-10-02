@@ -49,6 +49,7 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
   late final SystemData _systemData;
   late final Future<bool> _initAppFuture;
   late final UserCredential _userCredential;
+  var _initStage = "initial stage";
 
   @override
   void initState() {
@@ -86,11 +87,12 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
 
   FutureOr<bool> _handleError(dynamic error) {
     const msg = "App initialisation error";
-    debugPrint("$msg: $error");
+    debugPrint("$msg: $_initStage: $error");
     throw Exception([msg, error]);
   }
 
   Future _initFirebase() async {
+    _initStage = "Firebase init stage";
     try {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
@@ -99,14 +101,13 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
       await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(kReleaseMode);
       _userCredential = await FirebaseAuth.instance.signInAnonymously();
       await FirebaseAppCheck.instance.activate();
-      debugPrint("Firebase initialize success");
     } catch (error) {
-      debugPrint("Firebase initialize error: $error");
       throw Exception("Firebase initialize error: $error");
     }
   }
 
   Future<bool> _logAppStatus(bool isPlaying) async {
+    _initStage = "Log App Status init stage";
     final appCheckToken = await FirebaseAppCheck.instance.getToken();
     final params = {
       "package_info_version": widget._packageInfo.version,
@@ -128,6 +129,7 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
   }
 
   FutureOr<void> _initLogger() {
+    _initStage = "Logger init stage";
     if (kReleaseMode) {
       debugPrint = (String? message, {int? wrapWidth}) => FirebaseCrashlytics.instance.log(message ?? emptyLogMessage);
       FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
@@ -137,21 +139,23 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
   }
 
   Future _initLocale() async {
+    _initStage = "Locale init stage";
     final langId = await readIntFromSharedPreferences(keyLang) ?? defaultLangId;
     final newLocale = getLocaleById(langId);
     Get.updateLocale(newLocale);
   }
 
   Future _initTheme() async {
+    _initStage = "Theme init stage";
     final themeId = await readIntFromSharedPreferences(keyTheme) ?? defaultThemeId;
     final newTheme = getThemeById(themeId);
     Get.changeTheme(newTheme);
   }
 
   Future _initAppTrackingTransparency() async {
+    _initStage = "App Tracking Transparency init stage";
     try {
       var status = await AppTrackingTransparency.trackingAuthorizationStatus;
-      debugPrint("App tracking transparency status = $status");
       if (status == TrackingStatus.notDetermined) {
         await _showAppTrackingInfoDialog();
         // Wait for dialog popping animation
@@ -185,6 +189,8 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
   }
 
   Future _initSystemData() async {
+    _initStage = "System Data init stage";
+
     late final CollectionReference collection;
 
     try {
@@ -225,6 +231,8 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
   }
 
   Future<bool> _initPlayer() async {
+    _initStage = "Player init stage";
+
     debugPrint("Player initialize start");
 
     _systemData.playerData.appTitle = translate(StringKeys.appTitle, context);
