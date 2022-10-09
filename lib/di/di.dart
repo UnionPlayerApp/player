@@ -19,7 +19,7 @@ import 'package:union_player_app/screen_settings/settings_bloc.dart';
 import 'package:union_player_app/screen_settings/settings_page.dart';
 import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/widgets/info_page.dart';
-import 'package:union_player_app/utils/widgets/loading_page.dart';
+import 'package:union_player_app/utils/widgets/progress_page.dart';
 import 'package:uuid/uuid.dart';
 
 import '../player/app_player.dart';

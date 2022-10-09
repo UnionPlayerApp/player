@@ -28,7 +28,7 @@ import 'package:union_player_app/utils/core/shared_preferences.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/widgets/info_page.dart';
-import 'package:union_player_app/utils/widgets/loading_page.dart';
+import 'package:union_player_app/utils/widgets/progress_page.dart';
 
 import '../firebase_options.dart';
 import '../utils/core/locale_utils.dart';
