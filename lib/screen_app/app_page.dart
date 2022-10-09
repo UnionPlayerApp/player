@@ -1,9 +1,10 @@
+import 'dart:async';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:koin_flutter/koin_flutter.dart';
-import 'package:marquee/marquee.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_feedback/feedback_bloc.dart';
 import 'package:union_player_app/screen_feedback/feedback_page.dart';
@@ -16,8 +17,11 @@ import 'package:union_player_app/screen_settings/settings_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
+import 'package:union_player_app/utils/ui/app_theme.dart';
 import 'package:union_player_app/utils/widgets/info_page.dart';
 import 'package:union_player_app/utils/widgets/snack_bar.dart';
+
+import '../utils/widgets/flags_widget.dart';
 
 class AppPage extends StatefulWidget {
   @override
@@ -33,11 +37,10 @@ class _AppState extends State<AppPage> {
   Widget build(BuildContext context) {
     FirebaseAnalytics.instance.logEvent(name: gaAppStart);
     return BlocBuilder<AppBloc, AppState>(builder: (BuildContext context, AppState state) {
-      debugPrint("AppState.build(), AppState = $state");
       return WillPopScope(
         onWillPop: () => _onWillPop(),
         child: Scaffold(
-          appBar: _appBar(state),
+          appBar: _appBar(context, state),
           body: _body(state),
           extendBody: true,
           floatingActionButton: _fab(state),
@@ -115,37 +118,23 @@ class _AppState extends State<AppPage> {
     return Future.value(true);
   }
 
-  AppBar _appBar(AppState state) {
-    final size = AppBar().preferredSize;
+  AppBar _appBar(BuildContext context, AppState state) {
     return AppBar(
-      title: _createTitle(state, size),
+      titleSpacing: 0,
+      title: _createTitle(context, state),
       leading: _createLeading(state),
     );
   }
 
-  Widget _createTitle(AppState state, Size size) {
-    final title = state.isScheduleLoaded ? _loadedTitle(state) : _unloadedTitle();
-    final marquee = Marquee(
-      text: title,
-      startAfter: const Duration(seconds: 3),
-      pauseAfterRound: const Duration(seconds: 3),
-      blankSpace: 75.0,
+  Widget _createTitle(BuildContext context, AppState state) {
+    final width = MediaQuery.of(context).size.width - kToolbarHeight;
+    final mode = state.playingState ? FlagsWidgetMode.play : FlagsWidgetMode.stop;;
+    return FlagsWidget(
+      width: width,
+      height: kToolbarHeight,
+      mode: mode,
+      backgroundColor: primaryColor,
     );
-    return SizedBox(height: size.height, width: size.width, child: marquee);
-  }
-
-  String _loadedTitle(AppState state) {
-    final presentArticle = translate(StringKeys.presentLabel, context);
-    final presentArtist = state.presentArtist;
-    final presentTitle = state.presentTitle;
-    final nextArticle = translate(StringKeys.nextLabel, context);
-    final nextArtist = state.nextArtist;
-    final nextTitle = state.nextTitle;
-    return "$presentArticle: $presentArtist - $presentTitle. $nextArticle: $nextArtist - $nextTitle";
-  }
-
-  String _unloadedTitle() {
-    return translate(StringKeys.informationIsLoading, context);
   }
 
   Widget _createLeading(AppState state) {
@@ -165,7 +154,7 @@ class _AppState extends State<AppPage> {
         break;
     }
     return MaterialButton(
-      padding: const EdgeInsets.only(left: 6.0, right: 6.0),
+      padding: const EdgeInsets.symmetric(horizontal: 6.0),
       child: Image.asset(assetName),
       onPressed: () {
         context.read<AppBloc>().add(AppAudioQualitySelectorEvent());
@@ -216,14 +205,25 @@ class _AppState extends State<AppPage> {
 
   Widget _createAudioQualitySelector(bool visible) {
     final children = [
-      _createAudioQualitySelectorButton(icAudioQualityLow, StringKeys.settingsQualityLow, audioQualityLow),
       _createAudioQualitySelectorButton(
-          icAudioQualityMedium, StringKeys.settingsQualityMedium, audioQualityMedium),
-      _createAudioQualitySelectorButton(icAudioQualityHigh, StringKeys.settingsQualityHigh, audioQualityHigh),
+        icAudioQualityLow,
+        StringKeys.settingsQualityLow,
+        audioQualityLow,
+      ),
+      _createAudioQualitySelectorButton(
+        icAudioQualityMedium,
+        StringKeys.settingsQualityMedium,
+        audioQualityMedium,
+      ),
+      _createAudioQualitySelectorButton(
+        icAudioQualityHigh,
+        StringKeys.settingsQualityHigh,
+        audioQualityHigh,
+      ),
     ];
 
     final widget = Container(
-      margin: const EdgeInsets.all(6.0),
+      margin: const EdgeInsets.symmetric(vertical: 6.0),
       child: Wrap(children: [Column(crossAxisAlignment: CrossAxisAlignment.start, children: children)]),
     );
 
@@ -235,10 +235,10 @@ class _AppState extends State<AppPage> {
   }
 
   Widget _createAudioQualitySelectorButton(String assetName, StringKeys key, int audioQualityId) {
-    final size = AppBar().preferredSize.height;
+    const size = kToolbarHeight - 2 * 6.0;
 
     final image = Container(
-        padding: appAudioQualitySelectorPadding,
+        padding: const EdgeInsets.symmetric(horizontal: 6.0),
         child: SizedBox(
           height: size,
           width: size,

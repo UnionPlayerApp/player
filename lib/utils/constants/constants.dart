@@ -84,6 +84,8 @@ const keyUrlSchedule = "url_schedule";
 const newsArtAssetList = ["assets/images/news_01.png", "assets/images/news_02.png", "assets/images/news_03.png"];
 const talkArtAssetList = ["assets/images/talk_01.png", "assets/images/talk_02.png", "assets/images/talk_03.png"];
 const musicArtAssetList = ["assets/images/music_01.png", "assets/images/music_02.png", "assets/images/music_03.png"];
+const imageFlagRU = "assets/images/Flag_of_Russia.png";
+const imageFlagBY = "assets/images/Flag_of_Belarus.png";
 
 // Custom action name for AudioHandler
 const actionSetAudioQuality = "upa_action_set_audio_quality";

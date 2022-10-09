@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:union_player_app/utils/ui/app_theme.dart';
+import 'package:union_player_app/utils/widgets/flags_widget.dart';
 
 class ProgressPage extends StatelessWidget {
   final String _title;
@@ -11,13 +13,21 @@ class ProgressPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final kToolbarWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: AppBar(title: Text(_title)),
+      appBar: AppBar(
+        backgroundColor: primaryColor,
+        titleSpacing: 0,
+        title: FlagsWidget(
+          width: kToolbarWidth,
+          height: kToolbarHeight,
+          mode: FlagsWidgetMode.init,
+          backgroundColor: primaryColor,
+        ),
+      ),
       body: Stack(
         children: [
-          Center(
-            child: CircularProgressIndicator(),
-          ),
+          const Center(child: CircularProgressIndicator()),
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
