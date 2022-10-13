@@ -99,9 +99,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   void _onQueueEvent(List<MediaItem>? queue) {
-    if (queue == null) {
-      add(AppScheduleEvent(null));
-    } else if (queue.isEmpty) {
+    if (queue == null || queue.isEmpty) {
       add(AppScheduleEvent(null));
     } else {
       add(AppScheduleEvent(queue));

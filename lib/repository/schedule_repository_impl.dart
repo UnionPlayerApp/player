@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
@@ -9,11 +8,13 @@ import 'package:union_player_app/repository/schedule_repository_event.dart';
 import 'package:union_player_app/repository/schedule_repository_interface.dart';
 import 'package:union_player_app/utils/core/file_utils.dart';
 
-const _ATTEMPT_MAX = 5;
-
 class ScheduleRepositoryImpl implements IScheduleRepository {
+  static const _attemptMax = 5;
+  static const _delayBetweenAttempts = Duration(seconds: 1);
+
   final _subject = BehaviorSubject<ScheduleRepositoryEvent>(sync: true);
   final _items = List<ScheduleItem>.empty(growable: true);
+
   bool _isOpen = true;
 
   @override
@@ -30,14 +31,14 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
       do {
         if (attempt > 1) {
           debugPrint("schedule stream() => delay for 1 second start");
-          await Future.delayed(const Duration(seconds: 1));
+          await Future.delayed(_delayBetweenAttempts);
           debugPrint("schedule stream() => delay for 1 second finish");
         }
 
         debugPrint("schedule stream() => _load() start, attempt = $attempt");
         state = await _load(url);
         debugPrint("schedule stream() => _load() finish, attempt = $attempt");
-      } while (state is ScheduleRepositoryErrorEvent && attempt++ < _ATTEMPT_MAX);
+      } while (state is ScheduleRepositoryErrorEvent && attempt++ < _attemptMax);
 
       _subject.add(state);
 
@@ -67,24 +68,24 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
   }
 
   Future<ScheduleRepositoryEvent> _load(String url) async {
-    late final File file;
+    late final String scheduleString;
     late final List<ScheduleItem> newItems;
 
     _items.clear();
 
     try {
-      file = await loadRemoteFile(url);
-      debugPrint("Schedule file load success -> File: $file");
+      scheduleString = await loadRemoteFile(url);
+      debugPrint("Schedule load success -> Url: $url");
     } catch (error) {
-      final msg = "Schedule file load error -> Url: $url -> Error: $error";
+      final msg = "Schedule load error -> Url: $url -> Error: $error";
       debugPrint(msg);
       return ScheduleRepositoryErrorEvent(msg);
     }
 
     try {
-      newItems = parseScheduleFile(file);
+      newItems = parseScheduleString(scheduleString);
     } catch (error) {
-      final msg = "Parse schedule file error -> Path: $file -> Error: $error";
+      final msg = "Parse schedule string error -> Url: $url -> Error: $error";
       debugPrint(msg);
       return ScheduleRepositoryErrorEvent(msg);
     }

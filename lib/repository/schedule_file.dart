@@ -9,24 +9,24 @@ import 'package:union_player_app/utils/core/debug.dart';
 import 'package:union_player_app/utils/core/duration.dart';
 import 'package:xml/xml.dart';
 
-List<ScheduleItem> parseScheduleFile(File file) {
-  debugPrint("parseScheduleFile()");
+List<ScheduleItem> parseScheduleString(String scheduleString) {
+  debugPrint("parseScheduleString()");
   try {
-    final document = XmlDocument.parse(file.readAsStringSync());
+    final document = XmlDocument.parse(scheduleString);
     final elements = document.findAllElements("ELEM");
     final newList = List<ScheduleItem>.empty(growable: true);
 
     DateTime start = DateTime.now();
 
-    elements.forEach((element) {
+    for (var element in elements) {
       final type = _createType(element);
-      if (type == null) return;
+      if (type == null) continue;
 
       final duration = _createDuration(element);
-      if (duration == null) return;
+      if (duration == null) continue;
 
       final thisStart = _createStart(element, start);
-      if (thisStart == null) return;
+      if (thisStart == null) continue;
       start = thisStart.add(duration);
 
       final title = _createTitle(element);
@@ -35,10 +35,10 @@ List<ScheduleItem> parseScheduleFile(File file) {
       final item = ScheduleItem(thisStart, duration, type, title, artist, imageUrl: randomUrl());
 
       newList.add(item);
-    });
+    }
     return newList;
   } catch (error) {
-    debugPrint("parseScheduleFile() => error: $error");
+    debugPrint("parseScheduleString() => error: $error");
     rethrow;
   }
 }
