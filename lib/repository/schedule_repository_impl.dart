@@ -19,6 +19,7 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
   @override
   Stream<ScheduleRepositoryEvent> stateStream() => _subject.stream;
 
+  @override
   Future<void> start(String url) async {
     debugPrint("schedule => start()");
 
