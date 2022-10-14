@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:union_player_app/player/app_player_handler.dart';
 import 'package:union_player_app/repository/schedule_item_type.dart';
 import 'package:union_player_app/screen_main/main_event.dart';
@@ -11,10 +11,13 @@ import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/image_source_type.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 
+import 'main_item_view.dart';
+
 class MainBloc extends Bloc<MainEvent, MainState> {
   final AudioHandler _audioHandler;
   late final StreamSubscription _queueSubscription;
   late final StreamSubscription _customSubscription;
+  final _items = List<MainItemView>.empty(growable: true);
 
   MainBloc(this._audioHandler) : super(const MainState()) {
     _customSubscription = _audioHandler.customEvent.listen((event) => _onCustom(event));
@@ -56,15 +59,30 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       }
     }
 
+    final newItems = List<MainItemView>.empty(growable: true);
+
+    for (var mediaItem in event.mediaItems.reversed) {
+      final mainItemView = MainItemView.fromMediaItem(mediaItem);
+      if (_items.contains(mainItemView)) {
+        break;
+      } else {
+        newItems.add(mainItemView);
+      }
+    }
+
+    _items.addAll(newItems.reversed);
+
     final newState = MainState(
-        isScheduleLoaded: isScheduleLoaded,
-        isTitleVisible: isTitleVisible,
-        isArtistVisible: isArtistVisible,
-        itemLabelKey: itemLabelKey,
-        itemTitle: itemTitle,
-        itemArtist: itemArtist,
-        imageSourceType: imageSourceType,
-        imageSource: imageSource);
+      imageSource: imageSource,
+      imageSourceType: imageSourceType,
+      isArtistVisible: isArtistVisible,
+      isScheduleLoaded: isScheduleLoaded,
+      isTitleVisible: isTitleVisible,
+      itemArtist: itemArtist,
+      itemLabelKey: itemLabelKey,
+      itemTitle: itemTitle,
+      items: _items,
+    );
 
     emitter(newState);
   }
