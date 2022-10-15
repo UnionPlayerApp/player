@@ -39,7 +39,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     var imageSource = logoImage;
 
     if (event.isScheduleLoaded && event.mediaItems.isNotEmpty) {
-      itemLabelKey = StringKeys.presentLabel;
+      itemLabelKey = StringKeys.presLabel;
 
       final mediaItem = event.mediaItems[0];
 

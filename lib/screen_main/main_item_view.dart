@@ -43,10 +43,14 @@ class MainItemView extends Equatable {
     );
   }
 
+  bool get isBeforeNow => DateTime.now().isAfter(finish);
+
   bool get isNow {
     final now = DateTime.now();
     return now.isAtSameMomentAs(start) || (now.isAfter(start) && now.isBefore(finish));
   }
+
+  bool get isAfter => DateTime.now().isBefore(start);
 
   @override
   List<Object?> get props => [start.millisecondsSinceEpoch, finish.millisecondsSinceEpoch];

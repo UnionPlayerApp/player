@@ -17,6 +17,7 @@ final EdgeInsets appAudioQualitySelectorPadding = EdgeInsets.all(3.h);
 
 // MainPage
 final double mainImageSide = 200.w;
+final double mainItemExtent = 325.w;
 final double mainMarginBottom = 16.h;
 
 // SchedulePage
