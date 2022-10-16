@@ -3,12 +3,8 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:union_player_app/player/app_player_handler.dart';
-import 'package:union_player_app/repository/schedule_item_type.dart';
 import 'package:union_player_app/screen_main/main_event.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
-import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/core/image_source_type.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 
 import 'main_item_view.dart';
@@ -29,59 +25,29 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   FutureOr<void> _onMain(MainEvent event, Emitter<MainState> emitter) {
     debugPrint("MainBloc._onMain()");
 
-    var isScheduleLoaded = false;
-    var isTitleVisible = false;
-    var isArtistVisible = false;
-    var itemTitle = "";
-    var itemArtist = "";
-    var itemLabelKey = StringKeys.informationIsLoading;
-    var imageSourceType = ImageSourceType.assets;
-    var imageSource = logoImage;
+    _items.clear();
+    _items.addAll(event.mediaItems.map((mediaItem) => MainItemView.fromMediaItem(mediaItem)));
 
-    if (event.isScheduleLoaded && event.mediaItems.isNotEmpty) {
-      itemLabelKey = StringKeys.presLabel;
+    var currentIndex = 0;
 
-      final mediaItem = event.mediaItems[0];
+    final now = DateTime.now();
 
-      isScheduleLoaded = true;
-      isTitleVisible = true;
-
-      itemTitle = mediaItem.title;
-
-      if (mediaItem.type.toScheduleItemType == ScheduleItemType.music) {
-        isArtistVisible = true;
-        itemArtist = mediaItem.artist!;
+    _items.asMap().forEach((index, item) {
+      if (now.isAfter(item.finish)) {
+        item.labelKey = StringKeys.prevLabel;
+        return;
       }
-
-      if (mediaItem.artUri != null) {
-        imageSource = mediaItem.artUri!.path;
-        imageSourceType = ImageSourceType.file;
+      if (now.isBefore(item.start)) {
+        item.labelKey = StringKeys.nextLabel;
+        return;
       }
-    }
-
-    final newItems = List<MainItemView>.empty(growable: true);
-
-    for (var mediaItem in event.mediaItems.reversed) {
-      final mainItemView = MainItemView.fromMediaItem(mediaItem);
-      if (_items.contains(mainItemView)) {
-        break;
-      } else {
-        newItems.add(mainItemView);
-      }
-    }
-
-    _items.addAll(newItems.reversed);
+      item.labelKey = StringKeys.currLabel;
+      currentIndex = index;
+    });
 
     final newState = MainState(
-      imageSource: imageSource,
-      imageSourceType: imageSourceType,
-      isArtistVisible: isArtistVisible,
-      isScheduleLoaded: isScheduleLoaded,
-      isTitleVisible: isTitleVisible,
-      itemArtist: itemArtist,
-      itemLabelKey: itemLabelKey,
-      itemTitle: itemTitle,
       items: _items,
+      currentIndex: currentIndex,
     );
 
     emitter(newState);

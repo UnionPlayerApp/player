@@ -12,7 +12,7 @@
   "feedback": "Напісаць",
   "settings": "Настройкі",
   "prevLabel": "Раней у эфіры",
-  "presLabel": "Зараз у эфіры",
+  "currLabel": "Зараз у эфіры",
   "nextLabel": "Потым у эфіры",
   "informationIsLoading": "Інфармацыя загружаецца",
   "informationNotLoaded": "Інфармацыя не загружана",

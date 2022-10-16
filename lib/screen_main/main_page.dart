@@ -12,8 +12,10 @@ import 'package:union_player_app/utils/ui/app_theme.dart';
 
 import 'main_item_view.dart';
 
+// ignore: must_be_immutable
 class MainPage extends StatelessWidget {
   final _scrollController = ScrollController();
+  var _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +24,10 @@ class MainPage extends StatelessWidget {
           Stack(
             children: [
               _scrollWidget(context, state),
-              // Align(
-              //   alignment: Alignment.bottomRight,
-              //   child: _middleButton(context),
-              // )
+              Align(
+                alignment: Alignment.bottomRight,
+                child: _middleButton(context),
+              )
             ],
           ),
       bloc: get<MainBloc>(),
@@ -33,6 +35,8 @@ class MainPage extends StatelessWidget {
   }
 
   Widget _scrollWidget(BuildContext context, MainState state) {
+    _currentIndex = state.currentIndex;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToCurrentItem());
     return Container(
       padding: const EdgeInsets.all(10),
       color: backgroundColor,
@@ -49,7 +53,7 @@ class MainPage extends StatelessWidget {
   Widget _scrollItem(BuildContext context, MainItemView item) {
     final children = List<Widget>.empty(growable: true);
 
-    children.add(_stateTextWidget(context, _timeStateText(context, item), Theme.of(context).textTheme.headline6));
+    children.add(_stateTextWidget(context, translate(item.labelKey, context), Theme.of(context).textTheme.headline6));
 
     switch (item.imageSourceType) {
       case ImageSourceType.none:
@@ -74,13 +78,6 @@ class MainPage extends StatelessWidget {
     return Column(mainAxisSize: MainAxisSize.min, children: children);
   }
 
-  String _timeStateText(BuildContext context, MainItemView item) {
-    final timeStateKey = (item.isBeforeNow)
-        ? StringKeys.prevLabel
-        : (item.isNow) ? StringKeys.presLabel : StringKeys.nextLabel;
-    return translate(timeStateKey, context);
-  }
-
   Widget _stateTextWidget(BuildContext context, String stateStr, TextStyle? style) {
     final text = Text(stateStr, style: style, textAlign: TextAlign.center);
     return Container(margin: EdgeInsets.only(bottom: mainMarginBottom), child: text);
@@ -88,7 +85,7 @@ class MainPage extends StatelessWidget {
 
   Widget _imageWidgetFromFile(String imageSource) {
     final file = File(imageSource);
-    return _createContainer(Image.file(
+    return _imageContainer(Image.file(
       file,
       width: mainImageSide,
       height: mainImageSide,
@@ -97,7 +94,7 @@ class MainPage extends StatelessWidget {
   }
 
   Widget _imageWidgetFromAssets(String imageSource) {
-    return _createContainer(Image.asset(
+    return _imageContainer(Image.asset(
       imageSource,
       width: mainImageSide,
       height: mainImageSide,
@@ -106,7 +103,7 @@ class MainPage extends StatelessWidget {
   }
 
   Widget _imageWidgetFromNetwork(String imageSource) {
-    return _createContainer(Image.network(
+    return _imageContainer(Image.network(
       imageSource,
       width: mainImageSide,
       height: mainImageSide,
@@ -114,7 +111,7 @@ class MainPage extends StatelessWidget {
     ));
   }
 
-  Widget _createContainer(Image image) {
+  Widget _imageContainer(Image image) {
     const radius = 12.0;
     const offset = 10.0;
     return Container(
@@ -129,6 +126,31 @@ class MainPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(radius),
         child: image,
       ),
+    );
+  }
+
+  Widget _middleButton(BuildContext context) {
+    const buttonSize = 35.0;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: kBottomNavigationBarHeight + 25.0, right: 25.0),
+      child: InkWell(
+        onTap: () => _scrollToCurrentItem(),
+        child: Container(
+          alignment: Alignment.center,
+          height: buttonSize,
+          width: buttonSize,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: secondaryColor.withOpacity(0.66)),
+          child: const Icon(Icons.my_location, color: Colors.white),
+        ),
+      ),
+    );
+  }
+
+  void _scrollToCurrentItem() async {
+    _scrollController.animateTo(
+      mainItemExtent * _currentIndex,
+      duration: const Duration(milliseconds: 450),
+      curve: Curves.fastLinearToSlowEaseIn,
     );
   }
 }

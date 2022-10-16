@@ -2,10 +2,13 @@ import 'package:audio_service/audio_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:union_player_app/player/app_player_handler.dart';
 import 'package:union_player_app/repository/schedule_item_type.dart';
+import 'package:union_player_app/utils/core/date_time.dart';
 
 import '../utils/constants/constants.dart';
 import '../utils/core/image_source_type.dart';
+import '../utils/localizations/string_translation.dart';
 
+// ignore: must_be_immutable
 class MainItemView extends Equatable {
   final DateTime finish;
   final DateTime start;
@@ -15,7 +18,9 @@ class MainItemView extends Equatable {
   final String title;
   final bool isArtistVisible;
 
-  const MainItemView._({
+  var labelKey = StringKeys.empty;
+
+  MainItemView._({
     required this.artist,
     required this.finish,
     required this.imageSource,
@@ -43,15 +48,12 @@ class MainItemView extends Equatable {
     );
   }
 
-  bool get isBeforeNow => DateTime.now().isAfter(finish);
-
-  bool get isNow {
-    final now = DateTime.now();
-    return now.isAtSameMomentAs(start) || (now.isAfter(start) && now.isBefore(finish));
-  }
-
-  bool get isAfter => DateTime.now().isBefore(start);
-
   @override
   List<Object?> get props => [start.millisecondsSinceEpoch, finish.millisecondsSinceEpoch];
+
+  @override
+  String toString() => "MainItemView, "
+      "start = ${formatDateTime(start)} = ${start.millisecondsSinceEpoch}, "
+      "finish = ${formatDateTime(finish)} = ${finish.millisecondsSinceEpoch}, "
+      "title = $title";
 }

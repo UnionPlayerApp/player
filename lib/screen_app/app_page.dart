@@ -269,7 +269,7 @@ class _AppState extends State<AppPage> {
     );
   }
 
-  FloatingActionButton _fab(AppState state) => FloatingActionButton(
+  Widget _fab(AppState state) => FloatingActionButton(
         onPressed: () => context.read<AppBloc>().add(AppFabEvent()),
         tooltip: 'Play / Stop',
         child: Icon(state.playingState ? Icons.stop_rounded : Icons.play_arrow_rounded),

@@ -23,7 +23,7 @@ enum  StringKeys{
   pressAgainToExit,
   // AppScreen - AppBar
   prevLabel,
-  presLabel,
+  currLabel,
   nextLabel,
   informationIsLoading,
   informationNotLoaded,

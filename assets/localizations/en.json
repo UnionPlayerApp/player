@@ -12,7 +12,7 @@
   "feedback" : "Feedback",
   "settings" : "Settings",
   "prevLabel": "Previously aired",
-  "presLabel": "On air now",
+  "currLabel": "On air now",
   "nextLabel": "Next on the air",
   "informationIsLoading": "Information is loading",
   "informationNotLoaded": "Information is not loaded",
