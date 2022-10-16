@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/shared_preferences.dart';
 
@@ -60,7 +60,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   FutureOr<void> _onSchedule(AppScheduleEvent event, Emitter<AppState> emitter) {
-    late AppState newState;
+    late final AppState newState;
 
     if (event.items == null || event.items!.length < 2) {
       newState = state.copyWith(isScheduleLoaded: false);
@@ -99,9 +99,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   void _onQueueEvent(List<MediaItem>? queue) {
-    if (queue == null) {
-      add(AppScheduleEvent(null));
-    } else if (queue.isEmpty) {
+    if (queue == null || queue.isEmpty) {
       add(AppScheduleEvent(null));
     } else {
       add(AppScheduleEvent(queue));

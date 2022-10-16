@@ -1,20 +1,60 @@
 // Asset Constants
 import 'dart:ui';
 
+import 'package:flutter/scheduler.dart';
+
 const appBarLogoImage = "assets/images/union_radio_logo_outline.svg";
 const logoImage = "assets/images/union_radio_logo.png";
 const logoImage1 = "assets/images/union_radio_logo_1.png";
 
-const icAudioQualityLow = "assets/images/audio_quality_low.png";
-const icAudioQualityHigh = "assets/images/audio_quality_high.png";
-const icAudioQualityMedium = "assets/images/audio_quality_medium.png";
+var icAudioQualityLow = "";
+var icAudioQualityHigh = "";
+var icAudioQualityMedium = "";
+var icAudioQualityDefault = "";
+
+const icAudioQualityLowBlack = "assets/images/audio_quality_low.png";
+const icAudioQualityHighBlack = "assets/images/audio_quality_high.png";
+const icAudioQualityMediumBlack = "assets/images/audio_quality_medium.png";
+const icAudioQualityDefaultBlack = icAudioQualityMediumBlack;
 
 const icAudioQualityLowWhite = "assets/images/audio_quality_low_white.png";
 const icAudioQualityHighWhite = "assets/images/audio_quality_high_white.png";
 const icAudioQualityMediumWhite = "assets/images/audio_quality_medium_white.png";
-
-const icAudioQualityDefault = icAudioQualityMedium;
 const icAudioQualityDefaultWhite = icAudioQualityMediumWhite;
+
+void setIcAudioQuality(int themeId) {
+  switch (themeId) {
+    case themeLight:
+      _setIcAudioQualityToBlack();
+      break;
+    case themeDark:
+      _setIcAudioQualityToWhite();
+      break;
+    default:
+      switch (SchedulerBinding.instance.window.platformBrightness) {
+        case Brightness.light:
+          _setIcAudioQualityToBlack();
+          break;
+        case Brightness.dark:
+          _setIcAudioQualityToWhite();
+          break;
+      }
+  }
+}
+
+void _setIcAudioQualityToWhite() {
+  icAudioQualityLow = icAudioQualityLowWhite;
+  icAudioQualityHigh = icAudioQualityHighWhite;
+  icAudioQualityMedium = icAudioQualityMediumWhite;
+  icAudioQualityDefault = icAudioQualityDefaultWhite;
+}
+
+void _setIcAudioQualityToBlack() {
+  icAudioQualityLow = icAudioQualityLowBlack;
+  icAudioQualityHigh = icAudioQualityHighBlack;
+  icAudioQualityMedium = icAudioQualityMediumBlack;
+  icAudioQualityDefault = icAudioQualityDefaultBlack;
+}
 
 //Streams IDs
 const idStreamLow = 0;

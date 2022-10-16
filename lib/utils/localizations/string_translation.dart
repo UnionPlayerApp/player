@@ -22,7 +22,8 @@ enum  StringKeys{
   // AppScreen
   pressAgainToExit,
   // AppScreen - AppBar
-  presentLabel,
+  prevLabel,
+  currLabel,
   nextLabel,
   informationIsLoading,
   informationNotLoaded,

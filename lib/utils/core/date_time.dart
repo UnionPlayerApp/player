@@ -3,7 +3,7 @@ import 'package:union_player_app/utils/core/relative_day_type.dart';
 
 String formatDateTime(DateTime dateTime) {
   final type = getRelativeDayType(dateTime);
-  final pattern = getRelativeDayPattern(type) + "HH:mm";
+  final pattern = "${getRelativeDayPattern(type)}HH:mm";
   return DateFormat(pattern).format(dateTime);
 }
 
@@ -21,6 +21,6 @@ DateTime parseDateTime(String date, String time) {
 
     return DateTime(year, month, day, hours, minutes, seconds);
   } catch (error) {
-    throw FormatException('Invalid start date or time format');
+    throw const FormatException('Invalid start date or time format');
   }
 }

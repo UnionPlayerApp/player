@@ -6,8 +6,7 @@ class MainEvent extends Equatable {
   final List<MediaItem> mediaItems;
   final String loadingError;
 
-  MainEvent(this.isScheduleLoaded,
-      {this.mediaItems = const [], this.loadingError = ""});
+  const MainEvent(this.isScheduleLoaded, {this.mediaItems = const [], this.loadingError = ""});
 
   @override
   List<Object?> get props => [isScheduleLoaded, mediaItems, loadingError];

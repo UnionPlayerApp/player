@@ -32,8 +32,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   FutureOr<void> _onTheme(SettingsEventTheme event, Emitter<SettingsState> emitter) async {
     await writeIntToSharedPreferences(keyTheme, event.themeId);
-    final theme = getThemeById(event.themeId);
-    Get.changeTheme(theme);
+    setThemeById(event.themeId);
     final newState = state.copyWith(newTheme: event.themeId);
     emitter(newState);
   }

@@ -148,8 +148,7 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
   Future _initTheme() async {
     _initStage = "Theme init stage";
     final themeId = await readIntFromSharedPreferences(keyTheme) ?? defaultThemeId;
-    final newTheme = getThemeById(themeId);
-    Get.changeTheme(newTheme);
+    setThemeById(themeId);
   }
 
   Future _initAppTrackingTransparency() async {

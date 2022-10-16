@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:get/get.dart';
 
 import '../constants/constants.dart';
 
@@ -101,6 +102,12 @@ ThemeData getThemeById(int themeId) {
     default:
       return _systemTheme();
   }
+}
+
+void setThemeById(int themeId) {
+  setIcAudioQuality(themeId);
+  final newTheme = getThemeById(themeId);
+  Get.changeTheme(newTheme);
 }
 
 ThemeData _systemTheme() {

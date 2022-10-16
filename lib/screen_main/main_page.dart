@@ -8,60 +8,84 @@ import 'package:union_player_app/screen_main/main_state.dart';
 import 'package:union_player_app/utils/core/image_source_type.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
+import 'package:union_player_app/utils/ui/app_theme.dart';
 
+import 'main_item_view.dart';
+
+// ignore: must_be_immutable
 class MainPage extends StatelessWidget {
+  final _scrollController = ScrollController();
+  var _currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MainBloc, MainState>(
-      builder: (context, state) => _createWidget(context, state),
+      builder: (context, state) =>
+          Stack(
+            children: [
+              _scrollWidget(context, state),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: _middleButton(context),
+              )
+            ],
+          ),
       bloc: get<MainBloc>(),
     );
   }
 
-  Widget _createWidget(BuildContext context, MainState state) => Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: _createStateRows(context, state),
-      ));
+  Widget _scrollWidget(BuildContext context, MainState state) {
+    _currentIndex = state.currentIndex;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToCurrentItem());
+    return Container(
+      padding: const EdgeInsets.all(10),
+      color: backgroundColor,
+      child: ListWheelScrollView(
+        controller: _scrollController,
+        itemExtent: mainItemExtent,
+        diameterRatio: 2.5,
+        squeeze: 0.95,
+        children: state.items.map((mainItemView) => _scrollItem(context, mainItemView)).toList(growable: false),
+      ),
+    );
+  }
 
-  List<Widget> _createStateRows(BuildContext context, MainState state) {
-    final list = List<Widget>.empty(growable: true);
+  Widget _scrollItem(BuildContext context, MainItemView item) {
+    final children = List<Widget>.empty(growable: true);
 
-    list.add(_createStateRow(context, translate(state.itemLabelKey, context), Theme.of(context).textTheme.headline6));
+    children.add(_stateTextWidget(context, translate(item.labelKey, context), Theme.of(context).textTheme.headline6));
 
-    switch (state.imageSourceType) {
+    switch (item.imageSourceType) {
       case ImageSourceType.none:
         break;
       case ImageSourceType.file:
-        list.add(_createImageFromFile(state.imageSource));
+        children.add(_imageWidgetFromFile(item.imageSource));
         break;
       case ImageSourceType.network:
-        list.add(_createImageFromNetwork(state.imageSource));
+        children.add(_imageWidgetFromNetwork(item.imageSource));
         break;
       case ImageSourceType.assets:
-        list.add(_createImageFromAssets(state.imageSource));
+        children.add(_imageWidgetFromAssets(item.imageSource));
         break;
     }
 
-    if (state.isTitleVisible) {
-      list.add(_createStateRow(context, state.itemTitle, Theme.of(context).textTheme.bodyText2));
+    children.add(_stateTextWidget(context, item.title, Theme.of(context).textTheme.bodyText2));
+
+    if (item.isArtistVisible) {
+      children.add(_stateTextWidget(context, item.artist, Theme.of(context).textTheme.bodyText1));
     }
 
-    if (state.isArtistVisible) {
-      list.add(_createStateRow(context, state.itemArtist, Theme.of(context).textTheme.bodyText1));
-    }
-
-    return list;
+    return Column(mainAxisSize: MainAxisSize.min, children: children);
   }
 
-  Widget _createStateRow(BuildContext context, String stateStr, TextStyle? style) {
+  Widget _stateTextWidget(BuildContext context, String stateStr, TextStyle? style) {
     final text = Text(stateStr, style: style, textAlign: TextAlign.center);
     return Container(margin: EdgeInsets.only(bottom: mainMarginBottom), child: text);
   }
 
-  Widget _createImageFromFile(String imageSource) {
+  Widget _imageWidgetFromFile(String imageSource) {
     final file = File(imageSource);
-    return _createContainer(Image.file(
+    return _imageContainer(Image.file(
       file,
       width: mainImageSide,
       height: mainImageSide,
@@ -69,8 +93,8 @@ class MainPage extends StatelessWidget {
     ));
   }
 
-  Widget _createImageFromAssets(String imageSource) {
-    return _createContainer(Image.asset(
+  Widget _imageWidgetFromAssets(String imageSource) {
+    return _imageContainer(Image.asset(
       imageSource,
       width: mainImageSide,
       height: mainImageSide,
@@ -78,8 +102,8 @@ class MainPage extends StatelessWidget {
     ));
   }
 
-  Widget _createImageFromNetwork(String imageSource) {
-    return _createContainer(Image.network(
+  Widget _imageWidgetFromNetwork(String imageSource) {
+    return _imageContainer(Image.network(
       imageSource,
       width: mainImageSide,
       height: mainImageSide,
@@ -87,7 +111,7 @@ class MainPage extends StatelessWidget {
     ));
   }
 
-  Widget _createContainer(Image image) {
+  Widget _imageContainer(Image image) {
     const radius = 12.0;
     const offset = 10.0;
     return Container(
@@ -102,6 +126,31 @@ class MainPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(radius),
         child: image,
       ),
+    );
+  }
+
+  Widget _middleButton(BuildContext context) {
+    const buttonSize = 35.0;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: kBottomNavigationBarHeight + 25.0, right: 25.0),
+      child: InkWell(
+        onTap: () => _scrollToCurrentItem(),
+        child: Container(
+          alignment: Alignment.center,
+          height: buttonSize,
+          width: buttonSize,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: secondaryColor.withOpacity(0.66)),
+          child: const Icon(Icons.my_location, color: Colors.white),
+        ),
+      ),
+    );
+  }
+
+  void _scrollToCurrentItem() async {
+    _scrollController.animateTo(
+      mainItemExtent * _currentIndex,
+      duration: const Duration(milliseconds: 450),
+      curve: Curves.fastLinearToSlowEaseIn,
     );
   }
 }

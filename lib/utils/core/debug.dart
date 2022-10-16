@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
+
+import 'package:flutter/foundation.dart';
 
 String randomUrl() {
   List<String> urls = [
@@ -13,3 +17,7 @@ String randomUrl() {
 }
 
 String placeholderUrl() => "https://dayzrussia.com/wiki/images/4/47/Placeholder.png";
+
+void logScheduleFile(File file) {
+  file.openRead().transform(utf8.decoder).transform(const LineSplitter()).forEach((line) => debugPrint(line));
+}
