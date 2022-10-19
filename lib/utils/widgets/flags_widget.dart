@@ -7,8 +7,10 @@ import 'package:union_player_app/utils/constants/constants.dart';
 
 enum FlagsWidgetMode { stop, init, play }
 
+typedef FlagsWidgetWidth = Map<FlagsWidgetMode, double>;
+
 class FlagsWidget extends StatelessWidget {
-  final double width;
+  final FlagsWidgetWidth width;
   final double height;
   final FlagsWidgetMode mode;
   final Color backgroundColor;
@@ -21,16 +23,18 @@ class FlagsWidget extends StatelessWidget {
     required this.backgroundColor,
   }) : super(key: key);
 
-  static const _animationDuration = Duration(milliseconds: 1000);
+  static const _animationDuration = Duration(milliseconds: 1250);
 
   final _random = Random();
 
   @override
   Widget build(BuildContext context) {
+    final containerWidth = width[mode] ?? 0;
+    assert(containerWidth != 0);
+
     return Stack(
-      alignment: Alignment.center,
       children: [
-        Container(color: backgroundColor),
+        Container(width: containerWidth, color: backgroundColor),
         if (mode == FlagsWidgetMode.init) _initVisualizer(),
         if (mode == FlagsWidgetMode.stop) _stopVisualizer(),
         if (mode == FlagsWidgetMode.play) _playVisualizer(),
@@ -41,32 +45,36 @@ class FlagsWidget extends StatelessWidget {
   Widget _initVisualizer() => LoopAnimationBuilder<double>(
       duration: _animationDuration,
       tween: Tween<double>(begin: 0.0, end: 1.0),
-      builder: (_, ratio, __) => _clipHoleBuilder(ratio));
+      builder: (_, ratio, __) => _clipHoleBuilder(ratio, FlagsWidgetMode.init));
 
-  Widget _clipHoleBuilder(double ratio) => ClipPath(
+  Widget _clipHoleBuilder(double ratio, FlagsWidgetMode mode) => ClipPath(
         clipper: HoleWidget(ratio: ratio),
-        child: _backgroundWidget(),
+        child: _backgroundWidget(mode),
       );
 
   Widget _stopVisualizer() => MirrorAnimationBuilder<double>(
       duration: _animationDuration,
       tween: Tween<double>(begin: 0.0, end: 1.0),
-      builder: (_, ratio, __) => _clipHoleBuilder(ratio));
+      builder: (_, ratio, __) => _clipHoleBuilder(ratio, FlagsWidgetMode.stop));
 
-  Widget _backgroundWidget() => Row(
-        children: [
-          SizedBox(
-            width: width / 2,
-            height: height,
-            child: FittedBox(fit: BoxFit.fill, child: Image.asset(imageFlagBY)),
-          ),
-          SizedBox(
-            width: width / 2,
-            height: height,
-            child: FittedBox(fit: BoxFit.fill, child: Image.asset(imageFlagRU)),
-          )
-        ],
-      );
+  Widget _backgroundWidget(FlagsWidgetMode mode) {
+    final backgroundWidth = width[mode] ?? 0;
+    assert(backgroundWidth != 0);
+    return Row(
+      children: [
+        SizedBox(
+          width: backgroundWidth / 2,
+          height: height,
+          child: FittedBox(fit: BoxFit.fill, child: Image.asset(imageFlagBY)),
+        ),
+        SizedBox(
+          width: backgroundWidth / 2,
+          height: height,
+          child: FittedBox(fit: BoxFit.fill, child: Image.asset(imageFlagRU)),
+        )
+      ],
+    );
+  }
 
   Widget _playVisualizer() {
     const colorRedRussia = Color(0xffd52b1e);
@@ -87,8 +95,11 @@ class FlagsWidget extends StatelessWidget {
       _randomDuration(),
     ];
 
+    final widgetWidth = width[FlagsWidgetMode.play] ?? 0;
+    assert(widgetWidth != 0);
+
     return SizedBox(
-      width: width,
+      width: widgetWidth,
       height: height,
       child: PlayVisualizer(
         barCount: 30,
@@ -111,8 +122,10 @@ class HoleWidget extends CustomClipper<Path> {
     final dX = (size.width + size.height) * ratio - size.height;
     final offset = Offset(dX, 0);
 
+    final dR = size.height * 0.1;
+
     final path = Path()..fillType = PathFillType.evenOdd;
-    final oval = Rect.fromLTRB(0, 0, size.height, size.height).shift(offset);
+    final oval = Rect.fromLTRB(dR, dR, size.height - dR, size.height - dR).shift(offset);
     path.addOval(oval);
 
     return path;

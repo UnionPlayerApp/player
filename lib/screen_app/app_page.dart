@@ -121,14 +121,25 @@ class _AppState extends State<AppPage> {
   AppBar _appBar(BuildContext context, AppState state) {
     return AppBar(
       titleSpacing: 0,
-      title: _createTitle(context, state),
-      leading: _createLeading(state),
+      title: Stack(
+        children: [
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: kToolbarHeight,
+          ),
+          Align(alignment: Alignment.centerRight, child: _createTitle(context, state)),
+          Align(alignment: Alignment.centerLeft, child: _createLeading(state)),
+        ],
+      ),
     );
   }
 
   Widget _createTitle(BuildContext context, AppState state) {
-    final width = MediaQuery.of(context).size.width - kToolbarHeight;
-    final mode = state.playingState ? FlagsWidgetMode.play : FlagsWidgetMode.stop;;
+    final width = {
+      FlagsWidgetMode.stop: MediaQuery.of(context).size.width,
+      FlagsWidgetMode.play: MediaQuery.of(context).size.width - kToolbarHeight,
+    };
+    final mode = state.playingState ? FlagsWidgetMode.play : FlagsWidgetMode.stop;
     return FlagsWidget(
       width: width,
       height: kToolbarHeight,
@@ -153,12 +164,16 @@ class _AppState extends State<AppPage> {
         assetName = icAudioQualityDefaultWhite;
         break;
     }
-    return MaterialButton(
-      padding: const EdgeInsets.symmetric(horizontal: 6.0),
-      child: Image.asset(assetName),
-      onPressed: () {
-        context.read<AppBloc>().add(AppAudioQualitySelectorEvent());
-      },
+    return InkWell(
+      onTap: () => context.read<AppBloc>().add(AppAudioQualitySelectorEvent()),
+      child: SizedBox(
+        width: kToolbarHeight,
+        height: kToolbarHeight,
+        child: Padding(
+          padding: const EdgeInsets.all(6.0),
+          child: Image.asset(assetName),
+        ),
+      ),
     );
   }
 
