@@ -13,13 +13,15 @@ class ProgressPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final kToolbarWidth = MediaQuery.of(context).size.width;
+    final width = {
+      FlagsWidgetMode.init: MediaQuery.of(context).size.width,
+    };
     return Scaffold(
       appBar: AppBar(
         backgroundColor: primaryColor,
         titleSpacing: 0,
         title: FlagsWidget(
-          width: kToolbarWidth,
+          width: width,
           height: kToolbarHeight,
           mode: FlagsWidgetMode.init,
           backgroundColor: primaryColor,
