@@ -99,7 +99,7 @@ class _AppState extends State<AppPage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: const [
-        Icon(Icons.play_arrow_rounded),
+        Icon(null),
         Text(""),
       ],
     );
