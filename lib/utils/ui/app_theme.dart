@@ -23,21 +23,19 @@ ThemeData appThemeLight() {
     primaryColor: primaryColor,
     primaryColorDark: primaryDarkColor,
     primaryColorLight: primaryLightColor,
-    scaffoldBackgroundColor: backgroundColor,
+    scaffoldBackgroundColor: scaffoldBackgroundColorLight,
     textTheme: _appTextTheme(baseThemeData.textTheme),
   );
 }
 
-ThemeData appThemeDark() {
-  final baseThemeData = ThemeData.dark();
-  return baseThemeData.copyWith(
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      selectedItemColor: primaryLightColor,
-      unselectedItemColor: Colors.grey,
-    ),
-    colorScheme: _appColorSchemeDark,
-  );
-}
+ThemeData appThemeDark() => ThemeData.dark().copyWith(
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        selectedItemColor: primaryLightColor,
+        unselectedItemColor: Colors.grey,
+      ),
+      colorScheme: _appColorSchemeDark,
+      scaffoldBackgroundColor: scaffoldBackgroundColorDark,
+    );
 
 TextTheme _appTextTheme(TextTheme base) {
   return base.apply(
@@ -60,10 +58,10 @@ const _appColorScheme = ColorScheme(
   primary: primaryColor,
   secondary: secondaryColor,
   surface: surfaceColor,
-  background: backgroundColor,
+  background: scaffoldBackgroundColorLight,
   error: errorColor,
-  onPrimary: backgroundColor,
-  onSecondary: backgroundColor,
+  onPrimary: scaffoldBackgroundColorLight,
+  onSecondary: scaffoldBackgroundColorLight,
   onSurface: secondaryDarkColor,
   onBackground: colorOnBackgroundLight,
   onError: colorOnPrimary,
@@ -88,7 +86,9 @@ const colorOnBackgroundLight = Colors.black;
 const colorOnBackgroundDark = Colors.grey;
 const colorOnSecondaryWithAlfa = Color(0xCEFFFFFF);
 
-const backgroundColor = Color(0xFFF1F1F1);
+const scaffoldBackgroundColorLight = Color(0xFFF1F1F1);
+const scaffoldBackgroundColorDark = Color(0xff616161);
+
 const surfaceColor = Colors.white;
 
 const defaultLetterSpacing = 0.03;

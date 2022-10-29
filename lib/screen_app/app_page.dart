@@ -21,6 +21,9 @@ import 'package:union_player_app/utils/ui/app_theme.dart';
 import 'package:union_player_app/utils/widgets/info_page.dart';
 import 'package:union_player_app/utils/widgets/snack_bar.dart';
 
+import '../utils/widgets/anchored_overlay.dart';
+import '../utils/widgets/center_about.dart';
+import '../utils/widgets/fab_with_icons.dart';
 import '../utils/widgets/flags_widget.dart';
 
 class AppPage extends StatefulWidget {
@@ -32,52 +35,41 @@ class _AppState extends State<AppPage> {
   DateTime? _backPressTime;
   Widget? _currentPage;
   static const _animationDuration = Duration(milliseconds: 300);
+  final _goToCurrentStreamController = StreamController<void>();
 
   @override
   Widget build(BuildContext context) {
     FirebaseAnalytics.instance.logEvent(name: gaAppStart);
-    return BlocBuilder<AppBloc, AppState>(builder: (BuildContext context, AppState state) {
-      return WillPopScope(
-        onWillPop: () => _onWillPop(),
-        child: Scaffold(
-          appBar: _appBar(context, state),
-          body: _body(state),
-          extendBody: true,
-          floatingActionButton: _fab(state),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-          bottomNavigationBar: _bottomNavigationBar(state),
-        ),
-      );
-    });
+    return BlocBuilder<AppBloc, AppState>(
+      builder: (BuildContext context, AppState state) {
+        return WillPopScope(
+          onWillPop: () => _onWillPop(),
+          child: Scaffold(
+            appBar: _appBar(context, state),
+            body: _body(state),
+            extendBody: true,
+            floatingActionButton: _fab(context, state),
+            floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+            bottomNavigationBar: _bottomNavigationBar(state),
+          ),
+        );
+      },
+    );
   }
 
   Widget _bottomNavigationBar(AppState state) => BottomAppBar(
         shape: const CircularNotchedRectangle(),
         notchMargin: 7,
         child: SizedBox(
-          height: 60,
+          height: kBottomNavigationBarHeight,
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              //Left Tab Bar Icons
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buttonAppBar(context, state, 0, Icons.radio, StringKeys.home),
-                    _buttonAppBar(context, state, 1, Icons.list_alt, StringKeys.schedule),
-                  ],
-                ),
-              ),
-              // Right Tab Bar Icons
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buttonAppBar(context, state, 2, Icons.markunread_mailbox_outlined, StringKeys.feedback),
-                    _buttonAppBar(context, state, 3, Icons.settings_rounded, StringKeys.settings),
-                  ],
-                ),
-              ),
+              _buttonAppBar(context, state, 0, Icons.radio, StringKeys.home),
+              _buttonAppBar(context, state, 1, Icons.list_alt, StringKeys.schedule),
+              _buttonAppBar(context, state, 2, Icons.markunread_mailbox_outlined, StringKeys.feedback),
+              _buttonAppBar(context, state, 3, Icons.settings_rounded, StringKeys.settings),
+              _fakeButtonAppBar(),
             ],
           ),
         ),
@@ -87,21 +79,29 @@ class _AppState extends State<AppPage> {
     final color = state.navIndex == itemTab
         ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor
         : Theme.of(context).bottomNavigationBarTheme.unselectedItemColor;
-    return Expanded(
-      child: MaterialButton(
-        padding: const EdgeInsets.all(0),
-        minWidth: 0,
-        onPressed: () {
-          context.read<AppBloc>().add(AppNavEvent(itemTab));
-        },
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(iconTab, color: color),
-            Text(translate(nameTab, context), style: TextStyle(color: color)),
-          ],
-        ),
+    return MaterialButton(
+      padding: const EdgeInsets.all(0),
+      minWidth: 0,
+      onPressed: () {
+        context.read<AppBloc>().add(AppNavEvent(itemTab));
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(iconTab, color: color),
+          Text(translate(nameTab, context), style: TextStyle(color: color)),
+        ],
       ),
+    );
+  }
+
+  Widget _fakeButtonAppBar() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: const [
+        Icon(Icons.play_arrow_rounded),
+        Text(""),
+      ],
     );
   }
 
@@ -178,17 +178,20 @@ class _AppState extends State<AppPage> {
   }
 
   Widget _body(AppState state) {
-    final navPage = _createNavPage(state.navIndex, !state.isAudioQualitySelectorOpen);
+    final navPage = _createNavPage(state);
     final audioQualitySelector = _createAudioQualitySelector(state.isAudioQualitySelectorOpen);
 
     return Stack(children: [navPage, audioQualitySelector]);
   }
 
-  Widget _createNavPage(int navIndex, bool isActive) {
+  Widget _createNavPage(AppState state) {
     late final Widget navPage;
-    switch (navIndex) {
+    switch (state.navIndex) {
       case 0:
-        navPage = BlocProvider.value(value: get<MainBloc>(), child: get<MainPage>());
+        navPage = BlocProvider.value(
+          value: get<MainBloc>(),
+          child: getWithParam<MainPage, Stream<void>>(_goToCurrentStreamController.stream),
+        );
         break;
       case 1:
         navPage = BlocProvider.value(value: get<ScheduleBloc>(), child: get<SchedulePage>());
@@ -203,6 +206,8 @@ class _AppState extends State<AppPage> {
         navPage = getWithParam<InfoPage, List<String>>(["Ошибка навигации", "Экран не создан?"]);
         break;
     }
+
+    final isActive = !state.isAudioQualitySelectorOpen;
 
     final navPageAnimated = _currentPage == null
         ? AnimatedOpacity(opacity: isActive ? 1.0 : 0.2, duration: _animationDuration, child: navPage)
@@ -284,9 +289,42 @@ class _AppState extends State<AppPage> {
     );
   }
 
-  Widget _fab(AppState state) => FloatingActionButton(
-        onPressed: () => context.read<AppBloc>().add(AppFabEvent()),
-        tooltip: 'Play / Stop',
-        child: Icon(state.playingState ? Icons.stop_rounded : Icons.play_arrow_rounded),
-      );
+  Widget _fab(BuildContext context, AppState state) {
+    final fabIconData = state.playingState ? Icons.stop_rounded : Icons.play_arrow_rounded;
+    fabAction() => context.read<AppBloc>().add(AppFabPlayStopEvent());
+    const fabTooltip = 'Play / Stop';
+
+    const icons = [
+      Icons.my_location_rounded,
+    ];
+    final actions = [
+      () => _goToCurrentStreamController.add(null),
+    ];
+    const tooltips = [
+      'Current item',
+    ];
+
+    return AnchoredOverlay(
+      showOverlay: state.navIndex == 0,
+      overlayBuilder: (context, offset) {
+        return CenterAbout(
+          position: Offset(offset.dx, offset.dy - icons.length * 35.0),
+          child: FabWithIcons(
+            icons: icons,
+            actions: actions,
+            tooltips: tooltips,
+            fabIcon: fabIconData,
+            fabAction: fabAction,
+            fabTooltip: fabTooltip,
+          ),
+        );
+      },
+      child: FloatingActionButton(
+        onPressed: fabAction,
+        tooltip: fabTooltip,
+        elevation: 2.0,
+        child: Icon(fabIconData),
+      ),
+    );
+  }
 }

@@ -11,8 +11,10 @@ import 'main_item_view.dart';
 
 class MainBloc extends Bloc<MainEvent, MainState> {
   final AudioHandler _audioHandler;
+
   late final StreamSubscription _queueSubscription;
   late final StreamSubscription _customSubscription;
+
   final _items = List<MainItemView>.empty(growable: true);
 
   MainBloc(this._audioHandler) : super(const MainState()) {
@@ -23,8 +25,6 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   }
 
   FutureOr<void> _onMain(MainEvent event, Emitter<MainState> emitter) {
-    debugPrint("MainBloc._onMain()");
-
     _items.clear();
     _items.addAll(event.mediaItems.map((mediaItem) => MainItemView.fromMediaItem(mediaItem)));
 

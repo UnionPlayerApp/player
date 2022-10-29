@@ -11,16 +11,20 @@ class AppState extends Equatable {
   final int audioQualityId;
   final int navIndex;
 
-  const AppState(this.navIndex, this.playingState, this.audioQualityId, this.isAudioQualitySelectorOpen,
-      {this.isScheduleLoaded = false,
-        this.presentTitle = "",
-        this.presentArtist = "",
-        this.nextTitle = "",
-        this.nextArtist = ""});
+  const AppState(
+    this.navIndex,
+    this.playingState,
+    this.audioQualityId,
+    this.isAudioQualitySelectorOpen, {
+    this.isScheduleLoaded = false,
+    this.presentTitle = "",
+    this.presentArtist = "",
+    this.nextTitle = "",
+    this.nextArtist = "",
+  });
 
   @override
-  List<Object> get props =>
-      [
+  List<Object> get props => [
         audioQualityId,
         isAudioQualitySelectorOpen,
         isScheduleLoaded,
@@ -32,15 +36,16 @@ class AppState extends Equatable {
         presentTitle,
       ];
 
-  AppState copyWith({String? nextArtist,
-    String? nextTitle,
-    String? presentArtist,
-    String? presentTitle,
-    bool? isAudioQualitySelectorOpen,
-    bool? isScheduleLoaded,
-    bool? playingState,
-    int? audioQualityId,
-    int? navIndex}) =>
+  AppState copyWith(
+          {String? nextArtist,
+          String? nextTitle,
+          String? presentArtist,
+          String? presentTitle,
+          bool? isAudioQualitySelectorOpen,
+          bool? isScheduleLoaded,
+          bool? playingState,
+          int? audioQualityId,
+          int? navIndex}) =>
       AppState(
         navIndex ?? this.navIndex,
         playingState ?? this.playingState,

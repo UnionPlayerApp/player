@@ -20,7 +20,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   AppBloc(this._audioHandler, bool isPlaying)
       : super(const AppState(0, defaultIsPlaying, defaultAudioQualityId, false)) {
-    on<AppFabEvent>(_onFab);
+    on<AppFabPlayStopEvent>(_onFabPlayStop);
     on<AppNavEvent>(_onNav);
     on<AppPlayerEvent>(_onPlayer);
     on<AppScheduleEvent>(_onSchedule);
@@ -41,7 +41,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     }
   }
 
-  FutureOr<void> _onFab(AppFabEvent event, Emitter<AppState> emitter) {
+  FutureOr<void> _onFabPlayStop(AppFabPlayStopEvent event, Emitter<AppState> emitter) {
     if (_audioHandler.playbackState.value.playing) {
       _audioHandler.pause();
     } else {
