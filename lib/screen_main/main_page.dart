@@ -8,7 +8,6 @@ import 'package:union_player_app/screen_main/main_state.dart';
 import 'package:union_player_app/utils/core/image_source_type.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
-import 'package:union_player_app/utils/ui/app_theme.dart';
 
 import 'main_item_view.dart';
 
@@ -17,19 +16,14 @@ class MainPage extends StatelessWidget {
   final _scrollController = ScrollController();
   var _currentIndex = 0;
 
+  MainPage(fabGoToCurrentStream) : super() {
+    fabGoToCurrentStream.listen((_) => _scrollToCurrentItem());
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MainBloc, MainState>(
-      builder: (context, state) =>
-          Stack(
-            children: [
-              _scrollWidget(context, state),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: _middleButton(context),
-              )
-            ],
-          ),
+      builder: (context, state) => _scrollWidget(context, state),
       bloc: get<MainBloc>(),
     );
   }
@@ -39,7 +33,7 @@ class MainPage extends StatelessWidget {
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToCurrentItem());
     return Container(
       padding: const EdgeInsets.all(10),
-      color: backgroundColor,
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: ListWheelScrollView(
         controller: _scrollController,
         itemExtent: mainItemExtent,
@@ -125,23 +119,6 @@ class MainPage extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(radius),
         child: image,
-      ),
-    );
-  }
-
-  Widget _middleButton(BuildContext context) {
-    const buttonSize = 35.0;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: kBottomNavigationBarHeight + 25.0, right: 25.0),
-      child: InkWell(
-        onTap: () => _scrollToCurrentItem(),
-        child: Container(
-          alignment: Alignment.center,
-          height: buttonSize,
-          width: buttonSize,
-          decoration: BoxDecoration(shape: BoxShape.circle, color: secondaryColor.withOpacity(0.66)),
-          child: const Icon(Icons.my_location, color: Colors.white),
-        ),
       ),
     );
   }

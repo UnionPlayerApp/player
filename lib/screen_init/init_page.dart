@@ -138,14 +138,14 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
     }
   }
 
-  Future _initLocale() async {
+  Future<void> _initLocale() async {
     _initStage = "Locale init stage";
     final langId = await readIntFromSharedPreferences(keyLang) ?? defaultLangId;
     final newLocale = getLocaleById(langId);
-    Get.updateLocale(newLocale);
+    return Get.updateLocale(newLocale);
   }
 
-  Future _initTheme() async {
+  Future<void> _initTheme() async {
     _initStage = "Theme init stage";
     final themeId = await readIntFromSharedPreferences(keyTheme) ?? defaultThemeId;
     setThemeById(themeId);
