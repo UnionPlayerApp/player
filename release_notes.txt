@@ -1,3 +1,7 @@
+Release 1.2.4+21, 02/11/2022
+- fixed issue with different time zone
+- improved schedule algorithm
+
 Release 1.2.3+20, 29/10/2022
 - updated floating action bar
 - updated scaffold background color for the dark mode
