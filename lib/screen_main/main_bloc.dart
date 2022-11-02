@@ -28,7 +28,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     _items.clear();
     _items.addAll(event.mediaItems.map((mediaItem) => MainItemView.fromMediaItem(mediaItem)));
 
-    var currentIndex = 0;
+    var currentIndex = -1;
 
     final now = DateTime.now();
 
@@ -44,6 +44,14 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       item.labelKey = StringKeys.currLabel;
       currentIndex = index;
     });
+
+    if (currentIndex == -1 && now.isBefore(_items.first.start)) {
+      currentIndex = 0;
+    }
+
+    if (currentIndex == -1 && now.isAfter(_items.last.finish)) {
+      currentIndex = _items.length - 1;
+    }
 
     final newState = MainState(
       items: _items,

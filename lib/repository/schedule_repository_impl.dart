@@ -32,6 +32,8 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
       int attempt = 1;
 
       do {
+        debugPrint("schedule stream() => attempt = $attempt");
+
         if (attempt > 1) {
           debugPrint("schedule stream() => delay for 1 second start");
           await Future.delayed(_delayBetweenAttempts);
@@ -41,26 +43,39 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
         debugPrint("schedule stream() => _load() start, attempt = $attempt");
         state = await _load(url);
         debugPrint("schedule stream() => _load() finish, attempt = $attempt");
+
+        debugPrint("schedule stream() => state is $state");
       } while (state is ScheduleRepositoryErrorEvent && attempt++ < _attemptMax);
+
+      debugPrint("schedule stream() => exit from circle");
 
       _subject.add(state);
 
-      final seconds = _secondsToNextLoad();
+      final millis = _millisToNextLoad();
 
-      debugPrint("schedule stream() => delay for $seconds seconds start");
-      await Future.delayed(Duration(seconds: seconds));
-      debugPrint("schedule stream() => delay for $seconds seconds finish");
+      debugPrint("schedule stream() => delay for next load = $millis millis start");
+      await Future.delayed(Duration(milliseconds: millis));
+      debugPrint("schedule stream() => delay for next load = $millis millis finish");
     }
   }
 
-  int _secondsToNextLoad() {
-    if (_items.isEmpty) return 1;
+  int _millisToNextLoad() {
+    if (_items.isEmpty) return 1 * Duration.millisecondsPerSecond;
 
     final emptyElement = ScheduleItem.empty();
     final currentElement = _items.firstWhere((element) => element.isCurrent, orElse: () => emptyElement);
-    final rest = currentElement == emptyElement ? 1 : currentElement.secondsToFinish;
 
-    return rest;
+    if (currentElement != emptyElement) {
+      return currentElement.millisToFinish;
+    }
+
+    final now = DateTime.now();
+
+    if (now.isBefore(_items.first.start)) {
+      return _items.first.start.difference(now).inMilliseconds;
+    }
+
+    return 10 * Duration.millisecondsPerSecond;
   }
 
   Future<ScheduleRepositoryEvent> _load(String url) async {
