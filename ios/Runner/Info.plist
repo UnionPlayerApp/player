@@ -34,7 +34,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Need Microphone Permission for just_audio library usage</string>
 	<key>NSUserTrackingUsageDescription</key>
-	<string></string>
+	<string>\nWe remind you that your choice will not affect the performance of the application.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
