@@ -170,13 +170,14 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
   }
 
   Future<void> _showAppTrackingInfoDialog() async {
-    final title = Text(translate(StringKeys.trackingDialogTitle, context));
-    final content = Text(translate(StringKeys.trackingDialogText, context));
+    final title = Text(translate(StringKeys.trackingDialogTitle, context), textAlign: TextAlign.center);
+    final content = Text(translate(StringKeys.trackingDialogText, context), textAlign: TextAlign.center);
     final button = TextButton(
       child: Text(translate(StringKeys.trackingDialogButton, context)),
       onPressed: () => Navigator.pop(context),
     );
     final dialogWidget = AlertDialog(
+      actionsAlignment: MainAxisAlignment.center,
       title: title,
       content: content,
       actions: [button],

@@ -44,6 +44,6 @@
   "appInitTitle": "Application initialization...",
   "willMadeNextRelease": "At next release...",
   "trackingDialogTitle": "Dear Listener!",
-  "trackingDialogText": "We care about your privacy and data security. We keep this app free by showing ads.\n\nCan we continue to use your data to tailor ads for you?\n\nYou can change your choice anytime in the app settings.\n\nOur partners will collect only the most necessary data and use a unique identifier of your device to show you the most useful ads.",
+  "trackingDialogText": "The Apple company requires us to ask for your permission to use a unique advertising identifier. However, our application does not show you ads. Therefore, your answer, whatever it is, will not affect the performance of the application.\n\nSincerely,\n\nThe staff",
   "trackingDialogButton": "Continue"
 }
