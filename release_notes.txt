@@ -1,3 +1,7 @@
+Release 1.2.5+22, 04/11/2022
+- fixed issue with app transparency request (iOS version)
+- fixed bug with schedule initializing
+
 Release 1.2.4+21, 02/11/2022
 - fixed issue with different time zone
 - improved schedule algorithm
