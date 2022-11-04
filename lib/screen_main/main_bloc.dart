@@ -25,6 +25,11 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   }
 
   FutureOr<void> _onMain(MainEvent event, Emitter<MainState> emitter) {
+    if (event.mediaItems.isEmpty) {
+      debugPrint("Main page, media item queue is empty");
+      return Future.value();
+    }
+
     _items.clear();
     _items.addAll(event.mediaItems.map((mediaItem) => MainItemView.fromMediaItem(mediaItem)));
 
