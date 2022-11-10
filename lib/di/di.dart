@@ -49,5 +49,5 @@ final appModule = Module()
       ))
   ..single<IScheduleRepository>((s) => ScheduleRepositoryImpl())
   ..single<SystemData>((s) => SystemData())
-  ..factory<Uuid>((s) => Uuid())
+  ..factory<Uuid>((s) => const Uuid())
   ..factory<Random>((s) => Random());

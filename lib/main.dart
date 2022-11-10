@@ -10,7 +10,9 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:union_player_app/di/di.dart';
 import 'package:union_player_app/screen_init/init_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/core/shared_preferences.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
+import 'package:union_player_app/utils/ui/app_theme.dart';
 
 import 'utils/localizations/app_localizations_delegate.dart';
 
@@ -21,8 +23,9 @@ void main() async {
     _initLocator();
 
     final packageInfo = await PackageInfo.fromPlatform();
+    final themeMode = await SpManager.readThemeMode();
 
-    runApp(_app(packageInfo));
+    runApp(_app(packageInfo, themeMode));
   }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack));
 }
 
@@ -34,7 +37,7 @@ void _initLocator() {
   });
 }
 
-Widget _app(PackageInfo packageInfo) {
+Widget _app(PackageInfo packageInfo, ThemeMode themeMode) {
   return GetMaterialApp(
     debugShowCheckedModeBanner: false,
     localizationsDelegates: const [
@@ -54,6 +57,9 @@ Widget _app(PackageInfo packageInfo) {
       return supportedLocales.first;
     },
     onGenerateTitle: (context) => translate(StringKeys.appTitle, context),
+    theme: appThemeLight(),
+    darkTheme: appThemeDark(),
+    themeMode: themeMode,
     home: InitPage(packageInfo: packageInfo),
   );
 }
