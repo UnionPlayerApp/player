@@ -37,8 +37,16 @@ class SettingsPage extends StatelessWidget {
         _createLabel(context, StringKeys.settingsThemeLabel),
         _createButton(
           context,
-          [StringKeys.settingsThemeLight, StringKeys.settingsThemeDark, StringKeys.settingsThemeSystem],
-          [themeLight, themeDark, themeSystem],
+          [
+            StringKeys.settingsThemeLight,
+            StringKeys.settingsThemeDark,
+            StringKeys.settingsThemeSystem,
+          ],
+          [
+            themeLight,
+            themeDark,
+            themeSystem,
+          ],
           state.theme,
           (int? value) => get<SettingsBloc>().add(SettingsEventTheme(value ?? defaultThemeId)),
         ),
@@ -53,7 +61,11 @@ class SettingsPage extends StatelessWidget {
             StringKeys.settingsStartPlayingStop,
             StringKeys.settingsStartPlayingLast,
           ],
-          [startPlayingStart, startPlayingStop, startPlayingLast],
+          [
+            startPlayingStart,
+            startPlayingStop,
+            startPlayingLast,
+          ],
           state.startPlaying,
           (int? value) => get<SettingsBloc>().add(SettingsEventStartPlaying(value ?? defaultStartPlayingId)),
         ),
@@ -69,7 +81,12 @@ class SettingsPage extends StatelessWidget {
             StringKeys.settingsLangBY,
             StringKeys.settingsLangUS,
           ],
-          [langSystem, langRU, langBY, langUS],
+          [
+            langSystem,
+            langRU,
+            langBY,
+            langUS,
+          ],
           state.lang,
           (int? value) => get<SettingsBloc>().add(SettingsEventLang(value ?? defaultLangId)),
         ),
@@ -85,9 +102,7 @@ class SettingsPage extends StatelessWidget {
 
   Widget _createLabel(BuildContext context, StringKeys key) {
     final text = translate(key, context);
-    final textColor = Theme.of(context).colorScheme.onBackground;
-    final style = TextStyle(fontSize: titleFontSize, color: textColor);
-    return Text(text, style: style, overflow: TextOverflow.ellipsis);
+    return Text(text, style: Theme.of(context).textTheme.bodyText2, overflow: TextOverflow.ellipsis);
   }
 
   Widget _createButton(
@@ -106,18 +121,16 @@ class SettingsPage extends StatelessWidget {
       items.add(DropdownMenuItem(value: values[index], child: Text(translate(key, context))));
     });
 
-    final textColor = Theme.of(context).bottomNavigationBarTheme.selectedItemColor;
+    final textStyle = Theme.of(context).textTheme.bodyText1;
+    final textColor = textStyle?.color;
 
     return DropdownButton<int>(
       value: selectedItem,
       icon: Icon(Icons.arrow_downward_rounded, color: textColor),
       iconSize: 24,
       elevation: 16,
-      style: TextStyle(color: textColor),
-      underline: Container(
-        height: 2,
-        color: textColor,
-      ),
+      style: textStyle,
+      underline: Container(height: 2, color: textColor),
       onChanged: onChanged,
       items: items,
     );

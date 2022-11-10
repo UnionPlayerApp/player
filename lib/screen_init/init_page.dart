@@ -13,6 +13,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,6 +25,7 @@ import 'package:union_player_app/model/system_data/system_data.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_app/app_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/core/extensions.dart';
 import 'package:union_player_app/utils/core/shared_preferences.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
@@ -32,7 +34,6 @@ import 'package:union_player_app/utils/widgets/progress_page.dart';
 
 import '../firebase_options.dart';
 import '../utils/core/locale_utils.dart';
-import '../utils/ui/app_theme.dart';
 
 class InitPage extends StatefulWidget {
   final PackageInfo _packageInfo;
@@ -45,7 +46,7 @@ class InitPage extends StatefulWidget {
   InitPageState createState() => InitPageState();
 }
 
-class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
+class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   late final SystemData _systemData;
   late final Future<bool> _initAppFuture;
   late final UserCredential _userCredential;
@@ -55,8 +56,28 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
   void initState() {
     super.initState();
 
+    WidgetsBinding.instance.addObserver(this);
+
     _systemData = get<SystemData>();
     _initAppFuture = _initApp();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    get<AudioHandler>().stop();
+    super.dispose();
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    super.didChangePlatformBrightness();
+    SpManager.readThemeMode().then((settings) {
+      if (settings == ThemeMode.system) {
+        final themeMode = SchedulerBinding.instance.window.platformBrightness.toThemeMode;
+        Get.changeThemeMode(themeMode);
+      }
+    });
   }
 
   @override
@@ -69,7 +90,7 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
       initialData: defaultIsPlaying,
       future: _initAppFuture,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        final Widget homePage = _createHomePage(snapshot);
+        final homePage = _createHomePage(snapshot);
         return _wrapScreenUtilInit(homePage);
       },
     );
@@ -148,7 +169,7 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
   Future<void> _initTheme() async {
     _initStage = "Theme init stage";
     final themeId = await readIntFromSharedPreferences(keyTheme) ?? defaultThemeId;
-    setThemeById(themeId);
+    setIcAudioQuality(themeId);
   }
 
   Future _initAppTrackingTransparency() async {
@@ -287,12 +308,6 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
       keyIsPlaying: isPlaying,
     };
     return params;
-  }
-
-  @override
-  void dispose() {
-    get<AudioHandler>().stop();
-    super.dispose();
   }
 
   Widget _createHomePage(AsyncSnapshot<dynamic> snapshot) {

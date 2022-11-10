@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
+import 'package:union_player_app/utils/core/extensions.dart';
 
 import '../constants/constants.dart';
 
@@ -30,7 +30,7 @@ ThemeData appThemeLight() {
 
 ThemeData appThemeDark() => ThemeData.dark().copyWith(
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        selectedItemColor: primaryLightColor,
+        selectedItemColor: Colors.white,
         unselectedItemColor: Colors.grey,
       ),
       colorScheme: _appColorSchemeDark,
@@ -93,28 +93,9 @@ const surfaceColor = Colors.white;
 
 const defaultLetterSpacing = 0.03;
 
-ThemeData getThemeById(int themeId) {
-  switch (themeId) {
-    case themeLight:
-      return appThemeLight();
-    case themeDark:
-      return appThemeDark();
-    default:
-      return _systemTheme();
-  }
-}
-
 void setThemeById(int themeId) {
   setIcAudioQuality(themeId);
-  final newTheme = getThemeById(themeId);
-  Get.changeTheme(newTheme);
+  Get.changeThemeMode(themeId.toThemeMode);
 }
 
-ThemeData _systemTheme() {
-  switch (SchedulerBinding.instance.window.platformBrightness) {
-    case Brightness.light:
-      return appThemeLight();
-    case Brightness.dark:
-      return appThemeDark();
-  }
-}
+

@@ -2,25 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 
 class NoDividerBanner extends MaterialBanner {
-  const NoDividerBanner(Widget content, Widget? leading, List<Widget> actions)
-      : super(content: content, actions: actions, leading: leading);
+  const NoDividerBanner(
+    Widget content,
+    Widget leading,
+    List<Widget> actions,
+  ) : super(
+          content: content,
+          actions: actions,
+          leading: leading,
+          backgroundColor: Colors.blue,
+        );
 
   Widget build(BuildContext context) {
     assert(actions.isNotEmpty);
 
-    final ThemeData theme = Theme.of(context);
-    final MaterialBannerThemeData bannerTheme = MaterialBannerTheme.of(context);
-
-    final bool isSingleRow = actions.length == 1 && !forceActionsBelow;
-    final EdgeInsetsGeometry padding = this.padding ??
+    final bannerTheme = MaterialBannerTheme.of(context);
+    final isSingleRow = actions.length == 1 && !forceActionsBelow;
+    final padding = this.padding ??
         bannerTheme.padding ??
         (isSingleRow
             ? const EdgeInsetsDirectional.only(start: 16.0, top: 2.0)
             : const EdgeInsetsDirectional.only(start: 16.0, top: 24.0, end: 16.0, bottom: 4.0));
-    final EdgeInsetsGeometry leadingPadding =
+    final leadingPadding =
         this.leadingPadding ?? bannerTheme.leadingPadding ?? const EdgeInsetsDirectional.only(end: 16.0);
 
-    final Widget buttonBar = Container(
+    final buttonBar = Container(
       alignment: AlignmentDirectional.centerEnd,
       constraints: const BoxConstraints(minHeight: 52.0),
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -31,35 +37,21 @@ class NoDividerBanner extends MaterialBanner {
       ),
     );
 
-    final Color backgroundColor = this.backgroundColor ?? bannerTheme.backgroundColor ?? theme.colorScheme.surface;
-    final TextStyle? textStyle = contentTextStyle ?? bannerTheme.contentTextStyle ?? theme.textTheme.bodyText2;
-
-    return Container(
+    return SizedBox(
       height: bannerHeight,
-      color: backgroundColor,
       child: Column(
-        children: <Widget>[
+        children: [
           Padding(
             padding: padding,
             child: Row(
-              children: <Widget>[
-                if (leading != null)
-                  Padding(
-                    padding: leadingPadding,
-                    child: leading,
-                  ),
-                Expanded(
-                  child: DefaultTextStyle(
-                    style: textStyle!,
-                    child: content,
-                  ),
-                ),
+              children: [
+                Padding(padding: leadingPadding, child: leading),
+                Expanded(child: content),
                 if (isSingleRow) buttonBar,
               ],
             ),
           ),
           if (!isSingleRow) buttonBar,
-          // const Divider(height: 0),
         ],
       ),
     );
