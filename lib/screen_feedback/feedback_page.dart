@@ -44,32 +44,26 @@ class FeedbackPage extends StatelessWidget {
   Widget _createBanner(BuildContext context, FeedbackState state) {
     return Column(children: [
       Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(bannerBorderRadius),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                color: Colors.black54,
-                blurRadius: 5.h,
-              )
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(bannerBorderRadius),
+          boxShadow: [
+            BoxShadow(color: Colors.black54, blurRadius: 5.h),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(bottomLeft: bannerBorderRadius, bottomRight: bannerBorderRadius),
+          child: NoDividerBanner(
+            Text(translate(StringKeys.messageUs, context), style: Theme.of(context).textTheme.bodyText1),
+            const CircleAvatar(child: Icon(Icons.mail_rounded)),
+            [
+              TextButton(
+                child: Text(translate(StringKeys.write, context), style: const TextStyle(color: primaryDarkColor)),
+                onPressed: () => _writeEmailBottomPressed(context),
+              ),
             ],
           ),
-          child: ClipRRect(
-              borderRadius: BorderRadius.only(bottomLeft: bannerBorderRadius, bottomRight: bannerBorderRadius),
-              child: NoDividerBanner(
-                Text(translate(StringKeys.messageUs, context)),
-                CircleAvatar(child: Icon(Icons.mail_rounded)),
-                [
-                  TextButton(
-                    child: Text(
-                      translate(StringKeys.write, context),
-                      style: TextStyle(color: primaryDarkColor),
-                    ),
-                    onPressed: () {
-                      _writeEmailBottomPressed(context);
-                    },
-                  ),
-                ],
-              ))),
+        ),
+      ),
     ]);
   }
 
@@ -86,41 +80,41 @@ class FeedbackPage extends StatelessWidget {
   }
 
   _getCurrentStateWidget(BuildContext context, FeedbackState state) {
-    if (state is WebViewLoadSuccessState) {
-      return _loadAboutInfoWidget(context, state);
-    } else if (state is ErrorState) {
-      return _loadErrorWidget(context, state);
-    } else if (state is AboutInfoUrlLoadAwaitState) {
-      _gotCurrentLocale(context);
-      return _loadAwaitWidget();
-    } else if (state is WebViewLoadAwaitState) {
-      return _loadAboutInfoWidget(context, state);
-    } else {
-      return Center(
-        child: CircularProgressIndicator(),
-      );
+    switch (state.runtimeType) {
+      case WebViewLoadSuccessState:
+        state as WebViewLoadSuccessState;
+        return _loadAboutInfoWidget(context, state);
+      case ErrorState:
+        state as ErrorState;
+        return _loadErrorWidget(context, state);
+      case AboutInfoUrlLoadAwaitState:
+        _gotCurrentLocale(context);
+        return _loadAwaitWidget();
+      case WebViewLoadAwaitState:
+        state as WebViewLoadAwaitState;
+        return _loadAboutInfoWidget(context, state);
+      default:
+        return _loadAwaitWidget();
     }
   }
 
-  Widget _loadAwaitWidget() {
-    return Center(
-      child: CircularProgressIndicator(),
-    );
-  }
+  Widget _loadAwaitWidget() => const Center(child: CircularProgressIndicator());
 
   Widget _loadErrorWidget(BuildContext context, ErrorState state) {
     final headerStyle = Theme.of(context).textTheme.headline6;
     final bodyStyle = Theme.of(context).textTheme.bodyText2;
-    final header = Text("${translate(StringKeys.anyError, context)}", style: headerStyle);
+    final header = Text(translate(StringKeys.anyError, context), style: headerStyle);
     final body = Text(state.errorType, style: bodyStyle, textAlign: TextAlign.center);
-    final padding = const EdgeInsets.all(8.0);
+    const padding = EdgeInsets.all(8.0);
     return Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
           header,
-          Padding(
-              padding: padding,
-              child: body),
-        ]));
+          Padding(padding: padding, child: body),
+        ],
+      ),
+    );
   }
 
   Widget _loadAboutInfoWidget(BuildContext context, WebViewState state) {
@@ -128,14 +122,14 @@ class FeedbackPage extends StatelessWidget {
   }
 
   _createStackWithWebView(BuildContext context, WebViewState state) {
-    Set<Factory<OneSequenceGestureRecognizer>> _gestureRecognizers = [Factory(() => EagerGestureRecognizer())].toSet();
-    bool loadWithError = false;
+    final gestureRecognizers = {Factory(() => EagerGestureRecognizer())};
+    var loadWithError = false;
     return IndexedStack(index: state.indexedStackPosition, children: <Widget>[
       WebView(
         key: _webViewKey,
         initialUrl: state.url,
         javascriptMode: JavascriptMode.unrestricted,
-        gestureRecognizers: _gestureRecognizers,
+        gestureRecognizers: gestureRecognizers,
         onPageStarted: (value) {
           _logger.logDebug("Loading about_page started...");
           context.read<FeedbackBloc>().add(WebViewLoadStartedEvent(state.url));
@@ -152,12 +146,10 @@ class FeedbackPage extends StatelessWidget {
           return;
         },
         onWebViewCreated: (WebViewController controller) {
-          // controller.
+          // nothing
         },
       ),
-      Container(
-        child: Center(child: CircularProgressIndicator()),
-      ),
+      const Center(child: CircularProgressIndicator()),
     ]);
   }
 }
