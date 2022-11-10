@@ -30,7 +30,7 @@ ThemeData appThemeLight() {
 
 ThemeData appThemeDark() => ThemeData.dark().copyWith(
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        selectedItemColor: primaryLightColor,
+        selectedItemColor: Colors.white,
         unselectedItemColor: Colors.grey,
       ),
       colorScheme: _appColorSchemeDark,
