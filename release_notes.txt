@@ -1,3 +1,9 @@
+Release 1.2.7+24, 10/11/2022
+- upgraded the app themes initializing and management
+- fixed settings page in the dark theme
+- fixed feedback in the dark mode
+- fixed bottom navigation bar in the dark and light modes.
+
 Release 1.2.6+23, 06/11/2022
 - localized displayed app name
 
