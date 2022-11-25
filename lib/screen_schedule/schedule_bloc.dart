@@ -11,9 +11,9 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
   late final StreamSubscription _queueSubscription;
   late final StreamSubscription _customSubscription;
 
-  ScheduleBloc({required this.audioHandler}) : super(ScheduleLoadAwaitState()) {
-    on<ScheduleEventDataLoaded>((event, emit) => emit(ScheduleLoadSuccessState(event.items)));
-    on<ScheduleEventErrorMade>((event, emit) => emit(ScheduleLoadErrorState(event.error)));
+  ScheduleBloc({required this.audioHandler}) : super(const ScheduleLoadingState()) {
+    on<ScheduleEventDataLoaded>((event, emit) => emit(ScheduleLoadedState(items: event.items)));
+    on<ScheduleEventErrorMade>((event, emit) => emit(state.copyWithError(errorText: event.error)));
 
     _queueSubscription = audioHandler.queue.listen(_onQueueEvent);
     _customSubscription = audioHandler.customEvent.listen(_onCustomEvent);
@@ -28,12 +28,14 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
 
   void _onQueueEvent(List<MediaItem>? queue) {
     if (queue == null) {
-      _onCustomEvent("Unknown error - queue is null");
+      _onCustomEvent("Schedule load error: queue is null");
+    } else if (queue.isEmpty) {
+      _onCustomEvent("Schedule load error: queue is empty");
     } else {
       final items = queue.map((mediaItem) => ScheduleItemView.fromMediaItem(mediaItem)).toList();
       add(ScheduleEventDataLoaded(items));
     }
   }
 
-  void _onCustomEvent(error) => ScheduleEventErrorMade(error);
+  void _onCustomEvent(error) => add(ScheduleEventErrorMade(error));
 }

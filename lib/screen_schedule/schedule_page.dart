@@ -8,50 +8,22 @@ import 'package:union_player_app/screen_schedule/schedule_item_view.dart';
 import 'package:union_player_app/screen_schedule/schedule_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
-import 'package:union_player_app/utils/localizations/string_translation.dart';
+
+import '../utils/widgets/snack_bar.dart';
 
 class SchedulePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ScheduleBloc, ScheduleState>(
-      builder: (context, state) => _createWidget(context, state),
+    return BlocConsumer<ScheduleBloc, ScheduleState>(
+      listener: (context, state) => showSnackBar(context, messageText: state.errorText),
+      builder: (context, state) => (state is ScheduleLoadedState) ? _loadedPage(context, state) : _loadingPage(),
       bloc: get<ScheduleBloc>(),
     );
   }
 
-  Widget _createWidget(BuildContext context, ScheduleState state) {
-    switch (state.runtimeType) {
-      case ScheduleLoadSuccessState:
-        return _successPage(context, state as ScheduleLoadSuccessState);
-      case ScheduleLoadErrorState:
-        return _errorPage(context, state as ScheduleLoadErrorState);
-      case ScheduleLoadAwaitState:
-      default:
-        return _awaitPage();
-    }
-  }
+  Widget _loadingPage() => const Center(child: CircularProgressIndicator());
 
-  Widget _awaitPage() {
-    return const Center(
-      child: CircularProgressIndicator(),
-    );
-  }
-
-  Widget _errorPage(BuildContext context, ScheduleLoadErrorState state) {
-    final header = Text(translate(StringKeys.loadingError, context), style: Theme.of(context).textTheme.headline6);
-    final body = Text(state.errorMessage, style: Theme.of(context).textTheme.bodyText2, textAlign: TextAlign.center);
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          header,
-          Padding(padding: const EdgeInsets.all(8.0), child: body),
-        ],
-      ),
-    );
-  }
-
-  Widget _successPage(BuildContext context, ScheduleLoadSuccessState state) {
+  Widget _loadedPage(BuildContext context, ScheduleLoadedState state) {
     return RefreshIndicator(
       onRefresh: () async {
         //TODO: отправить событие на принудительную загрзку данных

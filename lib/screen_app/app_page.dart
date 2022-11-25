@@ -110,7 +110,7 @@ class _AppState extends State<AppPage> {
     const duration = Duration(seconds: 2);
     if (_backPressTime == null || now.difference(_backPressTime!) > duration) {
       _backPressTime = now;
-      showSnackBar(context, StringKeys.pressAgainToExit, duration: duration);
+      showSnackBar(context, messageKey: StringKeys.pressAgainToExit, duration: duration);
       return Future.value(false);
     }
     get<AudioHandler>().stop();

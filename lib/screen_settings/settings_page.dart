@@ -5,7 +5,6 @@ import 'package:union_player_app/screen_settings/settings_bloc.dart';
 import 'package:union_player_app/screen_settings/settings_event.dart';
 import 'package:union_player_app/screen_settings/settings_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/widgets/snack_bar.dart';
 
@@ -20,7 +19,7 @@ class SettingsPage extends StatelessWidget {
 
   Widget _createWidget(BuildContext context, SettingsState state) {
     if (state.snackBarKey != StringKeys.empty) {
-      Future.microtask(() => showSnackBar(context, state.snackBarKey));
+      Future.microtask(() => showSnackBar(context, messageKey: state.snackBarKey));
     }
     return Column(
       mainAxisSize: MainAxisSize.max,
