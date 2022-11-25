@@ -7,8 +7,10 @@ import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_item_view.dart';
 import 'package:union_player_app/screen_schedule/schedule_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/core/relative_time_type.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 
+import '../utils/ui/app_theme.dart';
 import '../utils/widgets/snack_bar.dart';
 
 class SchedulePage extends StatelessWidget {
@@ -47,6 +49,8 @@ class SchedulePage extends StatelessWidget {
         _imageWidget(element),
         Expanded(child: _textWidget(element, context)),
         _startTimeWidget(element, context),
+        SizedBox(width: scheduleImageSide / 20),
+        _timeTypeWidget(element, context),
       ],
     );
   }
@@ -116,5 +120,33 @@ class SchedulePage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _timeTypeWidget(ScheduleItemView element, BuildContext context) {
+    return Container(
+      height: scheduleImageSide,
+      width: scheduleImageSide / 20,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(3.0),
+        gradient: LinearGradient(
+          begin: Alignment.bottomLeft,
+          end: Alignment.topRight,
+          colors: element.timeType.colors,
+        ),
+      ),
+    );
+  }
+}
+
+extension _RelativeTimeTypeExtension on RelativeTimeType {
+  List<Color> get colors {
+    switch (this) {
+      case RelativeTimeType.previous:
+        return redColors;
+      case RelativeTimeType.current:
+        return yellowColors;
+      case RelativeTimeType.next:
+        return greenColors;
+    }
   }
 }
