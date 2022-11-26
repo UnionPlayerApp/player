@@ -21,15 +21,21 @@ class ScheduleLoadingState extends ScheduleState {
 
 class ScheduleLoadedState extends ScheduleState {
   final List<ScheduleItemView> items;
+  final int currentIndex;
 
-  const ScheduleLoadedState({required this.items, String? errorText}) : super(errorText: errorText);
+  const ScheduleLoadedState({
+    required this.items,
+    required this.currentIndex,
+    String? errorText,
+  }) : super(errorText: errorText);
 
   @override
   ScheduleLoadedState copyWithError({required String errorText}) => ScheduleLoadedState(
         items: items,
+        currentIndex: currentIndex,
         errorText: errorText,
       );
 
   @override
-  List<Object> get props => super.props + [items];
+  List<Object> get props => super.props + [items, currentIndex];
 }

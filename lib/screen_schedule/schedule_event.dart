@@ -8,11 +8,12 @@ abstract class ScheduleEvent extends Equatable {
 
 class ScheduleEventDataLoaded extends ScheduleEvent {
   final List<ScheduleItemView> items;
+  final int currentIndex;
 
-  ScheduleEventDataLoaded(this.items);
+  ScheduleEventDataLoaded({required this.items, required this.currentIndex});
 
   @override
-  List<Object?> get props => [items];
+  List<Object?> get props => [items, currentIndex];
 }
 
 class ScheduleEventErrorMade extends ScheduleEvent {
@@ -23,4 +24,3 @@ class ScheduleEventErrorMade extends ScheduleEvent {
   @override
   List<Object?> get props => [error];
 }
-

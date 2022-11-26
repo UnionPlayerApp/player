@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:koin_flutter/koin_flutter.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_item_view.dart';
 import 'package:union_player_app/screen_schedule/schedule_state.dart';
@@ -13,7 +14,16 @@ import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import '../utils/ui/app_theme.dart';
 import '../utils/widgets/snack_bar.dart';
 
+// ignore: must_be_immutable
 class SchedulePage extends StatelessWidget {
+  final _itemScrollController = ItemScrollController();
+  final _itemPositionsListener = ItemPositionsListener.create();
+  var _currentIndex = 0;
+
+  SchedulePage(Stream<int> fabGoToCurrentStream) : super() {
+    fabGoToCurrentStream.listen((navIndex) => _scrollToCurrentItem(navIndex));
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ScheduleBloc, ScheduleState>(
@@ -26,18 +36,17 @@ class SchedulePage extends StatelessWidget {
   Widget _loadingPage() => const Center(child: CircularProgressIndicator());
 
   Widget _loadedPage(BuildContext context, ScheduleLoadedState state) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        //TODO: отправить событие на принудительную загрзку данных
-        //context.read<ScheduleBloc>().add();
-      },
-      child: ListView.separated(
-        separatorBuilder: (BuildContext context, int index) => Divider(height: listViewDividerHeight),
-        itemCount: state.items.length,
-        itemBuilder: (BuildContext context, int index) => Padding(
-          padding: EdgeInsets.all(scheduleItemPadding),
-          child: _programElement(context, state.items[index]),
-        ),
+    _currentIndex = state.currentIndex;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToCurrentItem(1));
+
+    return ScrollablePositionedList.separated(
+      separatorBuilder: (BuildContext context, int index) => Divider(height: listViewDividerHeight),
+      itemScrollController: _itemScrollController,
+      itemPositionsListener: _itemPositionsListener,
+      itemCount: state.items.length,
+      itemBuilder: (BuildContext context, int index) => Padding(
+        padding: EdgeInsets.all(scheduleItemPadding),
+        child: _programElement(context, state.items[index]),
       ),
     );
   }
@@ -129,11 +138,23 @@ class SchedulePage extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(3.0),
         gradient: LinearGradient(
-          begin: Alignment.bottomLeft,
-          end: Alignment.topRight,
+          begin: Alignment.bottomRight,
+          end: Alignment.topLeft,
           colors: element.timeType.colors,
         ),
       ),
+    );
+  }
+
+  void _scrollToCurrentItem(int navIndex) {
+    if (navIndex != 1 || _currentIndex == -1) {
+      return;
+    }
+
+    _itemScrollController.scrollTo(
+      index: _currentIndex,
+      duration: const Duration(milliseconds: 450),
+      curve: Curves.fastLinearToSlowEaseIn,
     );
   }
 }

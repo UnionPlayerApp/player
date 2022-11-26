@@ -13,6 +13,12 @@ extension RelativeTimeTypeExtension on RelativeTimeType {
         return StringKeys.nextLabel;
     }
   }
+
+  bool get isPrevious => this == RelativeTimeType.previous;
+
+  bool get isCurrent => this == RelativeTimeType.current;
+
+  bool get isNext => this == RelativeTimeType.next;
 }
 
 RelativeTimeType relativeTimeType(DateTime start, DateTime finish) {

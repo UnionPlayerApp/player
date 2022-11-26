@@ -16,8 +16,8 @@ class MainPage extends StatelessWidget {
   final _scrollController = ScrollController();
   var _currentIndex = 0;
 
-  MainPage(fabGoToCurrentStream) : super() {
-    fabGoToCurrentStream.listen((_) => _scrollToCurrentItem());
+  MainPage(Stream<int> fabGoToCurrentStream) : super() {
+    fabGoToCurrentStream.listen((navIndex) => _scrollToCurrentItem(navIndex));
   }
 
   @override
@@ -30,7 +30,7 @@ class MainPage extends StatelessWidget {
 
   Widget _scrollWidget(BuildContext context, MainState state) {
     _currentIndex = state.currentIndex;
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToCurrentItem());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToCurrentItem(0));
     return Container(
       padding: const EdgeInsets.all(10),
       color: Theme.of(context).scaffoldBackgroundColor,
@@ -123,11 +123,13 @@ class MainPage extends StatelessWidget {
     );
   }
 
-  void _scrollToCurrentItem() async {
-    _scrollController.animateTo(
-      mainItemExtent * _currentIndex,
-      duration: const Duration(milliseconds: 450),
-      curve: Curves.fastLinearToSlowEaseIn,
-    );
+  void _scrollToCurrentItem(int navIndex) async {
+    if (navIndex == 0) {
+      _scrollController.animateTo(
+        mainItemExtent * _currentIndex,
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.fastLinearToSlowEaseIn,
+      );
+    }
   }
 }

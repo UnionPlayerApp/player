@@ -105,6 +105,6 @@ const yellowCorn = Color(0xFFFFEA61);
 const greenApple = Color(0xFF57C84D);
 const greenPastel = Color(0xFF83D475);
 
-const redColors = [redCarminePink, redBegonia];
-const yellowColors = [yellowBanana, yellowCorn];
-const greenColors = [greenApple, greenPastel];
+const redColors = [redBegonia, redCarminePink, redBegonia];
+const yellowColors = [yellowCorn, yellowBanana, yellowCorn];
+const greenColors = [greenPastel, greenApple, greenPastel];
