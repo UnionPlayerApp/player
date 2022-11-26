@@ -37,7 +37,7 @@ class SchedulePage extends StatelessWidget {
 
   Widget _loadedPage(BuildContext context, ScheduleLoadedState state) {
     _currentIndex = state.currentIndex;
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToCurrentItem(1));
+    WidgetsBinding.instance.addPostFrameCallback((_) => _jumpToCurrentItem());
 
     return ScrollablePositionedList.separated(
       separatorBuilder: (BuildContext context, int index) => Divider(height: listViewDividerHeight),
@@ -147,15 +147,23 @@ class SchedulePage extends StatelessWidget {
   }
 
   void _scrollToCurrentItem(int navIndex) {
-    if (navIndex != 1 || _currentIndex == -1) {
-      return;
+    if (navIndex == 1 && _currentIndex != -1) {
+      _itemScrollController.scrollTo(
+        index: _currentIndex,
+        alignment: 0.5,
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.fastLinearToSlowEaseIn,
+      );
     }
+  }
 
-    _itemScrollController.scrollTo(
-      index: _currentIndex,
-      duration: const Duration(milliseconds: 450),
-      curve: Curves.fastLinearToSlowEaseIn,
-    );
+  void _jumpToCurrentItem() {
+    if (_currentIndex != -1) {
+      _itemScrollController.jumpTo(
+        index: _currentIndex,
+        alignment: 0.5,
+      );
+    }
   }
 }
 
