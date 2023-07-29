@@ -34,8 +34,9 @@ class AppPage extends StatefulWidget {
 class _AppState extends State<AppPage> {
   DateTime? _backPressTime;
   Widget? _currentPage;
+  int _currentNavIndex = 0;
   static const _animationDuration = Duration(milliseconds: 300);
-  final _goToCurrentStreamController = StreamController<void>();
+  final _goToCurrentStreamController = StreamController<int>.broadcast();
 
   @override
   Widget build(BuildContext context) {
@@ -105,17 +106,18 @@ class _AppState extends State<AppPage> {
     );
   }
 
-  Future<bool> _onWillPop() {
-    final DateTime now = DateTime.now();
+  Future<bool> _onWillPop() async {
+    final now = DateTime.now();
     const duration = Duration(seconds: 2);
     if (_backPressTime == null || now.difference(_backPressTime!) > duration) {
       _backPressTime = now;
-      showSnackBar(context, StringKeys.pressAgainToExit, duration: duration);
+      showSnackBar(context, messageKey: StringKeys.pressAgainToExit, duration: duration);
       return Future.value(false);
+    } else {
+      await get<AudioHandler>().stop();
+      FirebaseAnalytics.instance.logEvent(name: gaAppStop);
+      return Future.value(true);
     }
-    get<AudioHandler>().stop();
-    FirebaseAnalytics.instance.logEvent(name: gaAppStop);
-    return Future.value(true);
   }
 
   AppBar _appBar(BuildContext context, AppState state) {
@@ -190,11 +192,14 @@ class _AppState extends State<AppPage> {
       case 0:
         navPage = BlocProvider.value(
           value: get<MainBloc>(),
-          child: getWithParam<MainPage, Stream<void>>(_goToCurrentStreamController.stream),
+          child: getWithParam<MainPage, Stream<int>>(_goToCurrentStreamController.stream),
         );
         break;
       case 1:
-        navPage = BlocProvider.value(value: get<ScheduleBloc>(), child: get<SchedulePage>());
+        navPage = BlocProvider.value(
+          value: get<ScheduleBloc>(),
+          child: getWithParam<SchedulePage, Stream<int>>(_goToCurrentStreamController.stream),
+        );
         break;
       case 2:
         navPage = BlocProvider.value(value: get<FeedbackBloc>(), child: get<FeedbackPage>());
@@ -216,6 +221,7 @@ class _AppState extends State<AppPage> {
             : AnimatedSwitcher(duration: _animationDuration, child: navPage);
 
     _currentPage = navPage;
+    _currentNavIndex = state.navIndex;
 
     return AnimatedOpacity(
         opacity: isActive ? 1.0 : 0.2,
@@ -298,14 +304,14 @@ class _AppState extends State<AppPage> {
       Icons.my_location_rounded,
     ];
     final actions = [
-      () => _goToCurrentStreamController.add(null),
+      () => _goToCurrentStreamController.add(_currentNavIndex),
     ];
     const tooltips = [
       'Current item',
     ];
 
     return AnchoredOverlay(
-      showOverlay: state.navIndex == 0,
+      showOverlay: state.navIndex == 0 || state.navIndex == 1,
       overlayBuilder: (context, offset) {
         return CenterAbout(
           position: Offset(offset.dx, offset.dy - icons.length * 35.0),

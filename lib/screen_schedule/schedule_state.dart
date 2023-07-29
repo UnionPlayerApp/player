@@ -2,28 +2,40 @@ import 'package:equatable/equatable.dart';
 import 'package:union_player_app/screen_schedule/schedule_item_view.dart';
 
 abstract class ScheduleState extends Equatable {
+  final String? errorText;
+
+  const ScheduleState({this.errorText});
+
+  ScheduleState copyWithError({required String errorText});
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [errorText ?? ""];
 }
 
-class ScheduleLoadAwaitState extends ScheduleState {}
+class ScheduleLoadingState extends ScheduleState {
+  const ScheduleLoadingState({String? errorText}) : super(errorText: errorText);
 
-class ScheduleLoadSuccessState extends ScheduleState {
+  @override
+  ScheduleLoadingState copyWithError({required String errorText}) => ScheduleLoadingState(errorText: errorText);
+}
+
+class ScheduleLoadedState extends ScheduleState {
   final List<ScheduleItemView> items;
+  final int currentIndex;
 
-  ScheduleLoadSuccessState(this.items);
-
-  @override
-  List<Object> get props => [items];
-}
-
-class ScheduleLoadErrorState extends ScheduleState {
-  final String errorMessage;
-
-  ScheduleLoadErrorState(this.errorMessage);
+  const ScheduleLoadedState({
+    required this.items,
+    required this.currentIndex,
+    String? errorText,
+  }) : super(errorText: errorText);
 
   @override
-  List<Object> get props => [errorMessage];
-}
+  ScheduleLoadedState copyWithError({required String errorText}) => ScheduleLoadedState(
+        items: items,
+        currentIndex: currentIndex,
+        errorText: errorText,
+      );
 
-class ScheduleLoadUnknownState extends ScheduleState {}
+  @override
+  List<Object> get props => super.props + [items, currentIndex];
+}

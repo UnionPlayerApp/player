@@ -53,9 +53,14 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
 
       final millis = _millisToNextLoad();
 
-      debugPrint("schedule stream() => delay for next load = $millis millis start");
+      final minutes = millis ~/ Duration.millisecondsPerMinute;
+      final secondsInMillis = millis % Duration.millisecondsPerMinute;
+      final seconds = secondsInMillis ~/ Duration.millisecondsPerSecond;
+      final millisRest = secondsInMillis % Duration.millisecondsPerSecond;
+
+      debugPrint("schedule stream() => delay for next load = $millis millis start  => $minutes:$seconds:$millisRest");
       await Future.delayed(Duration(milliseconds: millis));
-      debugPrint("schedule stream() => delay for next load = $millis millis finish");
+      debugPrint("schedule stream() => delay for next load = $millis millis finish => $minutes:$seconds:$millisRest");
     }
   }
 

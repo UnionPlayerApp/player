@@ -98,4 +98,13 @@ void setThemeById(int themeId) {
   Get.changeThemeMode(themeId.toThemeMode);
 }
 
+const redCarminePink = Color(0xFFEA4C46);
+const redBegonia = Color(0xFFF07470);
+const yellowBanana = Color(0xFFFFDD3C);
+const yellowCorn = Color(0xFFFFEA61);
+const greenApple = Color(0xFF57C84D);
+const greenPastel = Color(0xFF83D475);
 
+const redColors = [redBegonia, redCarminePink, redBegonia];
+const yellowColors = [yellowCorn, yellowBanana, yellowCorn];
+const greenColors = [greenPastel, greenApple, greenPastel];

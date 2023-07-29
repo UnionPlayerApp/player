@@ -3,67 +3,50 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:koin_flutter/koin_flutter.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_item_view.dart';
 import 'package:union_player_app/screen_schedule/schedule_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/core/relative_time_type.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
-import 'package:union_player_app/utils/localizations/string_translation.dart';
 
+import '../utils/ui/app_theme.dart';
+import '../utils/widgets/snack_bar.dart';
+
+// ignore: must_be_immutable
 class SchedulePage extends StatelessWidget {
+  final _itemScrollController = ItemScrollController();
+  final _itemPositionsListener = ItemPositionsListener.create();
+  var _currentIndex = 0;
+
+  SchedulePage(Stream<int> fabGoToCurrentStream) : super() {
+    fabGoToCurrentStream.listen((navIndex) => _scrollToCurrentItem(navIndex));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ScheduleBloc, ScheduleState>(
-      builder: (context, state) => _createWidget(context, state),
+    return BlocConsumer<ScheduleBloc, ScheduleState>(
+      listener: (context, state) => showSnackBar(context, messageText: state.errorText),
+      builder: (context, state) => (state is ScheduleLoadedState) ? _loadedPage(context, state) : _loadingPage(),
       bloc: get<ScheduleBloc>(),
     );
   }
 
-  Widget _createWidget(BuildContext context, ScheduleState state) {
-    switch (state.runtimeType) {
-      case ScheduleLoadSuccessState:
-        return _successPage(context, state as ScheduleLoadSuccessState);
-      case ScheduleLoadErrorState:
-        return _errorPage(context, state as ScheduleLoadErrorState);
-      case ScheduleLoadAwaitState:
-      default:
-        return _awaitPage();
-    }
-  }
+  Widget _loadingPage() => const Center(child: CircularProgressIndicator());
 
-  Widget _awaitPage() {
-    return const Center(
-      child: CircularProgressIndicator(),
-    );
-  }
+  Widget _loadedPage(BuildContext context, ScheduleLoadedState state) {
+    _currentIndex = state.currentIndex;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _jumpToCurrentItem());
 
-  Widget _errorPage(BuildContext context, ScheduleLoadErrorState state) {
-    final header = Text(translate(StringKeys.loadingError, context), style: Theme.of(context).textTheme.headline6);
-    final body = Text(state.errorMessage, style: Theme.of(context).textTheme.bodyText2, textAlign: TextAlign.center);
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          header,
-          Padding(padding: const EdgeInsets.all(8.0), child: body),
-        ],
-      ),
-    );
-  }
-
-  Widget _successPage(BuildContext context, ScheduleLoadSuccessState state) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        //TODO: отправить событие на принудительную загрзку данных
-        //context.read<ScheduleBloc>().add();
-      },
-      child: ListView.separated(
-        separatorBuilder: (BuildContext context, int index) => Divider(height: listViewDividerHeight),
-        itemCount: state.items.length,
-        itemBuilder: (BuildContext context, int index) => Padding(
-          padding: EdgeInsets.all(scheduleItemPadding),
-          child: _programElement(context, state.items[index]),
-        ),
+    return ScrollablePositionedList.separated(
+      separatorBuilder: (BuildContext context, int index) => Divider(height: listViewDividerHeight),
+      itemScrollController: _itemScrollController,
+      itemPositionsListener: _itemPositionsListener,
+      itemCount: state.items.length,
+      itemBuilder: (BuildContext context, int index) => Padding(
+        padding: EdgeInsets.all(scheduleItemPadding),
+        child: _programElement(context, state.items[index]),
       ),
     );
   }
@@ -75,6 +58,8 @@ class SchedulePage extends StatelessWidget {
         _imageWidget(element),
         Expanded(child: _textWidget(element, context)),
         _startTimeWidget(element, context),
+        SizedBox(width: scheduleImageSide / 20),
+        _timeTypeWidget(element, context),
       ],
     );
   }
@@ -144,5 +129,53 @@ class SchedulePage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _timeTypeWidget(ScheduleItemView element, BuildContext context) {
+    return Container(
+      height: scheduleImageSide,
+      width: scheduleImageSide / 20,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(3.0),
+        gradient: LinearGradient(
+          begin: Alignment.bottomRight,
+          end: Alignment.topLeft,
+          colors: element.timeType.colors,
+        ),
+      ),
+    );
+  }
+
+  void _scrollToCurrentItem(int navIndex) {
+    if (navIndex == 1 && _currentIndex != -1) {
+      _itemScrollController.scrollTo(
+        index: _currentIndex,
+        alignment: 0.5,
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.fastLinearToSlowEaseIn,
+      );
+    }
+  }
+
+  void _jumpToCurrentItem() {
+    if (_currentIndex != -1) {
+      _itemScrollController.jumpTo(
+        index: _currentIndex,
+        alignment: 0.5,
+      );
+    }
+  }
+}
+
+extension _RelativeTimeTypeExtension on RelativeTimeType {
+  List<Color> get colors {
+    switch (this) {
+      case RelativeTimeType.previous:
+        return redColors;
+      case RelativeTimeType.current:
+        return yellowColors;
+      case RelativeTimeType.next:
+        return greenColors;
+    }
   }
 }

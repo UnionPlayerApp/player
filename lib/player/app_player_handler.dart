@@ -55,11 +55,12 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> stop() async {
+    debugPrint("app player handler has been stopping");
     await _scheduleStateSubscription.cancel();
     await _sessionEventSubscription.cancel();
     await player.dispose();
     await schedule.stop();
-    super.stop();
+    debugPrint("app player handler was stopped");
   }
 
   @override
