@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/shared_preferences.dart';
 
@@ -19,8 +19,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   late final StreamSubscription _queueSubscription;
 
   AppBloc(this._audioHandler, bool isPlaying)
-      : super(AppState(0, DEFAULT_IS_PLAYING, DEFAULT_AUDIO_QUALITY_ID, false)) {
-    on<AppFabEvent>(_onFab);
+      : super(const AppState(0, defaultIsPlaying, defaultAudioQualityId, false)) {
+    on<AppFabPlayStopEvent>(_onFabPlayStop);
     on<AppNavEvent>(_onNav);
     on<AppPlayerEvent>(_onPlayer);
     on<AppScheduleEvent>(_onSchedule);
@@ -41,7 +41,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     }
   }
 
-  FutureOr<void> _onFab(AppFabEvent event, Emitter<AppState> emitter) {
+  FutureOr<void> _onFabPlayStop(AppFabPlayStopEvent event, Emitter<AppState> emitter) {
     if (_audioHandler.playbackState.value.playing) {
       _audioHandler.pause();
     } else {
@@ -60,7 +60,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   FutureOr<void> _onSchedule(AppScheduleEvent event, Emitter<AppState> emitter) {
-    late AppState newState;
+    late final AppState newState;
 
     if (event.items == null || event.items!.length < 2) {
       newState = state.copyWith(isScheduleLoaded: false);
@@ -99,9 +99,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   void _onQueueEvent(List<MediaItem>? queue) {
-    if (queue == null) {
-      add(AppScheduleEvent(null));
-    } else if (queue.isEmpty) {
+    if (queue == null || queue.isEmpty) {
       add(AppScheduleEvent(null));
     } else {
       add(AppScheduleEvent(queue));
@@ -110,7 +108,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   void _onPlaybackEvent(PlaybackState state) {
     add(AppPlayerEvent(state.playing));
-    writeBoolToSharedPreferences(KEY_IS_PLAYING, state.playing);
+    writeBoolToSharedPreferences(keyIsPlaying, state.playing);
   }
 
   @override
@@ -123,22 +121,22 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   void _doAudioQualityChanged(int audioQualityId) {
     Map<String, dynamic> params = {
-      KEY_AUDIO_QUALITY: audioQualityId,
-      KEY_IS_PLAYING: _audioHandler.playbackState.value.playing,
+      keyAudioQuality: audioQualityId,
+      keyIsPlaying: _audioHandler.playbackState.value.playing,
     };
     _audioHandler
-        .customAction(ACTION_SET_AUDIO_QUALITY, params)
-        .then((value) => writeIntToSharedPreferences(KEY_AUDIO_QUALITY, audioQualityId));
+        .customAction(actionSetAudioQuality, params)
+        .then((value) => writeIntToSharedPreferences(keyAudioQuality, audioQualityId));
   }
 
   void _readAudioQualityIdFromSharedPreferences() async {
-    readIntFromSharedPreferences(KEY_AUDIO_QUALITY)
+    readIntFromSharedPreferences(keyAudioQuality)
         .then((audioQualityId) => _onSharedPreferencesReadSuccess(audioQualityId))
         .catchError((error) => _onSharedPreferencesReadError(error));
   }
 
   _onSharedPreferencesReadSuccess(int? audioQualityId) {
-    add(AppAudioQualityInitEvent(audioQualityId ?? DEFAULT_AUDIO_QUALITY_ID));
+    add(AppAudioQualityInitEvent(audioQualityId ?? defaultAudioQualityId));
   }
 
   _onSharedPreferencesReadError(error) {

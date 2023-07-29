@@ -6,13 +6,13 @@ class AppPlayer extends AudioPlayer {
 
   @override
   Future<void> play() async {
-    FirebaseAnalytics.instance.logEvent(name: GA_PLAYER_START);
+    FirebaseAnalytics.instance.logEvent(name: gaPlayerStart);
     return super.play();
   }
 
   @override
   Future<void> stop() async {
-    FirebaseAnalytics.instance.logEvent(name: GA_PLAYER_STOP);
+    FirebaseAnalytics.instance.logEvent(name: gaPlayerStop);
     return super.stop();
   }
 }

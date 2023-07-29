@@ -11,9 +11,9 @@ import 'package:union_player_app/utils/widgets/snack_bar.dart';
 
 class SettingsPage extends StatelessWidget {
   @override
-  Widget build(BuildContext pageContext) {
+  Widget build(BuildContext context) {
     return BlocBuilder<SettingsBloc, SettingsState>(
-      builder: (context, state) => _createWidget(context, state),
+      builder: (builderContext, state) => _createWidget(builderContext, state),
       bloc: get<SettingsBloc>(),
     );
   }
@@ -34,50 +34,67 @@ class SettingsPage extends StatelessWidget {
   }
 
   Widget _createWidgetTheme(BuildContext context, SettingsState state) => _createRow(
-        _createLabel(context, StringKeys.settings_theme_label),
+        _createLabel(context, StringKeys.settingsThemeLabel),
         _createButton(
           context,
-          [StringKeys.settings_theme_light, StringKeys.settings_theme_dark, StringKeys.settings_theme_system],
-          [THEME_LIGHT, THEME_DARK, THEME_SYSTEM],
+          [
+            StringKeys.settingsThemeLight,
+            StringKeys.settingsThemeDark,
+            StringKeys.settingsThemeSystem,
+          ],
+          [
+            themeLight,
+            themeDark,
+            themeSystem,
+          ],
           state.theme,
-          (int? value) => get<SettingsBloc>().add(SettingsEventTheme(value ?? DEFAULT_THEME_ID)),
+          (int? value) => get<SettingsBloc>().add(SettingsEventTheme(value ?? defaultThemeId)),
         ),
       );
 
   Widget _createWidgetStartPlaying(BuildContext context, SettingsState state) => _createRow(
-        _createLabel(context, StringKeys.settings_start_playing_label),
+        _createLabel(context, StringKeys.settingsStartPlayingLabel),
         _createButton(
           context,
           [
-            StringKeys.settings_start_playing_start,
-            StringKeys.settings_start_playing_stop,
-            StringKeys.settings_start_playing_last,
+            StringKeys.settingsStartPlayingStart,
+            StringKeys.settingsStartPlayingStop,
+            StringKeys.settingsStartPlayingLast,
           ],
-          [START_PLAYING_START, START_PLAYING_STOP, START_PLAYING_LAST],
+          [
+            startPlayingStart,
+            startPlayingStop,
+            startPlayingLast,
+          ],
           state.startPlaying,
-          (int? value) => get<SettingsBloc>().add(SettingsEventStartPlaying(value ?? DEFAULT_START_PLAYING_ID)),
+          (int? value) => get<SettingsBloc>().add(SettingsEventStartPlaying(value ?? defaultStartPlayingId)),
         ),
       );
 
   Widget _createWidgetLang(BuildContext context, SettingsState state) => _createRow(
-        _createLabel(context, StringKeys.settings_lang_label),
+        _createLabel(context, StringKeys.settingsLangLabel),
         _createButton(
           context,
           [
-            StringKeys.settings_lang_system,
-            StringKeys.settings_lang_ru,
-            StringKeys.settings_lang_be,
-            StringKeys.settings_lang_en,
+            StringKeys.settingsLangSystem,
+            StringKeys.settingsLangRU,
+            StringKeys.settingsLangBY,
+            StringKeys.settingsLangUS,
           ],
-          [LANG_SYSTEM, LANG_RU, LANG_BE, LANG_EN],
+          [
+            langSystem,
+            langRU,
+            langBY,
+            langUS,
+          ],
           state.lang,
-          (int? value) => get<SettingsBloc>().add(SettingsEventLang(value ?? DEFAULT_LANG_ID)),
+          (int? value) => get<SettingsBloc>().add(SettingsEventLang(value ?? defaultLangId)),
         ),
       );
 
   Widget _createRow(Widget label, Widget button) {
     final labelContainer = Container(
-      margin: EdgeInsets.only(left: 5.0, right: 5.0),
+      margin: const EdgeInsets.only(left: 5.0, right: 5.0),
       child: label,
     );
     return Row(children: [labelContainer, button]);
@@ -85,30 +102,35 @@ class SettingsPage extends StatelessWidget {
 
   Widget _createLabel(BuildContext context, StringKeys key) {
     final text = translate(key, context);
-    return Text(text, style: TextStyle(fontSize: titleFontSize), overflow: TextOverflow.ellipsis);
+    return Text(text, style: Theme.of(context).textTheme.bodyText2, overflow: TextOverflow.ellipsis);
   }
 
   Widget _createButton(
-      BuildContext context, List<StringKeys> keys, List<int> values, int selectedItem, Function(int?) onChanged) {
+    BuildContext context,
+    List<StringKeys> keys,
+    List<int> values,
+    int selectedItem,
+    Function(int?) onChanged,
+  ) {
     assert(keys.length == values.length);
     assert(selectedItem < values.length);
 
     final items = List<DropdownMenuItem<int>>.empty(growable: true);
 
     keys.asMap().forEach((index, key) {
-      items.add(DropdownMenuItem(child: Text(translate(key, context)), value: values[index]));
+      items.add(DropdownMenuItem(value: values[index], child: Text(translate(key, context))));
     });
 
-    return new DropdownButton<int>(
+    final textStyle = Theme.of(context).textTheme.bodyText1;
+    final textColor = textStyle?.color;
+
+    return DropdownButton<int>(
       value: selectedItem,
-      icon: const Icon(Icons.arrow_downward_rounded),
+      icon: Icon(Icons.arrow_downward_rounded, color: textColor),
       iconSize: 24,
       elevation: 16,
-      style: const TextStyle(color: Colors.deepPurple),
-      underline: Container(
-        height: 2,
-        color: Colors.deepPurpleAccent,
-      ),
+      style: textStyle,
+      underline: Container(height: 2, color: textColor),
       onChanged: onChanged,
       items: items,
     );

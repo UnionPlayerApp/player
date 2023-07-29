@@ -1,3 +1,35 @@
+Release 1.2.7+24, 10/11/2022
+- upgraded the app themes initializing and management
+- fixed settings page in the dark theme
+- fixed feedback in the dark mode
+- fixed bottom navigation bar in the dark and light modes.
+
+Release 1.2.6+23, 06/11/2022
+- localized displayed app name
+
+Release 1.2.5+22, 04/11/2022
+- fixed issue with app transparency request (iOS version)
+- fixed bug with schedule initializing
+
+Release 1.2.4+21, 02/11/2022
+- fixed issue with different time zone
+- improved schedule algorithm
+
+Release 1.2.3+20, 29/10/2022
+- updated floating action bar
+- updated scaffold background color for the dark mode
+
+Release 1.2.2+19, 20/10/2022
+- updated toolbar widgets
+
+Release 1.2.1+18, 17/10/2022
+- updated main page view
+- updated toolbar view
+- updated schedule logic
+- implemented language setting
+- implemented light/dark/system theme setting
+- updated dependencies.
+
 Release 1.1.3+17, 03/09/2022
 - added Firebase Performance plugin
 - added Firebase Analytics log for the successful app initializing.

@@ -13,9 +13,11 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:koin_flutter/koin_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,35 +25,59 @@ import 'package:union_player_app/model/system_data/system_data.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_app/app_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/core/extensions.dart';
+import 'package:union_player_app/utils/core/shared_preferences.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/widgets/info_page.dart';
-import 'package:union_player_app/utils/widgets/loading_page.dart';
+import 'package:union_player_app/utils/widgets/progress_page.dart';
 
 import '../firebase_options.dart';
+import '../utils/core/locale_utils.dart';
 
 class InitPage extends StatefulWidget {
   final PackageInfo _packageInfo;
 
-  InitPage({Key? key, required PackageInfo packageInfo})
+  const InitPage({Key? key, required PackageInfo packageInfo})
       : _packageInfo = packageInfo,
         super(key: key);
 
   @override
-  _InitPageState createState() => _InitPageState();
+  InitPageState createState() => InitPageState();
 }
 
-class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin {
+class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   late final SystemData _systemData;
   late final Future<bool> _initAppFuture;
   late final UserCredential _userCredential;
+  var _initStage = "initial stage";
 
   @override
   void initState() {
     super.initState();
 
+    WidgetsBinding.instance.addObserver(this);
+
     _systemData = get<SystemData>();
     _initAppFuture = _initApp();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    get<AudioHandler>().stop();
+    super.dispose();
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    super.didChangePlatformBrightness();
+    SpManager.readThemeMode().then((settings) {
+      if (settings == ThemeMode.system) {
+        final themeMode = SchedulerBinding.instance.window.platformBrightness.toThemeMode;
+        Get.changeThemeMode(themeMode);
+      }
+    });
   }
 
   @override
@@ -61,10 +87,10 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
   Widget build(BuildContext context) {
     super.build(context);
     return FutureBuilder(
-      initialData: DEFAULT_IS_PLAYING,
+      initialData: defaultIsPlaying,
       future: _initAppFuture,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        final Widget homePage = _createHomePage(snapshot);
+        final homePage = _createHomePage(snapshot);
         return _wrapScreenUtilInit(homePage);
       },
     );
@@ -72,6 +98,8 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
 
   Future<bool> _initApp() => _initFirebase()
       .then((_) => _initLogger())
+      .then((_) => _initLocale())
+      .then((_) => _initTheme())
       .then((_) => _initAppTrackingTransparency())
       .then((_) => _initSystemData())
       .then((_) => _initPlayer())
@@ -79,12 +107,13 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
       .catchError((error) => _handleError(error));
 
   FutureOr<bool> _handleError(dynamic error) {
-    final String msg = "App initialisation error";
-    debugPrint("$msg: $error");
+    const msg = "App initialisation error";
+    debugPrint("$msg: $_initStage: $error");
     throw Exception([msg, error]);
   }
 
   Future _initFirebase() async {
+    _initStage = "Firebase init stage";
     try {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
@@ -93,14 +122,13 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
       await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(kReleaseMode);
       _userCredential = await FirebaseAuth.instance.signInAnonymously();
       await FirebaseAppCheck.instance.activate();
-      debugPrint("Firebase initialize success");
     } catch (error) {
-      debugPrint("Firebase initialize error: $error");
       throw Exception("Firebase initialize error: $error");
     }
   }
 
-  Future <bool> _logAppStatus(bool isPlaying) async {
+  Future<bool> _logAppStatus(bool isPlaying) async {
+    _initStage = "Log App Status init stage";
     final appCheckToken = await FirebaseAppCheck.instance.getToken();
     final params = {
       "package_info_version": widget._packageInfo.version,
@@ -116,12 +144,13 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
       "auth_refresh_token": _userCredential.user?.refreshToken ?? "null",
       "auth_uid": _userCredential.user?.uid ?? "null",
     };
-    FirebaseAnalytics.instance.logEvent(name: GA_APP_STATUS, parameters: params);
+    FirebaseAnalytics.instance.logEvent(name: gaAppStatus, parameters: params);
     debugPrint("App initialize success, app params = $params");
     return isPlaying;
   }
 
   FutureOr<void> _initLogger() {
+    _initStage = "Logger init stage";
     if (kReleaseMode) {
       debugPrint = (String? message, {int? wrapWidth}) => FirebaseCrashlytics.instance.log(message ?? emptyLogMessage);
       FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
@@ -130,10 +159,23 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
     }
   }
 
+  Future<void> _initLocale() async {
+    _initStage = "Locale init stage";
+    final langId = await readIntFromSharedPreferences(keyLang) ?? defaultLangId;
+    final newLocale = getLocaleById(langId);
+    return Get.updateLocale(newLocale);
+  }
+
+  Future<void> _initTheme() async {
+    _initStage = "Theme init stage";
+    final themeId = await readIntFromSharedPreferences(keyTheme) ?? defaultThemeId;
+    setIcAudioQuality(themeId);
+  }
+
   Future _initAppTrackingTransparency() async {
+    _initStage = "App Tracking Transparency init stage";
     try {
       var status = await AppTrackingTransparency.trackingAuthorizationStatus;
-      debugPrint("App tracking transparency status = $status");
       if (status == TrackingStatus.notDetermined) {
         await _showAppTrackingInfoDialog();
         // Wait for dialog popping animation
@@ -149,13 +191,14 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
   }
 
   Future<void> _showAppTrackingInfoDialog() async {
-    final title = Text(translate(StringKeys.tracking_dialog_title, context));
-    final content = Text(translate(StringKeys.tracking_dialog_text, context));
+    final title = Text(translate(StringKeys.trackingDialogTitle, context), textAlign: TextAlign.center);
+    final content = Text(translate(StringKeys.trackingDialogText, context), textAlign: TextAlign.center);
     final button = TextButton(
-      child: Text(translate(StringKeys.tracking_dialog_button, context)),
+      child: Text(translate(StringKeys.trackingDialogButton, context)),
       onPressed: () => Navigator.pop(context),
     );
     final dialogWidget = AlertDialog(
+      actionsAlignment: MainAxisAlignment.center,
       title: title,
       content: content,
       actions: [button],
@@ -167,6 +210,8 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
   }
 
   Future _initSystemData() async {
+    _initStage = "System Data init stage";
+
     late final CollectionReference collection;
 
     try {
@@ -207,43 +252,45 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
   }
 
   Future<bool> _initPlayer() async {
+    _initStage = "Player init stage";
+
     debugPrint("Player initialize start");
 
-    _systemData.playerData.appTitle = translate(StringKeys.app_title, context);
+    _systemData.playerData.appTitle = translate(StringKeys.appTitle, context);
 
     final SharedPreferences sp = await SharedPreferences.getInstance();
 
-    final int audioQualityId = sp.getInt(KEY_AUDIO_QUALITY) ?? DEFAULT_AUDIO_QUALITY_ID;
-    final int startPlayingId = sp.getInt(KEY_START_PLAYING) ?? DEFAULT_START_PLAYING_ID;
+    final int audioQualityId = sp.getInt(keyAudioQuality) ?? defaultAudioQualityId;
+    final int startPlayingId = sp.getInt(keyStartPlaying) ?? defaultStartPlayingId;
 
     late final bool isPlaying;
     switch (startPlayingId) {
-      case START_PLAYING_START:
+      case startPlayingStart:
         isPlaying = true;
         break;
-      case START_PLAYING_STOP:
+      case startPlayingStop:
         isPlaying = false;
         break;
-      case START_PLAYING_LAST:
-        isPlaying = sp.getBool(KEY_IS_PLAYING) ?? DEFAULT_IS_PLAYING;
+      case startPlayingLast:
+        isPlaying = sp.getBool(keyIsPlaying) ?? defaultIsPlaying;
         break;
       default:
-        isPlaying = DEFAULT_IS_PLAYING;
+        isPlaying = defaultIsPlaying;
         break;
     }
 
     final playerHandler = await AudioService.init(
       builder: () => get<AudioHandler>(),
       config: const AudioServiceConfig(
-        androidNotificationChannelName: AUDIO_NOTIFICATION_CHANNEL_NAME,
-        androidNotificationIcon: AUDIO_NOTIFICATION_ICON,
+        androidNotificationChannelName: audioNotificationChannelName,
+        androidNotificationIcon: audioNotificationIcon,
         androidNotificationOngoing: true,
         androidShowNotificationBadge: true,
         notificationColor: Colors.lightGreenAccent,
       ),
     );
 
-    await playerHandler.customAction(ACTION_START, _createPlayerTaskParams(audioQualityId, isPlaying));
+    await playerHandler.customAction(actionStart, _createPlayerTaskParams(audioQualityId, isPlaying));
 
     debugPrint("Player initialize success");
 
@@ -252,21 +299,15 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
 
   Map<String, dynamic> _createPlayerTaskParams(int audioQualityId, bool isPlaying) {
     final Map<String, dynamic> params = {
-      KEY_APP_TITLE: _systemData.playerData.appTitle,
-      KEY_URL_STREAM_LOW: _systemData.streamData.streamLow,
-      KEY_URL_STREAM_MEDIUM: _systemData.streamData.streamMedium,
-      KEY_URL_STREAM_HIGH: _systemData.streamData.streamHigh,
-      KEY_URL_SCHEDULE: _systemData.xmlData.url,
-      KEY_AUDIO_QUALITY: audioQualityId,
-      KEY_IS_PLAYING: isPlaying,
+      keyAppTitle: _systemData.playerData.appTitle,
+      keyUrlStreamLow: _systemData.streamData.streamLow,
+      keyUrlStreamMedium: _systemData.streamData.streamMedium,
+      keyUrlStreamHigh: _systemData.streamData.streamHigh,
+      keyUrlSchedule: _systemData.xmlData.url,
+      keyAudioQuality: audioQualityId,
+      keyIsPlaying: isPlaying,
     };
     return params;
-  }
-
-  @override
-  void dispose() {
-    get<AudioHandler>().stop();
-    super.dispose();
   }
 
   Widget _createHomePage(AsyncSnapshot<dynamic> snapshot) {
@@ -285,17 +326,17 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
 
   Widget _wrapScreenUtilInit(Widget homePage) {
     return ScreenUtilInit(
-      designSize: Size(PROTOTYPE_DEVICE_WIDTH, PROTOTYPE_DEVICE_HEIGHT),
+      designSize: const Size(PROTOTYPE_DEVICE_WIDTH, PROTOTYPE_DEVICE_HEIGHT),
       builder: (_, __) => homePage,
     );
   }
 
   List<String> _createInfoPageStrings() => ([
-        translate(StringKeys.app_is_not_init_1, context),
-        translate(StringKeys.app_is_not_init_2, context),
-        translate(StringKeys.app_is_not_init_3, context),
-        translate(StringKeys.app_is_not_init_4, context),
-        translate(StringKeys.app_is_not_init_5, context),
+        translate(StringKeys.appIsNotInit1, context),
+        translate(StringKeys.appIsNotInit2, context),
+        translate(StringKeys.appIsNotInit3, context),
+        translate(StringKeys.appIsNotInit4, context),
+        translate(StringKeys.appIsNotInit5, context),
       ]);
 
   Widget _createAppPage(bool isPlaying) => BlocProvider.value(
@@ -304,7 +345,7 @@ class _InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin 
       );
 
   Widget _progressPage() {
-    final title = translate(StringKeys.app_init_title, context);
+    final title = translate(StringKeys.appInitTitle, context);
     final version = "${widget._packageInfo.version} (${widget._packageInfo.buildNumber})";
     return getWithParam<ProgressPage, List<String>>([title, version]);
   }

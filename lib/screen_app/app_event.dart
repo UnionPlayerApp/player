@@ -5,7 +5,7 @@ abstract class AppEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class AppFabEvent extends AppEvent {}
+class AppFabPlayStopEvent extends AppEvent {}
 
 class AppNavEvent extends AppEvent {
   final int navIndex;

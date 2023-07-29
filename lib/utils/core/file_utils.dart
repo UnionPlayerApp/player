@@ -1,18 +1,18 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
-Future<File> loadRemoteFile(String url) async {
+Future<String> loadRemoteFile(String url) async {
   try {
     final httpClient = HttpClient();
     final uri = Uri.parse(url);
     final request = await httpClient.getUrl(uri);
     final response = await request.close();
     final bytes = await consolidateHttpClientResponseBytes(response);
-    final path = await _createLocalPath(url);
-    return await _createFileFromBytes(path, bytes);
+    return const Utf8Decoder().convert(bytes);
   } catch (error) {
     throw Exception(error.toString());
   }

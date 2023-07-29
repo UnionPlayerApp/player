@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
+
 import 'app_localizations.dart';
 
-class AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   // This delegate instance will never change (it doesn't even have fields!)
   // It can provide a constant constructor.
   const AppLocalizationsDelegate();
@@ -16,9 +16,9 @@ class AppLocalizationsDelegate
   @override
   Future<AppLocalizations> load(Locale locale) async {
     // AppLocalizations class is where the JSON loading actually runs
-    AppLocalizations localizations = new AppLocalizations(locale);
+    AppLocalizations localizations = AppLocalizations(locale);
     await localizations.load();
-    print("Load ${locale.languageCode}");
+    debugPrint("Load ${locale.languageCode}");
     return localizations;
   }
 

@@ -4,7 +4,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:koin/koin.dart';
 import 'package:union_player_app/model/system_data/system_data.dart';
-import 'package:union_player_app/player/audio_player_handler.dart';
+import 'package:union_player_app/player/app_player_handler.dart';
 import 'package:union_player_app/repository/schedule_repository_impl.dart';
 import 'package:union_player_app/repository/schedule_repository_interface.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
@@ -19,7 +19,7 @@ import 'package:union_player_app/screen_settings/settings_bloc.dart';
 import 'package:union_player_app/screen_settings/settings_page.dart';
 import 'package:union_player_app/utils/app_logger.dart';
 import 'package:union_player_app/utils/widgets/info_page.dart';
-import 'package:union_player_app/utils/widgets/loading_page.dart';
+import 'package:union_player_app/utils/widgets/progress_page.dart';
 import 'package:uuid/uuid.dart';
 
 import '../player/app_player.dart';
@@ -33,7 +33,7 @@ final appModule = Module()
   ..single((s) => FeedbackBloc(s.get()))
   ..single((s) => FeedbackPage(s.get()))
   ..single((s) => MainBloc(s.get()))
-  ..single((s) => MainPage())
+  ..singleWithParam((s, Stream<void> fabGoToCurrentStream) => MainPage(fabGoToCurrentStream))
   ..single((s) => ScheduleBloc(audioHandler: s.get()))
   ..single((s) => SchedulePage())
   ..single((s) => SettingsBloc())
@@ -49,5 +49,5 @@ final appModule = Module()
       ))
   ..single<IScheduleRepository>((s) => ScheduleRepositoryImpl())
   ..single<SystemData>((s) => SystemData())
-  ..factory<Uuid>((s) => Uuid())
+  ..factory<Uuid>((s) => const Uuid())
   ..factory<Random>((s) => Random());

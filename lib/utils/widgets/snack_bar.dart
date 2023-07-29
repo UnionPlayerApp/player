@@ -10,16 +10,14 @@ void showSnackBar(BuildContext context, StringKeys stringKey, {Duration duration
       Icons.info_rounded,
       color: colorOnPrimary,
     ),
-    Container(
-      child: Text(translate(stringKey, context)),
-      margin: EdgeInsets.only(left: 6.0),
-    ),
+    const SizedBox(width: 6.0),
+    Text(translate(stringKey, context)),
   ]);
   final snackBar = SnackBar(
     content: content,
     backgroundColor: primaryColor,
     duration: duration,
-    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+    padding: const EdgeInsets.all(8.0),
     behavior: SnackBarBehavior.floating,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
   );
