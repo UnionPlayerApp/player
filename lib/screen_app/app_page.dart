@@ -106,17 +106,18 @@ class _AppState extends State<AppPage> {
     );
   }
 
-  Future<bool> _onWillPop() {
-    final DateTime now = DateTime.now();
+  Future<bool> _onWillPop() async {
+    final now = DateTime.now();
     const duration = Duration(seconds: 2);
     if (_backPressTime == null || now.difference(_backPressTime!) > duration) {
       _backPressTime = now;
       showSnackBar(context, messageKey: StringKeys.pressAgainToExit, duration: duration);
       return Future.value(false);
+    } else {
+      await get<AudioHandler>().stop();
+      FirebaseAnalytics.instance.logEvent(name: gaAppStop);
+      return Future.value(true);
     }
-    get<AudioHandler>().stop();
-    FirebaseAnalytics.instance.logEvent(name: gaAppStop);
-    return Future.value(true);
   }
 
   AppBar _appBar(BuildContext context, AppState state) {

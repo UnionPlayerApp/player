@@ -63,9 +63,8 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
   }
 
   @override
-  void dispose() {
+  void dispose() async {
     WidgetsBinding.instance.removeObserver(this);
-    get<AudioHandler>().stop();
     super.dispose();
   }
 
@@ -118,18 +117,26 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
+      await FirebaseAppCheck.instance.activate();
       await FirebasePerformance.instance.setPerformanceCollectionEnabled(kReleaseMode);
       await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(kReleaseMode);
       _userCredential = await FirebaseAuth.instance.signInAnonymously();
-      await FirebaseAppCheck.instance.activate();
     } catch (error) {
       throw Exception("Firebase initialize error: $error");
     }
+    debugPrint("Firebase initializing is successful");
   }
 
   Future<bool> _logAppStatus(bool isPlaying) async {
     _initStage = "Log App Status init stage";
-    final appCheckToken = await FirebaseAppCheck.instance.getToken();
+    // TODO: need to fix
+    // final appCheckToken = await FirebaseAppCheck.instance.getToken();
+    const appCheckToken = "temporary unsupported";
+    final authIsAnonymous = _userCredential.user?.isAnonymous == null
+        ? "null"
+        : _userCredential.user!.isAnonymous
+            ? "true"
+            : "false";
     final params = {
       "package_info_version": widget._packageInfo.version,
       "package_info_build_number": widget._packageInfo.buildNumber,
@@ -140,10 +147,11 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
       "platform_version": Platform.version,
       "platform_locale_Name": Platform.localeName,
       "app_check_token": appCheckToken,
-      "auth_is_anonymous": _userCredential.user?.isAnonymous ?? "null",
+      "auth_is_anonymous": authIsAnonymous,
       "auth_refresh_token": _userCredential.user?.refreshToken ?? "null",
       "auth_uid": _userCredential.user?.uid ?? "null",
     };
+    params.forEach((key, value) => debugPrint("key: $key, value type: ${value.runtimeType}, value: $value"));
     FirebaseAnalytics.instance.logEvent(name: gaAppStatus, parameters: params);
     debugPrint("App initialize success, app params = $params");
     return isPlaying;
