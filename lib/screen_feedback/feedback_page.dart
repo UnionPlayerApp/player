@@ -12,7 +12,6 @@ import 'package:union_player_app/utils/widgets/no_divider_banner.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:koin_flutter/koin_flutter.dart';
 import 'feedback_event.dart';
 
 class FeedbackPage extends StatelessWidget {
@@ -25,7 +24,6 @@ class FeedbackPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<FeedbackBloc, FeedbackState>(
       builder: (context, state) => _createWidget(context, state),
-      bloc: get<FeedbackBloc>(),
     );
   }
 

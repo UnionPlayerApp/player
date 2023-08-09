@@ -10,7 +10,7 @@ class InfoPage extends StatelessWidget {
         super(key: key);
 
   Widget mapStr(BuildContext context, String str) => Padding(
-      padding: EdgeInsets.fromLTRB(
+      padding: const EdgeInsets.fromLTRB(
           _TEXT_PADDING, _TEXT_PADDING, _TEXT_PADDING, _TEXT_PADDING),
       child: Text(
         str,

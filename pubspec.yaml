@@ -3,7 +3,7 @@ description: A Union Player Flutter application.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.2.9+26
+version: 1.3.0+27
 
 environment:
   sdk: ">=2.13.0 <3.0.0"
@@ -31,9 +31,9 @@ dependencies:
   flutter_svg: ^1.1.1
   form_field_validator: ^1.1.0
   get: ^4.6.5
+  get_it: ^7.6.0
   intl: ^0.17.0
   just_audio: ^0.9.22
-  koin_flutter: ^0.11.0-nullsafety.0
   logger: ^1.1.0
   package_info_plus: ^3.0.2
   path_provider: ^2.0.11

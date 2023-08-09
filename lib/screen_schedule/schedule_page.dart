@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:koin_flutter/koin_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_item_view.dart';
@@ -29,7 +28,6 @@ class SchedulePage extends StatelessWidget {
     return BlocConsumer<ScheduleBloc, ScheduleState>(
       listener: (context, state) => showSnackBar(context, messageText: state.errorText),
       builder: (context, state) => (state is ScheduleLoadedState) ? _loadedPage(context, state) : _loadingPage(),
-      bloc: get<ScheduleBloc>(),
     );
   }
 

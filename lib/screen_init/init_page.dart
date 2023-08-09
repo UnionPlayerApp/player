@@ -18,7 +18,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:koin_flutter/koin_flutter.dart';
+import 'package:get_it/get_it.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:union_player_app/model/system_data/system_data.dart';
@@ -58,7 +58,7 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
 
     WidgetsBinding.instance.addObserver(this);
 
-    _systemData = get<SystemData>();
+    _systemData = GetIt.I.get<SystemData>();
     _initAppFuture = _initApp();
   }
 
@@ -288,7 +288,7 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
     }
 
     final playerHandler = await AudioService.init(
-      builder: () => get<AudioHandler>(),
+      builder: () => GetIt.I.get<AudioHandler>(),
       config: const AudioServiceConfig(
         androidNotificationChannelName: audioNotificationChannelName,
         androidNotificationIcon: audioNotificationIcon,
@@ -326,7 +326,7 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
       }
       if (snapshot.hasError) {
         final List<String> infoPageStrings = _createInfoPageStrings();
-        return getWithParam<InfoPage, List<String>>(infoPageStrings);
+        return GetIt.I.get<InfoPage>(param1: infoPageStrings);
       }
     }
     return _progressPage();
@@ -348,13 +348,13 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
       ]);
 
   Widget _createAppPage(bool isPlaying) => BlocProvider.value(
-        value: getWithParam<AppBloc, bool>(isPlaying),
-        child: get<AppPage>(),
+        value: GetIt.I.get<AppBloc>(param1: isPlaying),
+        child: GetIt.I.get<AppPage>(),
       );
 
   Widget _progressPage() {
     final title = translate(StringKeys.appInitTitle, context);
     final version = "${widget._packageInfo.version} (${widget._packageInfo.buildNumber})";
-    return getWithParam<ProgressPage, List<String>>([title, version]);
+    return GetIt.I.get<ProgressPage>(param1: [title, version]);
   }
 }

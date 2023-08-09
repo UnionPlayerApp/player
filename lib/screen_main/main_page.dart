@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
 import 'package:union_player_app/utils/core/image_source_type.dart';
@@ -24,7 +23,6 @@ class MainPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<MainBloc, MainState>(
       builder: (context, state) => _scrollWidget(context, state),
-      bloc: get<MainBloc>(),
     );
   }
 

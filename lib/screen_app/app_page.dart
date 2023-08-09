@@ -4,7 +4,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:koin_flutter/koin_flutter.dart';
+import 'package:get_it/get_it.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_feedback/feedback_bloc.dart';
 import 'package:union_player_app/screen_feedback/feedback_page.dart';
@@ -18,7 +18,6 @@ import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/ui/app_theme.dart';
-import 'package:union_player_app/utils/widgets/info_page.dart';
 import 'package:union_player_app/utils/widgets/snack_bar.dart';
 
 import '../utils/widgets/anchored_overlay.dart';
@@ -32,11 +31,33 @@ class AppPage extends StatefulWidget {
 }
 
 class _AppState extends State<AppPage> {
+  static const _animationDuration = Duration(milliseconds: 300);
+
+  final _goToCurrentStreamController = StreamController<int>.broadcast();
+
   DateTime? _backPressTime;
   Widget? _currentPage;
   int _currentNavIndex = 0;
-  static const _animationDuration = Duration(milliseconds: 300);
-  final _goToCurrentStreamController = StreamController<int>.broadcast();
+
+  late final _mainPage = BlocProvider.value(
+    value: GetIt.I.get<MainBloc>(),
+    child: GetIt.I.get<MainPage>(param1: _goToCurrentStreamController.stream),
+  );
+
+  late final _schedulePage = BlocProvider.value(
+    value: GetIt.I.get<ScheduleBloc>(),
+    child: GetIt.I.get<SchedulePage>(param1: _goToCurrentStreamController.stream),
+  );
+
+  late final _feedbackPage = BlocProvider.value(
+    value: GetIt.I.get<FeedbackBloc>(),
+    child: GetIt.I.get<FeedbackPage>(),
+  );
+
+  late final _settingsPage = BlocProvider.value(
+    value: GetIt.I.get<SettingsBloc>(),
+    child: GetIt.I.get<SettingsPage>(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +135,7 @@ class _AppState extends State<AppPage> {
       showSnackBar(context, messageKey: StringKeys.pressAgainToExit, duration: duration);
       return Future.value(false);
     } else {
-      await get<AudioHandler>().stop();
+      await GetIt.I.get<AudioHandler>().stop();
       FirebaseAnalytics.instance.logEvent(name: gaAppStop);
       return Future.value(true);
     }
@@ -187,36 +208,13 @@ class _AppState extends State<AppPage> {
   }
 
   Widget _createNavPage(AppState state) {
-    late final Widget navPage;
-    switch (state.navIndex) {
-      case 0:
-        navPage = BlocProvider.value(
-          value: get<MainBloc>(),
-          child: getWithParam<MainPage, Stream<int>>(_goToCurrentStreamController.stream),
-        );
-        break;
-      case 1:
-        navPage = BlocProvider.value(
-          value: get<ScheduleBloc>(),
-          child: getWithParam<SchedulePage, Stream<int>>(_goToCurrentStreamController.stream),
-        );
-        break;
-      case 2:
-        navPage = BlocProvider.value(value: get<FeedbackBloc>(), child: get<FeedbackPage>());
-        break;
-      case 3:
-        navPage = BlocProvider.value(value: get<SettingsBloc>(), child: get<SettingsPage>());
-        break;
-      default:
-        navPage = getWithParam<InfoPage, List<String>>(["Ошибка навигации", "Экран не создан?"]);
-        break;
-    }
+    final navPage = _pageByIndex(state.navIndex);
 
     final isActive = !state.isAudioQualitySelectorOpen;
 
     final navPageAnimated = _currentPage == null
         ? AnimatedOpacity(opacity: isActive ? 1.0 : 0.2, duration: _animationDuration, child: navPage)
-        : _currentPage.runtimeType == navPage.runtimeType
+        : _currentPage == navPage
             ? navPage
             : AnimatedSwitcher(duration: _animationDuration, child: navPage);
 
@@ -227,6 +225,21 @@ class _AppState extends State<AppPage> {
         opacity: isActive ? 1.0 : 0.2,
         duration: _animationDuration,
         child: IgnorePointer(ignoring: !isActive, child: navPageAnimated));
+  }
+
+  Widget _pageByIndex(int navIndex) {
+    switch (navIndex) {
+      case 0:
+        return _mainPage;
+      case 1:
+        return _schedulePage;
+      case 2:
+        return _feedbackPage;
+      case 3:
+        return _settingsPage;
+      default:
+        throw Exception("The navigation error: the page is not implemented for index $navIndex");
+    }
   }
 
   Widget _createAudioQualitySelector(bool visible) {
