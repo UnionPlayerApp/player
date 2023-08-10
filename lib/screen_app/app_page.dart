@@ -286,9 +286,9 @@ class _AppState extends State<AppPage> {
 
     final string = "${translate(StringKeys.settingsQualityLabel, context)} -> ${translate(key, context)}";
 
-    final textStyle = Theme.of(context).textTheme.button == null
+    final textStyle = Theme.of(context).textTheme.labelLarge == null
         ? null
-        : Theme.of(context).textTheme.button!.copyWith(color: Colors.white);
+        : Theme.of(context).textTheme.labelLarge!.copyWith(color: Colors.white);
 
     final text = Container(
         decoration: const BoxDecoration(

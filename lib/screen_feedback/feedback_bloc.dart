@@ -7,8 +7,8 @@ import 'package:union_player_app/screen_feedback/feedback_event.dart';
 import 'package:union_player_app/screen_feedback/feedback_state.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-const _EMAIL_SCHEME = 'mailto';
-const _EMAIL_SUBJECT = 'subject';
+const _emailScheme = 'mailto';
+const _emailSubject = 'subject';
 
 class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
   final SystemData _systemData;
@@ -51,8 +51,8 @@ class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
 
   FutureOr<void> _onWriteEmailButtonPressed(WriteEmailButtonPressedEvent event, Emitter<FeedbackState> emitter) {
     final path = _systemData.emailData.mailingList.join(",");
-    final query = "$_EMAIL_SUBJECT=${event.subject}";
-    final url = Uri(scheme: _EMAIL_SCHEME, path: path, query: query);
+    final query = "$_emailSubject=${event.subject}";
+    final url = Uri(scheme: _emailScheme, path: path, query: query);
     launchUrl(url);
   }
 

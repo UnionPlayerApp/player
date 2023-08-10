@@ -45,7 +45,7 @@ class MainPage extends StatelessWidget {
   Widget _scrollItem(BuildContext context, MainItemView item) {
     final children = List<Widget>.empty(growable: true);
 
-    children.add(_stateTextWidget(context, translate(item.labelKey, context), Theme.of(context).textTheme.headline6));
+    children.add(_stateTextWidget(context, translate(item.labelKey, context), Theme.of(context).textTheme.titleLarge));
 
     switch (item.imageSourceType) {
       case ImageSourceType.none:
@@ -61,10 +61,10 @@ class MainPage extends StatelessWidget {
         break;
     }
 
-    children.add(_stateTextWidget(context, item.title, Theme.of(context).textTheme.bodyText2));
+    children.add(_stateTextWidget(context, item.title, Theme.of(context).textTheme.bodyMedium));
 
     if (item.isArtistVisible) {
-      children.add(_stateTextWidget(context, item.artist, Theme.of(context).textTheme.bodyText1));
+      children.add(_stateTextWidget(context, item.artist, Theme.of(context).textTheme.bodyLarge));
     }
 
     return Column(mainAxisSize: MainAxisSize.min, children: children);

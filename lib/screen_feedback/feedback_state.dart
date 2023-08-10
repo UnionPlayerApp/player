@@ -1,10 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-abstract class FeedbackState extends Equatable {
-
-  @override
-  List<Object> get props => [];
-}
+abstract class FeedbackState extends Equatable {}
 
 class AboutInfoUrlLoadAwaitState extends FeedbackState {
   @override
@@ -12,35 +8,24 @@ class AboutInfoUrlLoadAwaitState extends FeedbackState {
 }
 
 abstract class WebViewState extends FeedbackState {
-  final String url = "";
-  final int indexedStackPosition = 1;
-}
-
-class WebViewLoadAwaitState extends WebViewState{
-  @override
   final String url;
-  @override
-  final int indexedStackPosition = 1;
+  final int indexedStackPosition;
 
-  WebViewLoadAwaitState(this.url);
+  WebViewState({this.url = "", this.indexedStackPosition = 1});
 
   @override
-  List<Object> get props => [url];
+  List<Object?> get props => [url, indexedStackPosition];
 }
 
-class WebViewLoadSuccessState extends WebViewState{
-  @override
-  final String url;
-  @override
-  final int indexedStackPosition = 0;
-
-  WebViewLoadSuccessState(this.url);
-
-  @override
-  List<Object> get props => [indexedStackPosition];
+class WebViewLoadAwaitState extends WebViewState {
+  WebViewLoadAwaitState(String url) : super(url: url);
 }
 
-class ErrorState extends FeedbackState{
+class WebViewLoadSuccessState extends WebViewState {
+  WebViewLoadSuccessState(String url) : super(url: url, indexedStackPosition: 0);
+}
+
+class ErrorState extends FeedbackState {
   final String errorType;
 
   ErrorState(this.errorType);

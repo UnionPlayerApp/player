@@ -101,7 +101,7 @@ class SettingsPage extends StatelessWidget {
 
   Widget _createLabel(BuildContext context, StringKeys key) {
     final text = translate(key, context);
-    return Text(text, style: Theme.of(context).textTheme.bodyText2, overflow: TextOverflow.ellipsis);
+    return Text(text, style: Theme.of(context).textTheme.bodyMedium, overflow: TextOverflow.ellipsis);
   }
 
   Widget _createButton(
@@ -120,7 +120,7 @@ class SettingsPage extends StatelessWidget {
       items.add(DropdownMenuItem(value: values[index], child: Text(translate(key, context))));
     });
 
-    final textStyle = Theme.of(context).textTheme.bodyText1;
+    final textStyle = Theme.of(context).textTheme.bodyLarge;
     final textColor = textStyle?.color;
 
     return DropdownButton<int>(

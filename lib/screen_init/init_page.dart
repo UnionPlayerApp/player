@@ -334,7 +334,7 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
 
   Widget _wrapScreenUtilInit(Widget homePage) {
     return ScreenUtilInit(
-      designSize: const Size(PROTOTYPE_DEVICE_WIDTH, PROTOTYPE_DEVICE_HEIGHT),
+      designSize: const Size(prototypeDeviceWidth, prototypeDeviceHeight),
       builder: (_, __) => homePage,
     );
   }
@@ -353,8 +353,7 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
       );
 
   Widget _progressPage() {
-    final title = translate(StringKeys.appInitTitle, context);
     final version = "${widget._packageInfo.version} (${widget._packageInfo.buildNumber})";
-    return GetIt.I.get<ProgressPage>(param1: [title, version]);
+    return GetIt.I.get<ProgressPage>(param1: version);
   }
 }

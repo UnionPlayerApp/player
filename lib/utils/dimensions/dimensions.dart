@@ -3,8 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 // Размеры устройства в dp, выбранного в качестве образца для расчета размеров виджетов и отступов
-const double PROTOTYPE_DEVICE_HEIGHT = 780;
-const double PROTOTYPE_DEVICE_WIDTH = 390;
+const double prototypeDeviceHeight = 780;
+const double prototypeDeviceWidth = 390;
 
 // Общие настройки
 final EdgeInsets allSidesMargin = EdgeInsets.all(16.w);

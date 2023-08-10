@@ -63,10 +63,10 @@ class SchedulePage extends StatelessWidget {
   }
 
   Text _startTimeWidget(ScheduleItemView element, BuildContext context) =>
-      Text(element.start, style: Theme.of(context).textTheme.headline6, overflow: TextOverflow.ellipsis);
+      Text(element.start, style: Theme.of(context).textTheme.titleLarge, overflow: TextOverflow.ellipsis);
 
   Text _titleWidget(ScheduleItemView element, BuildContext context) {
-    final titleStyle = Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: titleFontSize);
+    final titleStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: titleFontSize);
     return Text(
       element.title,
       style: titleStyle,
@@ -78,7 +78,7 @@ class SchedulePage extends StatelessWidget {
   }
 
   Text _artistWidget(ScheduleItemView element, BuildContext context) {
-    final artistStyle = Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: artistFontSize);
+    final artistStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: artistFontSize);
     return Text(
       element.artist,
       style: artistStyle,

@@ -51,7 +51,7 @@ class FeedbackPage extends StatelessWidget {
         child: ClipRRect(
           borderRadius: const BorderRadius.only(bottomLeft: bannerBorderRadius, bottomRight: bannerBorderRadius),
           child: NoDividerBanner(
-            Text(translate(StringKeys.messageUs, context), style: Theme.of(context).textTheme.bodyText1),
+            Text(translate(StringKeys.messageUs, context), style: Theme.of(context).textTheme.bodyLarge),
             const CircleAvatar(child: Icon(Icons.mail_rounded)),
             [
               TextButton(
@@ -99,8 +99,8 @@ class FeedbackPage extends StatelessWidget {
   Widget _loadAwaitWidget() => const Center(child: CircularProgressIndicator());
 
   Widget _loadErrorWidget(BuildContext context, ErrorState state) {
-    final headerStyle = Theme.of(context).textTheme.headline6;
-    final bodyStyle = Theme.of(context).textTheme.bodyText2;
+    final headerStyle = Theme.of(context).textTheme.titleLarge;
+    final bodyStyle = Theme.of(context).textTheme.bodyMedium;
     final header = Text(translate(StringKeys.anyError, context), style: headerStyle);
     final body = Text(state.errorType, style: bodyStyle, textAlign: TextAlign.center);
     const padding = EdgeInsets.all(8.0);

@@ -39,7 +39,7 @@ class BindingModule {
     GetIt.I.registerFactory(() => AppPage());
     GetIt.I.registerFactory(() => SettingsPage());
     GetIt.I.registerFactoryParam<InfoPage, List<String>, void>((params, _) => InfoPage(params: params));
-    GetIt.I.registerFactoryParam<ProgressPage, List<String>, void>((params, _) => ProgressPage(params: params));
+    GetIt.I.registerFactoryParam<ProgressPage, String, void>((appVersion, _) => ProgressPage(version: appVersion));
     GetIt.I.registerFactoryParam<MainPage, Stream<int>, void>((fabGoToCurrentStream, _) => MainPage(fabGoToCurrentStream));
     GetIt.I.registerFactoryParam<SchedulePage, Stream<int>, void>((fabGoToCurrentStream, _) => SchedulePage(fabGoToCurrentStream));
     GetIt.I.registerFactory(() => FeedbackPage(GetIt.I.get()));

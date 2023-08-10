@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const _TEXT_PADDING = 5.0;
+const _textPadding = 5.0;
 
 class InfoPage extends StatelessWidget {
   final List<String> params;
@@ -11,10 +11,10 @@ class InfoPage extends StatelessWidget {
 
   Widget mapStr(BuildContext context, String str) => Padding(
       padding: const EdgeInsets.fromLTRB(
-          _TEXT_PADDING, _TEXT_PADDING, _TEXT_PADDING, _TEXT_PADDING),
+          _textPadding, _textPadding, _textPadding, _textPadding),
       child: Text(
         str,
-        style: Theme.of(context).textTheme.bodyText2,
+        style: Theme.of(context).textTheme.bodyMedium,
         textAlign: TextAlign.center,
       ));
 
