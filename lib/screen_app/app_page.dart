@@ -118,9 +118,9 @@ class _AppState extends State<AppPage> {
   }
 
   Widget _fakeButtonAppBar() {
-    return Column(
+    return const Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
+      children: [
         Icon(null),
         Text(""),
       ],
