@@ -13,7 +13,6 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -73,7 +72,7 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
     super.didChangePlatformBrightness();
     SpManager.readThemeMode().then((settings) {
       if (settings == ThemeMode.system) {
-        final themeMode = SchedulerBinding.instance.window.platformBrightness.toThemeMode;
+        final themeMode = View.of(context).platformDispatcher.platformBrightness.toThemeMode;
         Get.changeThemeMode(themeMode);
       }
     });
