@@ -6,10 +6,10 @@ import 'package:union_player_app/utils/core/date_time.dart';
 
 import '../utils/constants/constants.dart';
 import '../utils/core/image_source_type.dart';
-import '../utils/localizations/string_translation.dart';
+import '../utils/core/string_keys.dart';
 
 // ignore: must_be_immutable
-class MainItemView extends Equatable {
+class ListenItemView extends Equatable {
   final DateTime finish;
   final DateTime start;
   final ImageSourceType imageSourceType;
@@ -20,7 +20,7 @@ class MainItemView extends Equatable {
 
   var labelKey = StringKeys.empty;
 
-  MainItemView._({
+  ListenItemView._({
     required this.artist,
     required this.finish,
     required this.imageSource,
@@ -30,14 +30,14 @@ class MainItemView extends Equatable {
     required this.title,
   });
 
-  factory MainItemView.fromMediaItem(MediaItem item) {
+  factory ListenItemView.fromMediaItem(MediaItem item) {
     final artist = item.artist ?? "";
     final finish = item.duration != null ? item.start.add(item.duration!) : item.start;
     final imageSource = item.artUri == null ? logoImage : item.artUri!.path;
     final imageSourceType = item.artUri == null ? ImageSourceType.assets : ImageSourceType.file;
     final isArtistVisible = item.type.toScheduleItemType == ScheduleItemType.music;
 
-    return MainItemView._(
+    return ListenItemView._(
       artist: artist,
       finish: finish,
       imageSource: imageSource,

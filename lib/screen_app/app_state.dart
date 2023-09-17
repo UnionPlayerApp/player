@@ -9,10 +9,10 @@ class AppState extends Equatable {
   final bool isScheduleLoaded;
   final bool playingState;
   final int audioQualityId;
-  final int navIndex;
+  final NavType navType;
 
   const AppState(
-    this.navIndex,
+    this.navType,
     this.playingState,
     this.audioQualityId,
     this.isAudioQualitySelectorOpen, {
@@ -28,7 +28,7 @@ class AppState extends Equatable {
         audioQualityId,
         isAudioQualitySelectorOpen,
         isScheduleLoaded,
-        navIndex,
+        navType,
         nextArtist,
         nextTitle,
         playingState,
@@ -36,18 +36,19 @@ class AppState extends Equatable {
         presentTitle,
       ];
 
-  AppState copyWith(
-          {String? nextArtist,
-          String? nextTitle,
-          String? presentArtist,
-          String? presentTitle,
-          bool? isAudioQualitySelectorOpen,
-          bool? isScheduleLoaded,
-          bool? playingState,
-          int? audioQualityId,
-          int? navIndex}) =>
+  AppState copyWith({
+    String? nextArtist,
+    String? nextTitle,
+    String? presentArtist,
+    String? presentTitle,
+    bool? isAudioQualitySelectorOpen,
+    bool? isScheduleLoaded,
+    bool? playingState,
+    int? audioQualityId,
+    NavType? navType,
+  }) =>
       AppState(
-        navIndex ?? this.navIndex,
+        navType ?? this.navType,
         playingState ?? this.playingState,
         audioQualityId ?? this.audioQualityId,
         isAudioQualitySelectorOpen ?? this.isAudioQualitySelectorOpen,

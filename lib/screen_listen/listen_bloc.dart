@@ -3,35 +3,35 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:union_player_app/screen_main/main_event.dart';
-import 'package:union_player_app/screen_main/main_state.dart';
-import 'package:union_player_app/utils/localizations/string_translation.dart';
 
-import 'main_item_view.dart';
+import '../utils/core/string_keys.dart';
+import 'listen_event.dart';
+import 'listen_item_view.dart';
+import 'listen_state.dart';
 
-class MainBloc extends Bloc<MainEvent, MainState> {
+class ListenBloc extends Bloc<ListenEvent, ListenState> {
   final AudioHandler _audioHandler;
 
   late final StreamSubscription _queueSubscription;
   late final StreamSubscription _customSubscription;
 
-  final _items = List<MainItemView>.empty(growable: true);
+  final _items = List<ListenItemView>.empty(growable: true);
 
-  MainBloc(this._audioHandler) : super(const MainState()) {
+  ListenBloc(this._audioHandler) : super(const ListenState()) {
     _customSubscription = _audioHandler.customEvent.listen((event) => _onCustom(event));
     _queueSubscription = _audioHandler.queue.listen((queue) => _onQueue(queue));
 
-    on<MainEvent>(_onMain);
+    on<ListenEvent>(_onMain);
   }
 
-  FutureOr<void> _onMain(MainEvent event, Emitter<MainState> emitter) {
+  FutureOr<void> _onMain(ListenEvent event, Emitter<ListenState> emitter) {
     if (event.mediaItems.isEmpty) {
       debugPrint("Main page, media item queue is empty");
       return Future.value();
     }
 
     _items.clear();
-    _items.addAll(event.mediaItems.map((mediaItem) => MainItemView.fromMediaItem(mediaItem)));
+    _items.addAll(event.mediaItems.map((mediaItem) => ListenItemView.fromMediaItem(mediaItem)));
 
     var currentIndex = -1;
 
@@ -58,7 +58,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       currentIndex = _items.length - 1;
     }
 
-    final newState = MainState(
+    final newState = ListenState(
       items: _items,
       currentIndex: currentIndex,
     );
@@ -68,7 +68,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
   void _onCustom(error) {
     debugPrint("MainBloc._onCustom(error), error = $error");
-    add(MainEvent(false, loadingError: error));
+    add(ListenEvent(isScheduleLoaded: false, loadingError: error));
   }
 
   _onQueue(List<MediaItem>? queue) {
@@ -80,7 +80,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       _onCustom("Schedule load error: queue is empty");
     } else {
       debugPrint("MainBloc._onQueue(queue) -> queue has ${queue.length} items");
-      add(MainEvent(true, mediaItems: queue));
+      add(ListenEvent(isScheduleLoaded: true, mediaItems: queue));
     }
   }
 

@@ -11,8 +11,6 @@ import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_app/app_page.dart';
 import 'package:union_player_app/screen_feedback/feedback_bloc.dart';
 import 'package:union_player_app/screen_feedback/feedback_page.dart';
-import 'package:union_player_app/screen_main/main_bloc.dart';
-import 'package:union_player_app/screen_main/main_page.dart';
 import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_page.dart';
 import 'package:union_player_app/screen_settings/settings_bloc.dart';
@@ -23,6 +21,8 @@ import 'package:union_player_app/utils/widgets/progress_page.dart';
 import 'package:uuid/uuid.dart';
 
 import '../player/app_player.dart';
+import '../screen_listen/listen_bloc.dart';
+import '../screen_listen/listen_page.dart';
 
 class BindingModule {
   static providesTools() {
@@ -40,7 +40,7 @@ class BindingModule {
     GetIt.I.registerFactory(() => SettingsPage());
     GetIt.I.registerFactoryParam<InfoPage, List<String>, void>((params, _) => InfoPage(params: params));
     GetIt.I.registerFactoryParam<ProgressPage, String, void>((appVersion, _) => ProgressPage(version: appVersion));
-    GetIt.I.registerFactoryParam<MainPage, Stream<int>, void>((fabGoToCurrentStream, _) => MainPage(fabGoToCurrentStream));
+    GetIt.I.registerFactoryParam<ListenPage, Stream<int>, void>((fabGoToCurrentStream, _) => ListenPage(fabGoToCurrentStream));
     GetIt.I.registerFactoryParam<SchedulePage, Stream<int>, void>((fabGoToCurrentStream, _) => SchedulePage(fabGoToCurrentStream));
     GetIt.I.registerFactory(() => FeedbackPage());
   }
@@ -48,7 +48,7 @@ class BindingModule {
   static providesBlocs() {
     GetIt.I.registerFactoryParam<AppBloc, bool, void>((isPlaying, _) => AppBloc(GetIt.I.get(), isPlaying));
     GetIt.I.registerFactory(() => FeedbackBloc(GetIt.I.get()));
-    GetIt.I.registerFactory(() => MainBloc(GetIt.I.get()));
+    GetIt.I.registerFactory(() => ListenBloc(GetIt.I.get()));
     GetIt.I.registerFactory(() => ScheduleBloc(audioHandler: GetIt.I.get()));
     GetIt.I.registerFactory(() => SettingsBloc());
   }

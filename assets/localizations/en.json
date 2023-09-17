@@ -7,7 +7,7 @@
   "feedbackSubject": "From Union Radio 1 listener",
   "feedbackEmailLaunchError": "Error starting the mail program. Check the correctness of its settings",
   "pressAgainToExit": "Press again to exit",
-  "home" : "Home",
+  "listen" : "Home",
   "schedule" : "Schedule",
   "feedback" : "Feedback",
   "settings" : "Settings",

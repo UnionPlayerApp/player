@@ -4,12 +4,9 @@ import 'package:audio_service/audio_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
-import 'package:union_player_app/screen_feedback/feedback_bloc.dart';
-import 'package:union_player_app/screen_feedback/feedback_page.dart';
-import 'package:union_player_app/screen_main/main_bloc.dart';
-import 'package:union_player_app/screen_main/main_page.dart';
 import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_page.dart';
 import 'package:union_player_app/screen_settings/settings_bloc.dart';
@@ -20,9 +17,10 @@ import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/ui/app_theme.dart';
 import 'package:union_player_app/utils/widgets/snack_bar.dart';
 
-import '../utils/widgets/anchored_overlay.dart';
-import '../utils/widgets/center_about.dart';
-import '../utils/widgets/fab_with_icons.dart';
+import '../screen_listen/listen_bloc.dart';
+import '../screen_listen/listen_page.dart';
+import '../utils/core/nav_type.dart';
+import '../utils/core/string_keys.dart';
 import '../utils/widgets/flags_widget.dart';
 
 class AppPage extends StatefulWidget {
@@ -37,21 +35,15 @@ class _AppState extends State<AppPage> {
 
   DateTime? _backPressTime;
   Widget? _currentPage;
-  int _currentNavIndex = 0;
 
-  late final _mainPage = BlocProvider.value(
-    value: GetIt.I.get<MainBloc>(),
-    child: GetIt.I.get<MainPage>(param1: _goToCurrentStreamController.stream),
+  late final _listenPage = BlocProvider.value(
+    value: GetIt.I.get<ListenBloc>(),
+    child: GetIt.I.get<ListenPage>(param1: _goToCurrentStreamController.stream),
   );
 
   late final _schedulePage = BlocProvider.value(
     value: GetIt.I.get<ScheduleBloc>(),
     child: GetIt.I.get<SchedulePage>(param1: _goToCurrentStreamController.stream),
-  );
-
-  late final _feedbackPage = BlocProvider.value(
-    value: GetIt.I.get<FeedbackBloc>(),
-    child: GetIt.I.get<FeedbackPage>(),
   );
 
   late final _settingsPage = BlocProvider.value(
@@ -70,8 +62,6 @@ class _AppState extends State<AppPage> {
             appBar: _appBar(context, state),
             body: _body(state),
             extendBody: true,
-            floatingActionButton: _fab(context, state),
-            floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
             bottomNavigationBar: _bottomNavigationBar(state),
           ),
         );
@@ -80,50 +70,36 @@ class _AppState extends State<AppPage> {
   }
 
   Widget _bottomNavigationBar(AppState state) => BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 7,
         child: SizedBox(
           height: kBottomNavigationBarHeight,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buttonAppBar(context, state, 0, Icons.radio, StringKeys.home),
-              _buttonAppBar(context, state, 1, Icons.list_alt, StringKeys.schedule),
-              _buttonAppBar(context, state, 2, Icons.markunread_mailbox_outlined, StringKeys.feedback),
-              _buttonAppBar(context, state, 3, Icons.settings_rounded, StringKeys.settings),
-              _fakeButtonAppBar(),
+              _buttonAppBar(context, state, NavType.schedule, icSchedule, StringKeys.schedule),
+              _buttonAppBar(context, state, NavType.listen, icListen, StringKeys.listen),
+              _buttonAppBar(context, state, NavType.settings, icSettings, StringKeys.settings),
             ],
           ),
         ),
       );
 
-  Widget _buttonAppBar(BuildContext context, AppState state, int itemTab, IconData iconTab, StringKeys nameTab) {
-    final color = state.navIndex == itemTab
+  Widget _buttonAppBar(BuildContext context, AppState state, NavType navType, String iconName, StringKeys nameTab) {
+    final color = state.navType == navType
         ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor
         : Theme.of(context).bottomNavigationBarTheme.unselectedItemColor;
     return MaterialButton(
       padding: const EdgeInsets.all(0),
       minWidth: 0,
       onPressed: () {
-        context.read<AppBloc>().add(AppNavEvent(itemTab));
+        context.read<AppBloc>().add(AppNavEvent(navType));
       },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(iconTab, color: color),
+          SvgPicture.asset(iconName, colorFilter: ColorFilter.mode(color!, BlendMode.srcIn)),
           Text(translate(nameTab, context), style: TextStyle(color: color)),
         ],
       ),
-    );
-  }
-
-  Widget _fakeButtonAppBar() {
-    return const Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(null),
-        Text(""),
-      ],
     );
   }
 
@@ -208,7 +184,7 @@ class _AppState extends State<AppPage> {
   }
 
   Widget _createNavPage(AppState state) {
-    final navPage = _pageByIndex(state.navIndex);
+    final navPage = _pageByNavType(state.navType);
 
     final isActive = !state.isAudioQualitySelectorOpen;
 
@@ -219,7 +195,6 @@ class _AppState extends State<AppPage> {
             : AnimatedSwitcher(duration: _animationDuration, child: navPage);
 
     _currentPage = navPage;
-    _currentNavIndex = state.navIndex;
 
     return AnimatedOpacity(
         opacity: isActive ? 1.0 : 0.2,
@@ -227,18 +202,14 @@ class _AppState extends State<AppPage> {
         child: IgnorePointer(ignoring: !isActive, child: navPageAnimated));
   }
 
-  Widget _pageByIndex(int navIndex) {
-    switch (navIndex) {
-      case 0:
-        return _mainPage;
-      case 1:
+  Widget _pageByNavType(NavType navType) {
+    switch (navType) {
+      case NavType.listen:
+        return _listenPage;
+      case NavType.schedule:
         return _schedulePage;
-      case 2:
-        return _feedbackPage;
-      case 3:
+      case NavType.settings:
         return _settingsPage;
-      default:
-        throw Exception("The navigation error: the page is not implemented for index $navIndex");
     }
   }
 
@@ -305,45 +276,6 @@ class _AppState extends State<AppPage> {
       padding: const EdgeInsets.all(0),
       onPressed: () => context.read<AppBloc>().add(AppAudioQualityButtonEvent(audioQualityId)),
       child: row,
-    );
-  }
-
-  Widget _fab(BuildContext context, AppState state) {
-    final fabIconData = state.playingState ? Icons.stop_rounded : Icons.play_arrow_rounded;
-    fabAction() => context.read<AppBloc>().add(AppFabPlayStopEvent());
-    const fabTooltip = 'Play / Stop';
-
-    const icons = [
-      Icons.my_location_rounded,
-    ];
-    final actions = [
-      () => _goToCurrentStreamController.add(_currentNavIndex),
-    ];
-    const tooltips = [
-      'Current item',
-    ];
-
-    return AnchoredOverlay(
-      showOverlay: state.navIndex == 0 || state.navIndex == 1,
-      overlayBuilder: (context, offset) {
-        return CenterAbout(
-          position: Offset(offset.dx, offset.dy - icons.length * 35.0),
-          child: FabWithIcons(
-            icons: icons,
-            actions: actions,
-            tooltips: tooltips,
-            fabIcon: fabIconData,
-            fabAction: fabAction,
-            fabTooltip: fabTooltip,
-          ),
-        );
-      },
-      child: FloatingActionButton(
-        onPressed: fabAction,
-        tooltip: fabTooltip,
-        elevation: 2.0,
-        child: Icon(fabIconData),
-      ),
     );
   }
 }

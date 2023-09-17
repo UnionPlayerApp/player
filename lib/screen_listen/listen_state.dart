@@ -1,12 +1,12 @@
 import 'package:equatable/equatable.dart';
 
-import 'main_item_view.dart';
+import 'listen_item_view.dart';
 
-class MainState extends Equatable {
-  final List<MainItemView> items;
+class ListenState extends Equatable {
+  final List<ListenItemView> items;
   final int currentIndex;
 
-  const MainState({
+  const ListenState({
     this.items = const [],
     this.currentIndex = 0,
   });

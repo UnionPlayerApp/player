@@ -33,6 +33,7 @@ import 'package:union_player_app/utils/widgets/progress_page.dart';
 
 import '../firebase_options.dart';
 import '../utils/core/locale_utils.dart';
+import '../utils/core/string_keys.dart';
 
 class InitPage extends StatefulWidget {
   final PackageInfo _packageInfo;

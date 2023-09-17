@@ -2,31 +2,31 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:union_player_app/screen_main/main_bloc.dart';
-import 'package:union_player_app/screen_main/main_state.dart';
 import 'package:union_player_app/utils/core/image_source_type.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 
-import 'main_item_view.dart';
+import 'listen_bloc.dart';
+import 'listen_item_view.dart';
+import 'listen_state.dart';
 
 // ignore: must_be_immutable
-class MainPage extends StatelessWidget {
+class ListenPage extends StatelessWidget {
   final _scrollController = ScrollController();
   var _currentIndex = 0;
 
-  MainPage(Stream<int> fabGoToCurrentStream) : super() {
+  ListenPage(Stream<int> fabGoToCurrentStream) : super() {
     fabGoToCurrentStream.listen((navIndex) => _scrollToCurrentItem(navIndex));
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MainBloc, MainState>(
+    return BlocBuilder<ListenBloc, ListenState>(
       builder: (context, state) => _scrollWidget(context, state),
     );
   }
 
-  Widget _scrollWidget(BuildContext context, MainState state) {
+  Widget _scrollWidget(BuildContext context, ListenState state) {
     _currentIndex = state.currentIndex;
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToCurrentItem(0));
     return Container(
@@ -42,7 +42,7 @@ class MainPage extends StatelessWidget {
     );
   }
 
-  Widget _scrollItem(BuildContext context, MainItemView item) {
+  Widget _scrollItem(BuildContext context, ListenItemView item) {
     final children = List<Widget>.empty(growable: true);
 
     children.add(_stateTextWidget(context, translate(item.labelKey, context), Theme.of(context).textTheme.titleLarge));
