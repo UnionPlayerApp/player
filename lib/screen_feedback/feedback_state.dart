@@ -1,49 +1,30 @@
 import 'package:equatable/equatable.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 abstract class FeedbackState extends Equatable {
+  const FeedbackState();
+}
+
+class FeedbackLoadingState extends FeedbackState {
+  const FeedbackLoadingState();
 
   @override
   List<Object> get props => [];
 }
 
-class AboutInfoUrlLoadAwaitState extends FeedbackState {
+class FeedbackWebViewState extends FeedbackState {
+  final WebViewController controller;
+
+  const FeedbackWebViewState({required this.controller});
+
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [controller];
 }
 
-abstract class WebViewState extends FeedbackState {
-  final String url = "";
-  final int indexedStackPosition = 1;
-}
-
-class WebViewLoadAwaitState extends WebViewState{
-  @override
-  final String url;
-  @override
-  final int indexedStackPosition = 1;
-
-  WebViewLoadAwaitState(this.url);
-
-  @override
-  List<Object> get props => [url];
-}
-
-class WebViewLoadSuccessState extends WebViewState{
-  @override
-  final String url;
-  @override
-  final int indexedStackPosition = 0;
-
-  WebViewLoadSuccessState(this.url);
-
-  @override
-  List<Object> get props => [indexedStackPosition];
-}
-
-class ErrorState extends FeedbackState{
+class FeedbackErrorState extends FeedbackState {
   final String errorType;
 
-  ErrorState(this.errorType);
+  const FeedbackErrorState(this.errorType);
 
   @override
   List<Object> get props => [errorType];

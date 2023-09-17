@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/screen_settings/settings_bloc.dart';
 import 'package:union_player_app/screen_settings/settings_event.dart';
 import 'package:union_player_app/screen_settings/settings_state.dart';
@@ -13,7 +12,6 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SettingsBloc, SettingsState>(
       builder: (builderContext, state) => _createWidget(builderContext, state),
-      bloc: get<SettingsBloc>(),
     );
   }
 
@@ -47,7 +45,7 @@ class SettingsPage extends StatelessWidget {
             themeSystem,
           ],
           state.theme,
-          (int? value) => get<SettingsBloc>().add(SettingsEventTheme(value ?? defaultThemeId)),
+          (int? value) => BlocProvider.of<SettingsBloc>(context).add(SettingsEventTheme(value ?? defaultThemeId)),
         ),
       );
 
@@ -66,7 +64,9 @@ class SettingsPage extends StatelessWidget {
             startPlayingLast,
           ],
           state.startPlaying,
-          (int? value) => get<SettingsBloc>().add(SettingsEventStartPlaying(value ?? defaultStartPlayingId)),
+          (int? value) => BlocProvider.of<SettingsBloc>(context).add(
+            SettingsEventStartPlaying(value ?? defaultStartPlayingId),
+          ),
         ),
       );
 
@@ -87,7 +87,7 @@ class SettingsPage extends StatelessWidget {
             langUS,
           ],
           state.lang,
-          (int? value) => get<SettingsBloc>().add(SettingsEventLang(value ?? defaultLangId)),
+          (int? value) => BlocProvider.of<SettingsBloc>(context).add(SettingsEventLang(value ?? defaultLangId)),
         ),
       );
 
@@ -101,7 +101,7 @@ class SettingsPage extends StatelessWidget {
 
   Widget _createLabel(BuildContext context, StringKeys key) {
     final text = translate(key, context);
-    return Text(text, style: Theme.of(context).textTheme.bodyText2, overflow: TextOverflow.ellipsis);
+    return Text(text, style: Theme.of(context).textTheme.bodyMedium, overflow: TextOverflow.ellipsis);
   }
 
   Widget _createButton(
@@ -120,7 +120,7 @@ class SettingsPage extends StatelessWidget {
       items.add(DropdownMenuItem(value: values[index], child: Text(translate(key, context))));
     });
 
-    final textStyle = Theme.of(context).textTheme.bodyText1;
+    final textStyle = Theme.of(context).textTheme.bodyLarge;
     final textColor = textStyle?.color;
 
     return DropdownButton<int>(

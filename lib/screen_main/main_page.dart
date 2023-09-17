@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:koin_flutter/koin_flutter.dart';
 import 'package:union_player_app/screen_main/main_bloc.dart';
 import 'package:union_player_app/screen_main/main_state.dart';
 import 'package:union_player_app/utils/core/image_source_type.dart';
@@ -24,7 +23,6 @@ class MainPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<MainBloc, MainState>(
       builder: (context, state) => _scrollWidget(context, state),
-      bloc: get<MainBloc>(),
     );
   }
 
@@ -47,7 +45,7 @@ class MainPage extends StatelessWidget {
   Widget _scrollItem(BuildContext context, MainItemView item) {
     final children = List<Widget>.empty(growable: true);
 
-    children.add(_stateTextWidget(context, translate(item.labelKey, context), Theme.of(context).textTheme.headline6));
+    children.add(_stateTextWidget(context, translate(item.labelKey, context), Theme.of(context).textTheme.titleLarge));
 
     switch (item.imageSourceType) {
       case ImageSourceType.none:
@@ -63,10 +61,10 @@ class MainPage extends StatelessWidget {
         break;
     }
 
-    children.add(_stateTextWidget(context, item.title, Theme.of(context).textTheme.bodyText2));
+    children.add(_stateTextWidget(context, item.title, Theme.of(context).textTheme.bodyMedium));
 
     if (item.isArtistVisible) {
-      children.add(_stateTextWidget(context, item.artist, Theme.of(context).textTheme.bodyText1));
+      children.add(_stateTextWidget(context, item.artist, Theme.of(context).textTheme.bodyLarge));
     }
 
     return Column(mainAxisSize: MainAxisSize.min, children: children);

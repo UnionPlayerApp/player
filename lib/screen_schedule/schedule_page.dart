@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:koin_flutter/koin_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_item_view.dart';
@@ -29,7 +28,6 @@ class SchedulePage extends StatelessWidget {
     return BlocConsumer<ScheduleBloc, ScheduleState>(
       listener: (context, state) => showSnackBar(context, messageText: state.errorText),
       builder: (context, state) => (state is ScheduleLoadedState) ? _loadedPage(context, state) : _loadingPage(),
-      bloc: get<ScheduleBloc>(),
     );
   }
 
@@ -65,10 +63,10 @@ class SchedulePage extends StatelessWidget {
   }
 
   Text _startTimeWidget(ScheduleItemView element, BuildContext context) =>
-      Text(element.start, style: Theme.of(context).textTheme.headline6, overflow: TextOverflow.ellipsis);
+      Text(element.start, style: Theme.of(context).textTheme.titleLarge, overflow: TextOverflow.ellipsis);
 
   Text _titleWidget(ScheduleItemView element, BuildContext context) {
-    final titleStyle = Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: titleFontSize);
+    final titleStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: titleFontSize);
     return Text(
       element.title,
       style: titleStyle,
@@ -80,7 +78,7 @@ class SchedulePage extends StatelessWidget {
   }
 
   Text _artistWidget(ScheduleItemView element, BuildContext context) {
-    final artistStyle = Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: artistFontSize);
+    final artistStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: artistFontSize);
     return Text(
       element.artist,
       style: artistStyle,

@@ -3,13 +3,9 @@ import 'package:union_player_app/utils/ui/app_theme.dart';
 import 'package:union_player_app/utils/widgets/flags_widget.dart';
 
 class ProgressPage extends StatelessWidget {
-  final String _title;
   final String _version;
 
-  ProgressPage({Key? key, required List<String> params})
-      : _title = params[0],
-        _version = params[1],
-        super(key: key);
+  const ProgressPage({required String version}) : _version = version;
 
   @override
   Widget build(BuildContext context) {

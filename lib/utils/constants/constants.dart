@@ -1,7 +1,5 @@
 // Asset Constants
-import 'dart:ui';
-
-import 'package:flutter/scheduler.dart';
+import 'package:flutter/material.dart';
 
 const appBarLogoImage = "assets/images/union_radio_logo_outline.svg";
 const logoImage = "assets/images/union_radio_logo.png";
@@ -31,7 +29,7 @@ void setIcAudioQuality(int themeId) {
       _setIcAudioQualityToWhite();
       break;
     default:
-      switch (SchedulerBinding.instance.window.platformBrightness) {
+      switch (WidgetsBinding.instance.platformDispatcher.platformBrightness) {
         case Brightness.light:
           _setIcAudioQualityToBlack();
           break;

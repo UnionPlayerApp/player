@@ -7,7 +7,7 @@ class SettingsState extends Equatable {
   final int theme;
   final StringKeys snackBarKey;
 
-  const SettingsState(this.lang, this.startPlaying, this.theme, {this.snackBarKey: StringKeys.empty});
+  const SettingsState(this.lang, this.startPlaying, this.theme, {this.snackBarKey = StringKeys.empty});
 
   @override
   List<Object?> get props => [lang, startPlaying, theme, snackBarKey];

@@ -1,11 +1,9 @@
 import 'dart:async';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:koin/koin.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:union_player_app/di/di.dart';
 import 'package:union_player_app/screen_init/init_page.dart';
@@ -30,11 +28,9 @@ void main() async {
 }
 
 void _initLocator() {
-  startKoin((app) {
-    const level = kDebugMode ? Level.debug : Level.none;
-    app.printLogger(level: level);
-    app.module(appModule);
-  });
+  BindingModule.providesTools();
+  BindingModule.providesBlocs();
+  BindingModule.providesPages();
 }
 
 Widget _app(PackageInfo packageInfo, ThemeMode themeMode) {

@@ -159,10 +159,10 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
 
   Future<List<Uri>> _createUriListFromAssetList(List<String> assetList) async {
     final List<Uri> uriList = List.empty(growable: true);
-    assetList.forEach((asset) async {
+    for (var asset in assetList) {
       final path = await _createUriFromAsset(asset);
       uriList.add(path);
-    });
+    }
     return uriList;
   }
 
