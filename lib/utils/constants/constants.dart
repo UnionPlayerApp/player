@@ -20,9 +20,10 @@ const icAudioQualityHighWhite = "assets/images/audio_quality_high_white.png";
 const icAudioQualityMediumWhite = "assets/images/audio_quality_medium_white.png";
 const icAudioQualityDefaultWhite = icAudioQualityMediumWhite;
 
+const icAudioQuality = "assets/icons/ic_audio_quality.svg";
 const icListen = "assets/icons/ic_listen.svg";
-const icSettings = "assets/icons/ic_settings.svg";
 const icSchedule = "assets/icons/ic_schedule.svg";
+const icSettings = "assets/icons/ic_settings.svg";
 
 void setIcAudioQuality(int themeId) {
   switch (themeId) {

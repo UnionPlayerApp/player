@@ -36,18 +36,18 @@ class _AppState extends State<AppPage> {
   DateTime? _backPressTime;
   Widget? _currentPage;
 
-  late final _listenPage = BlocProvider.value(
-    value: GetIt.I.get<ListenBloc>(),
+  late final _listenPage = BlocProvider(
+    create: (_) => GetIt.I.get<ListenBloc>(),
     child: GetIt.I.get<ListenPage>(param1: _goToCurrentStreamController.stream),
   );
 
-  late final _schedulePage = BlocProvider.value(
-    value: GetIt.I.get<ScheduleBloc>(),
+  late final _schedulePage = BlocProvider(
+    create: (_) => GetIt.I.get<ScheduleBloc>(),
     child: GetIt.I.get<SchedulePage>(param1: _goToCurrentStreamController.stream),
   );
 
-  late final _settingsPage = BlocProvider.value(
-    value: GetIt.I.get<SettingsBloc>(),
+  late final _settingsPage = BlocProvider(
+    create: (_) => GetIt.I.get<SettingsBloc>(),
     child: GetIt.I.get<SettingsPage>(),
   );
 
@@ -59,9 +59,7 @@ class _AppState extends State<AppPage> {
         return WillPopScope(
           onWillPop: () => _onWillPop(),
           child: Scaffold(
-            appBar: _appBar(context, state),
             body: _body(state),
-            extendBody: true,
             bottomNavigationBar: _bottomNavigationBar(state),
           ),
         );
@@ -70,6 +68,7 @@ class _AppState extends State<AppPage> {
   }
 
   Widget _bottomNavigationBar(AppState state) => BottomAppBar(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: SizedBox(
           height: kBottomNavigationBarHeight,
           child: Row(
@@ -97,6 +96,7 @@ class _AppState extends State<AppPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SvgPicture.asset(iconName, colorFilter: ColorFilter.mode(color!, BlendMode.srcIn)),
+          const SizedBox(height: 8.0),
           Text(translate(nameTab, context), style: TextStyle(color: color)),
         ],
       ),
@@ -177,10 +177,10 @@ class _AppState extends State<AppPage> {
   }
 
   Widget _body(AppState state) {
-    final navPage = _createNavPage(state);
-    final audioQualitySelector = _createAudioQualitySelector(state.isAudioQualitySelectorOpen);
-
-    return Stack(children: [navPage, audioQualitySelector]);
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: SafeArea(child: _createNavPage(state)),
+    );
   }
 
   Widget _createNavPage(AppState state) {

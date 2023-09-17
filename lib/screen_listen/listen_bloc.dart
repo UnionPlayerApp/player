@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/core/shared_preferences.dart';
+import 'package:union_player_app/utils/enums/audio_quality_type.dart';
 
 import '../utils/core/string_keys.dart';
 import 'listen_event.dart';
@@ -17,14 +20,24 @@ class ListenBloc extends Bloc<ListenEvent, ListenState> {
 
   final _items = List<ListenItemView>.empty(growable: true);
 
-  ListenBloc(this._audioHandler) : super(const ListenState()) {
+  ListenBloc(this._audioHandler) : super(ListenState.empty()) {
     _customSubscription = _audioHandler.customEvent.listen((event) => _onCustom(event));
     _queueSubscription = _audioHandler.queue.listen((queue) => _onQueue(queue));
 
-    on<ListenEvent>(_onMain);
+    on<ListenInitEvent>(_onInit);
+    on<ListenLoadEvent>(_onLoad);
+
+    add(ListenInitEvent());
   }
 
-  FutureOr<void> _onMain(ListenEvent event, Emitter<ListenState> emitter) {
+  FutureOr<void> _onInit(ListenInitEvent event, Emitter<ListenState> emitter) async {
+    final audioQualityInt = await readIntFromSharedPreferences(keyAudioQuality);
+    final audioQualityType = audioQualityInt?.audioQualityType ?? AudioQualityType.unknown;
+    final newState = state.copyWith(audioQualityType: audioQualityType);
+    emitter(newState);
+  }
+
+  FutureOr<void> _onLoad(ListenLoadEvent event, Emitter<ListenState> emitter) {
     if (event.mediaItems.isEmpty) {
       debugPrint("Main page, media item queue is empty");
       return Future.value();
@@ -58,7 +71,7 @@ class ListenBloc extends Bloc<ListenEvent, ListenState> {
       currentIndex = _items.length - 1;
     }
 
-    final newState = ListenState(
+    final newState = state.copyWith(
       items: _items,
       currentIndex: currentIndex,
     );
@@ -68,7 +81,7 @@ class ListenBloc extends Bloc<ListenEvent, ListenState> {
 
   void _onCustom(error) {
     debugPrint("MainBloc._onCustom(error), error = $error");
-    add(ListenEvent(isScheduleLoaded: false, loadingError: error));
+    add(ListenLoadEvent(isScheduleLoaded: false, loadingError: error));
   }
 
   _onQueue(List<MediaItem>? queue) {
@@ -80,7 +93,7 @@ class ListenBloc extends Bloc<ListenEvent, ListenState> {
       _onCustom("Schedule load error: queue is empty");
     } else {
       debugPrint("MainBloc._onQueue(queue) -> queue has ${queue.length} items");
-      add(ListenEvent(isScheduleLoaded: true, mediaItems: queue));
+      add(ListenLoadEvent(isScheduleLoaded: true, mediaItems: queue));
     }
   }
 

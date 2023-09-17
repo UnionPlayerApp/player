@@ -2,11 +2,15 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/image_source_type.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 
+import 'audio_quality_popup.dart';
 import 'listen_bloc.dart';
+import 'listen_event.dart';
 import 'listen_item_view.dart';
 import 'listen_state.dart';
 
@@ -22,7 +26,15 @@ class ListenPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ListenBloc, ListenState>(
-      builder: (context, state) => _scrollWidget(context, state),
+      builder: (context, state) => Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _topActionWidget(context, state),
+          _scheduleItemWidget(context, state),
+          _currentItemProgressWidget(context, state),
+          _playerButton(context, state),
+        ],
+      ),
     );
   }
 
@@ -129,5 +141,37 @@ class ListenPage extends StatelessWidget {
         curve: Curves.fastLinearToSlowEaseIn,
       );
     }
+  }
+
+  Widget _topActionWidget(BuildContext context, ListenState state) {
+    return Row(
+      children: [
+        const Spacer(),
+        InkWell(
+          onTap: () => _showAudioQualityPopup(context, state),
+          child: SvgPicture.asset(icAudioQuality),
+        ),
+      ],
+    );
+  }
+
+  Widget _scheduleItemWidget(BuildContext context, ListenState state) {
+    return Text("_scheduleItemWidget");
+  }
+
+  Widget _currentItemProgressWidget(BuildContext context, ListenState state) {
+    return Text("_currentItemProgressWidget");
+  }
+
+  Widget _playerButton(BuildContext context, ListenState state) {
+    return Text("_playerButton");
+  }
+
+  void _showAudioQualityPopup(BuildContext context, ListenState state) {
+    AudioQualityPopup(audioQualityType: state.audioQualityType).show(context).then((audioQualityType) {
+      if (audioQualityType != null) {
+        context.read<ListenBloc>().add(ListenAudioQualityEvent(audioQualityType: audioQualityType));
+      }
+    });
   }
 }

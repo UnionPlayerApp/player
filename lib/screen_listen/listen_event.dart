@@ -1,12 +1,18 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:equatable/equatable.dart';
 
-class ListenEvent extends Equatable {
+import '../utils/enums/audio_quality_type.dart';
+
+abstract class ListenEvent extends Equatable {
+  const ListenEvent();
+}
+
+class ListenLoadEvent extends ListenEvent {
   final bool isScheduleLoaded;
   final List<MediaItem> mediaItems;
   final String loadingError;
 
-  const ListenEvent({
+  const ListenLoadEvent({
     required this.isScheduleLoaded,
     this.mediaItems = const [],
     this.loadingError = "",
@@ -14,4 +20,18 @@ class ListenEvent extends Equatable {
 
   @override
   List<Object?> get props => [isScheduleLoaded, mediaItems, loadingError];
+}
+
+class ListenAudioQualityEvent extends ListenEvent {
+  final AudioQualityType audioQualityType;
+
+  const ListenAudioQualityEvent({required this.audioQualityType});
+
+  @override
+  List<Object?> get props => [audioQualityType];
+}
+
+class ListenInitEvent extends ListenEvent {
+  @override
+  List<Object?> get props => [];
 }
