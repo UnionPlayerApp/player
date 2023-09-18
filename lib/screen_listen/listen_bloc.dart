@@ -26,6 +26,7 @@ class ListenBloc extends Bloc<ListenEvent, ListenState> {
 
     on<ListenInitEvent>(_onInit);
     on<ListenLoadEvent>(_onLoad);
+    on<ListenAudioQualityEvent>(_onAudioQuality);
 
     add(ListenInitEvent());
   }
@@ -103,5 +104,23 @@ class ListenBloc extends Bloc<ListenEvent, ListenState> {
     _customSubscription.cancel();
     _queueSubscription.cancel();
     return super.close();
+  }
+
+  FutureOr<void> _onAudioQuality(ListenAudioQualityEvent event, Emitter<ListenState> emitter) async {
+    await _setAudioQuality(event.audioQualityType);
+    final newState = state.copyWith(audioQualityType: event.audioQualityType);
+    emitter(newState);
+  }
+
+  Future<void> _setAudioQuality(AudioQualityType audioQualityType) {
+    final audioQualityInt = audioQualityType.integer;
+    final params = {
+      keyAudioQuality: audioQualityInt,
+      keyIsPlaying: _audioHandler.playbackState.value.playing,
+    };
+    return Future.wait([
+      _audioHandler.customAction(actionSetAudioQuality, params),
+      writeIntToSharedPreferences(keyAudioQuality, audioQualityInt),
+    ]);
   }
 }

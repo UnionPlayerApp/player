@@ -92,7 +92,7 @@ const audioBackgroundTaskLogoAsset = "assets/images/union_radio_logo_1.png";
 const audioQualityLow = 0;
 const audioQualityMedium = 1;
 const audioQualityHigh = 2;
-const audioQualityUndefined = 3;
+const audioQualityUnknown = 3;
 
 const themeSystem = 0;
 const themeLight = 1;

@@ -57,4 +57,7 @@ enum StringKeys {
   trackingDialogTitle,
   trackingDialogText,
   trackingDialogButton,
+  // button labels
+  buttonOk,
+  buttonCancel,
 }
