@@ -20,11 +20,6 @@ const icAudioQualityHighWhite = "assets/images/audio_quality_high_white.png";
 const icAudioQualityMediumWhite = "assets/images/audio_quality_medium_white.png";
 const icAudioQualityDefaultWhite = icAudioQualityMediumWhite;
 
-const icAudioQuality = "assets/icons/ic_audio_quality.svg";
-const icListen = "assets/icons/ic_listen.svg";
-const icSchedule = "assets/icons/ic_schedule.svg";
-const icSettings = "assets/icons/ic_settings.svg";
-
 void setIcAudioQuality(int themeId) {
   switch (themeId) {
     case themeLight:
@@ -150,3 +145,13 @@ const supportedLocales = [
   localeRU,
   localeBY,
 ];
+
+class AppIcons {
+  static const icAudioQuality = "assets/icons/ic_audio_quality.svg";
+  static const icListen = "assets/icons/ic_listen.svg";
+  static const icLive = "assets/icons/ic_live.svg";
+  static const icPause = "assets/icons/ic_pause.svg";
+  static const icPlay = "assets/icons/ic_play.svg";
+  static const icSchedule = "assets/icons/ic_schedule.svg";
+  static const icSettings = "assets/icons/ic_settings.svg";
+}

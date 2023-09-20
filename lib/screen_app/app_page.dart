@@ -74,9 +74,9 @@ class _AppState extends State<AppPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buttonAppBar(context, state, NavType.schedule, icSchedule, StringKeys.schedule),
-              _buttonAppBar(context, state, NavType.listen, icListen, StringKeys.listen),
-              _buttonAppBar(context, state, NavType.settings, icSettings, StringKeys.settings),
+              _buttonAppBar(context, state, NavType.schedule, AppIcons.icSchedule, StringKeys.schedule),
+              _buttonAppBar(context, state, NavType.listen, AppIcons.icListen, StringKeys.listen),
+              _buttonAppBar(context, state, NavType.settings, AppIcons.icSettings, StringKeys.settings),
             ],
           ),
         ),

@@ -7,7 +7,9 @@ import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/image_source_type.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
+import 'package:union_player_app/utils/ui/text_styles.dart';
 
+import '../utils/ui/app_colors.dart';
 import 'audio_quality_popup.dart';
 import 'listen_bloc.dart';
 import 'listen_event.dart';
@@ -149,22 +151,54 @@ class ListenPage extends StatelessWidget {
         const Spacer(),
         InkWell(
           onTap: () => _showAudioQualityPopup(context, state),
-          child: SvgPicture.asset(icAudioQuality),
+          child: SvgPicture.asset(AppIcons.icAudioQuality),
         ),
       ],
     );
   }
 
   Widget _scheduleItemWidget(BuildContext context, ListenState state) {
-    return Text("_scheduleItemWidget");
+    return const Text("_scheduleItemWidget");
   }
 
   Widget _currentItemProgressWidget(BuildContext context, ListenState state) {
-    return Text("_currentItemProgressWidget");
+    return const Text("_currentItemProgressWidget");
   }
 
   Widget _playerButton(BuildContext context, ListenState state) {
-    return Text("_playerButton");
+    return InkWell(
+      onTap: () => {},
+      child: Wrap(
+        children: [
+          Container(
+            // height: 72.0,
+            alignment: Alignment.center,
+            constraints: const BoxConstraints.tightForFinite(height: 72.0, width: 175.0),
+            padding: const EdgeInsets.all(21.0),
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.blueGreen,
+                    AppColors.blueGreen.withOpacity(0.25),
+                  ],
+                ),
+                borderRadius: const BorderRadius.all(Radius.circular(40.0))),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SvgPicture.asset(AppIcons.icLive),
+                const SizedBox(
+                  width: 10.0,
+                ),
+                const Text("LLLLLLLLIVE", style: TextStyles.white22w400),
+                const SizedBox(width: 20.0),
+                SvgPicture.asset(AppIcons.icPlay),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showAudioQualityPopup(BuildContext context, ListenState state) {
