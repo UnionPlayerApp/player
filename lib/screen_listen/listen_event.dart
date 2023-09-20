@@ -5,6 +5,9 @@ import '../utils/enums/audio_quality_type.dart';
 
 abstract class ListenEvent extends Equatable {
   const ListenEvent();
+
+  @override
+  List<Object?> get props => [];
 }
 
 class ListenLoadEvent extends ListenEvent {
@@ -31,7 +34,19 @@ class ListenAudioQualityEvent extends ListenEvent {
   List<Object?> get props => [audioQualityType];
 }
 
-class ListenInitEvent extends ListenEvent {
+class ListenInitEvent extends ListenEvent {}
+
+class ListenPlayerButtonEvent extends ListenEvent {}
+
+class ListenBackStepEvent extends ListenEvent {}
+
+class ListenForwardStepEvent extends ListenEvent {}
+
+class ListenPlaybackEvent extends ListenEvent {
+  final PlaybackState playbackState;
+
+  const ListenPlaybackEvent({required this.playbackState});
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [playbackState];
 }

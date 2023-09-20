@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:union_player_app/screen_listen/media_item_progress.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/image_source_type.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
@@ -18,13 +19,6 @@ import 'listen_state.dart';
 
 // ignore: must_be_immutable
 class ListenPage extends StatelessWidget {
-  final _scrollController = ScrollController();
-  var _currentIndex = 0;
-
-  ListenPage(Stream<int> fabGoToCurrentStream) : super() {
-    fabGoToCurrentStream.listen((navIndex) => _scrollToCurrentItem(navIndex));
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ListenBloc, ListenState>(
@@ -33,68 +27,19 @@ class ListenPage extends StatelessWidget {
         children: [
           _topActionWidget(context, state),
           _scheduleItemWidget(context, state),
-          _currentItemProgressWidget(context, state),
+          MediaItemProgress(start: state.itemView.start, finish: state.itemView.finish),
           _playerButton(context, state),
         ],
       ),
     );
   }
 
-  Widget _scrollWidget(BuildContext context, ListenState state) {
-    _currentIndex = state.currentIndex;
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToCurrentItem(0));
-    return Container(
-      padding: const EdgeInsets.all(10),
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: ListWheelScrollView(
-        controller: _scrollController,
-        itemExtent: mainItemExtent,
-        diameterRatio: 2.5,
-        squeeze: 0.95,
-        children: state.items.map((mainItemView) => _scrollItem(context, mainItemView)).toList(growable: false),
-      ),
-    );
-  }
-
-  Widget _scrollItem(BuildContext context, ListenItemView item) {
-    final children = List<Widget>.empty(growable: true);
-
-    children.add(_stateTextWidget(context, translate(item.labelKey, context), Theme.of(context).textTheme.titleLarge));
-
-    switch (item.imageSourceType) {
-      case ImageSourceType.none:
-        break;
-      case ImageSourceType.file:
-        children.add(_imageWidgetFromFile(item.imageSource));
-        break;
-      case ImageSourceType.network:
-        children.add(_imageWidgetFromNetwork(item.imageSource));
-        break;
-      case ImageSourceType.assets:
-        children.add(_imageWidgetFromAssets(item.imageSource));
-        break;
-    }
-
-    children.add(_stateTextWidget(context, item.title, Theme.of(context).textTheme.bodyMedium));
-
-    if (item.isArtistVisible) {
-      children.add(_stateTextWidget(context, item.artist, Theme.of(context).textTheme.bodyLarge));
-    }
-
-    return Column(mainAxisSize: MainAxisSize.min, children: children);
-  }
-
-  Widget _stateTextWidget(BuildContext context, String stateStr, TextStyle? style) {
-    final text = Text(stateStr, style: style, textAlign: TextAlign.center);
-    return Container(margin: EdgeInsets.only(bottom: mainMarginBottom), child: text);
-  }
-
   Widget _imageWidgetFromFile(String imageSource) {
     final file = File(imageSource);
     return _imageContainer(Image.file(
       file,
-      width: mainImageSide,
-      height: mainImageSide,
+      width: mainImageSize,
+      height: mainImageSize,
       fit: BoxFit.cover,
     ));
   }
@@ -102,8 +47,8 @@ class ListenPage extends StatelessWidget {
   Widget _imageWidgetFromAssets(String imageSource) {
     return _imageContainer(Image.asset(
       imageSource,
-      width: mainImageSide,
-      height: mainImageSide,
+      width: mainImageSize,
+      height: mainImageSize,
       fit: BoxFit.cover,
     ));
   }
@@ -111,17 +56,16 @@ class ListenPage extends StatelessWidget {
   Widget _imageWidgetFromNetwork(String imageSource) {
     return _imageContainer(Image.network(
       imageSource,
-      width: mainImageSide,
-      height: mainImageSide,
+      width: mainImageSize,
+      height: mainImageSize,
       fit: BoxFit.cover,
     ));
   }
 
   Widget _imageContainer(Image image) {
-    const radius = 12.0;
+    const radius = mainImageSize / 2;
     const offset = 10.0;
     return Container(
-      margin: EdgeInsets.only(bottom: mainMarginBottom),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(radius),
         boxShadow: const [
@@ -133,16 +77,6 @@ class ListenPage extends StatelessWidget {
         child: image,
       ),
     );
-  }
-
-  void _scrollToCurrentItem(int navIndex) async {
-    if (navIndex == 0) {
-      _scrollController.animateTo(
-        mainItemExtent * _currentIndex,
-        duration: const Duration(milliseconds: 450),
-        curve: Curves.fastLinearToSlowEaseIn,
-      );
-    }
   }
 
   Widget _topActionWidget(BuildContext context, ListenState state) {
@@ -158,22 +92,61 @@ class ListenPage extends StatelessWidget {
   }
 
   Widget _scheduleItemWidget(BuildContext context, ListenState state) {
-    return const Text("_scheduleItemWidget");
+    return Column(
+      children: [
+        Text(translate(state.itemView.labelKey, context), style: TextStyles.screenTitle),
+        const SizedBox(height: 20.0),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            InkWell(
+              onTap: () => context.read<ListenBloc>().add(ListenBackStepEvent()),
+              child: SvgPicture.asset(AppIcons.icArrowBack),
+            ),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                Image.asset(AppImages.imDisk0),
+                Image.asset(AppImages.imDisk1),
+                Image.asset(AppImages.imDisk2),
+                _scheduleImageWidget(state.itemView),
+              ],
+            ),
+            InkWell(
+              onTap: () => context.read<ListenBloc>().add(ListenForwardStepEvent()),
+              child: SvgPicture.asset(AppIcons.icArrowForward),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20.0),
+        Text(state.itemView.isArtistVisible ? state.itemView.artist : " ", style: TextStyles.screenTitle),
+        const SizedBox(height: 20.0),
+        Text(state.itemView.title, style: TextStyles.screenContent, maxLines: 1, overflow: TextOverflow.ellipsis),
+      ],
+    );
   }
 
-  Widget _currentItemProgressWidget(BuildContext context, ListenState state) {
-    return const Text("_currentItemProgressWidget");
+  Widget _scheduleImageWidget(ListenItemView itemView) {
+    switch (itemView.imageSourceType) {
+      case ImageSourceType.none:
+        return const SizedBox();
+      case ImageSourceType.file:
+        return _imageWidgetFromFile(itemView.imageSource);
+      case ImageSourceType.network:
+        return _imageWidgetFromNetwork(itemView.imageSource);
+      case ImageSourceType.assets:
+        return _imageWidgetFromAssets(itemView.imageSource);
+    }
   }
 
   Widget _playerButton(BuildContext context, ListenState state) {
-    return InkWell(
-      onTap: () => {},
-      child: Wrap(
+    return GestureDetector(
+      onTap: () => context.read<ListenBloc>().add(ListenPlayerButtonEvent()),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            // height: 72.0,
             alignment: Alignment.center,
-            constraints: const BoxConstraints.tightForFinite(height: 72.0, width: 175.0),
             padding: const EdgeInsets.all(21.0),
             decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -190,9 +163,9 @@ class ListenPage extends StatelessWidget {
                 const SizedBox(
                   width: 10.0,
                 ),
-                const Text("LLLLLLLLIVE", style: TextStyles.white22w400),
+                const Text("LIVE", style: TextStyles.white22w400),
                 const SizedBox(width: 20.0),
-                SvgPicture.asset(AppIcons.icPlay),
+                SvgPicture.asset(state.isPlaying ? AppIcons.icPause : AppIcons.icPlay),
               ],
             ),
           ),

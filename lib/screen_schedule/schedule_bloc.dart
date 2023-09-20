@@ -21,7 +21,7 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
   }
 
   FutureOr<void> _onDataLoaded(event, emitter) => emitter(
-        ScheduleLoadedState(items: event.items, currentIndex: event.currentIndex),
+        ScheduleLoadedState(items: event.items, currentIndex: event.indexPlay),
       );
 
   FutureOr<void> _onErrorMade(event, emitter) => emitter(state.copyWithError(errorText: event.error));

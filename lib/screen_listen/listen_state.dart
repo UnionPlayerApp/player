@@ -1,36 +1,37 @@
 import 'package:equatable/equatable.dart';
+import 'package:union_player_app/utils/constants/constants.dart';
 
 import '../utils/enums/audio_quality_type.dart';
 import 'listen_item_view.dart';
 
 class ListenState extends Equatable {
   final AudioQualityType audioQualityType;
-  final List<ListenItemView> items;
-  final int currentIndex;
+  final ListenItemView itemView;
+  final bool isPlaying;
 
   const ListenState({
     required this.audioQualityType,
-    required this.items,
-    required this.currentIndex,
+    required this.itemView,
+    required this.isPlaying,
   });
 
-  factory ListenState.empty() => const ListenState(
+  factory ListenState.empty() => ListenState(
         audioQualityType: AudioQualityType.unknown,
-        items: [],
-        currentIndex: 0,
+        itemView: ListenItemView.empty(),
+        isPlaying: defaultIsPlaying,
       );
 
   @override
-  List<Object?> get props => [items, currentIndex, audioQualityType];
+  List<Object?> get props => [itemView, audioQualityType, isPlaying];
 
   ListenState copyWith({
     AudioQualityType? audioQualityType,
-    List<ListenItemView>? items,
-    int? currentIndex,
+    ListenItemView? itemView,
+    bool? isPlaying,
   }) =>
       ListenState(
         audioQualityType: audioQualityType ?? this.audioQualityType,
-        items: items ?? this.items,
-        currentIndex: currentIndex ?? this.currentIndex,
+        itemView: itemView ?? this.itemView,
+        isPlaying: isPlaying ?? this.isPlaying,
       );
 }

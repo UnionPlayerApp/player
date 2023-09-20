@@ -147,6 +147,8 @@ const supportedLocales = [
 ];
 
 class AppIcons {
+  static const icArrowBack = "assets/icons/ic_arrow_back.svg";
+  static const icArrowForward = "assets/icons/ic_arrow_forward.svg";
   static const icAudioQuality = "assets/icons/ic_audio_quality.svg";
   static const icListen = "assets/icons/ic_listen.svg";
   static const icLive = "assets/icons/ic_live.svg";
@@ -154,4 +156,10 @@ class AppIcons {
   static const icPlay = "assets/icons/ic_play.svg";
   static const icSchedule = "assets/icons/ic_schedule.svg";
   static const icSettings = "assets/icons/ic_settings.svg";
+}
+
+class AppImages {
+  static const imDisk0 = "assets/images/disk_0.png";
+  static const imDisk1 = "assets/images/disk_1.png";
+  static const imDisk2 = "assets/images/disk_2.png";
 }

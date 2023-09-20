@@ -48,6 +48,16 @@ class ListenItemView extends Equatable {
     );
   }
 
+  factory ListenItemView.empty() => ListenItemView._(
+    artist: "",
+    finish: DateTime(0),
+    imageSource: "",
+    imageSourceType: ImageSourceType.none,
+    isArtistVisible: false,
+    start: DateTime(0),
+    title: "",
+  );
+
   @override
   List<Object?> get props => [start.millisecondsSinceEpoch, finish.millisecondsSinceEpoch];
 

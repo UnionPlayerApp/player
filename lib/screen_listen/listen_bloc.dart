@@ -13,20 +13,32 @@ import 'listen_item_view.dart';
 import 'listen_state.dart';
 
 class ListenBloc extends Bloc<ListenEvent, ListenState> {
+  static const _unknownIndex = -1;
+
   final AudioHandler _audioHandler;
 
-  late final StreamSubscription _queueSubscription;
   late final StreamSubscription _customSubscription;
+  late final StreamSubscription _playerSubscription;
+  late final StreamSubscription _queueSubscription;
 
   final _items = List<ListenItemView>.empty(growable: true);
+  var _currentIndex = _unknownIndex;
+  var _displayIndex = _unknownIndex;
 
   ListenBloc(this._audioHandler) : super(ListenState.empty()) {
     _customSubscription = _audioHandler.customEvent.listen((event) => _onCustom(event));
+    _playerSubscription = _audioHandler.playbackState.listen((playbackState) => add(
+          ListenPlaybackEvent(playbackState: playbackState),
+        ));
     _queueSubscription = _audioHandler.queue.listen((queue) => _onQueue(queue));
 
+    on<ListenAudioQualityEvent>(_onAudioQuality);
     on<ListenInitEvent>(_onInit);
     on<ListenLoadEvent>(_onLoad);
-    on<ListenAudioQualityEvent>(_onAudioQuality);
+    on<ListenPlaybackEvent>(_onPlayback);
+    on<ListenPlayerButtonEvent>(_onPlayerButton);
+    on<ListenBackStepEvent>(_onBackStep);
+    on<ListenForwardStepEvent>(_onForwardStep);
 
     add(ListenInitEvent());
   }
@@ -34,7 +46,10 @@ class ListenBloc extends Bloc<ListenEvent, ListenState> {
   FutureOr<void> _onInit(ListenInitEvent event, Emitter<ListenState> emitter) async {
     final audioQualityInt = await readIntFromSharedPreferences(keyAudioQuality);
     final audioQualityType = audioQualityInt?.audioQualityType ?? AudioQualityType.unknown;
-    final newState = state.copyWith(audioQualityType: audioQualityType);
+    final newState = state.copyWith(
+      audioQualityType: audioQualityType,
+      isPlaying: _audioHandler.playbackState.value.playing,
+    );
     emitter(newState);
   }
 
@@ -47,7 +62,7 @@ class ListenBloc extends Bloc<ListenEvent, ListenState> {
     _items.clear();
     _items.addAll(event.mediaItems.map((mediaItem) => ListenItemView.fromMediaItem(mediaItem)));
 
-    var currentIndex = -1;
+    _currentIndex = _unknownIndex;
 
     final now = DateTime.now();
 
@@ -61,22 +76,20 @@ class ListenBloc extends Bloc<ListenEvent, ListenState> {
         return;
       }
       item.labelKey = StringKeys.currLabel;
-      currentIndex = index;
+      _currentIndex = index;
     });
 
-    if (currentIndex == -1 && now.isBefore(_items.first.start)) {
-      currentIndex = 0;
+    if (_currentIndex == _unknownIndex && now.isBefore(_items.first.start)) {
+      _currentIndex = 0;
     }
 
-    if (currentIndex == -1 && now.isAfter(_items.last.finish)) {
-      currentIndex = _items.length - 1;
+    if (_currentIndex == _unknownIndex && now.isAfter(_items.last.finish)) {
+      _currentIndex = _items.length - 1;
     }
 
-    final newState = state.copyWith(
-      items: _items,
-      currentIndex: currentIndex,
-    );
+    _displayIndex = _currentIndex;
 
+    final newState = state.copyWith(itemView: _items[_displayIndex]);
     emitter(newState);
   }
 
@@ -100,8 +113,9 @@ class ListenBloc extends Bloc<ListenEvent, ListenState> {
 
   @override
   Future<void> close() {
-    debugPrint("MainBloc.close()");
+    debugPrint("ListenBloc.close()");
     _customSubscription.cancel();
+    _playerSubscription.cancel();
     _queueSubscription.cancel();
     return super.close();
   }
@@ -122,5 +136,38 @@ class ListenBloc extends Bloc<ListenEvent, ListenState> {
       _audioHandler.customAction(actionSetAudioQuality, params),
       writeIntToSharedPreferences(keyAudioQuality, audioQualityInt),
     ]);
+  }
+
+  FutureOr<void> _onPlayback(ListenPlaybackEvent event, Emitter<ListenState> emitter) async {
+    final isPlayingChanged = state.isPlaying != event.playbackState.playing;
+    final newState = state.copyWith(isPlaying: event.playbackState.playing);
+    emitter(newState);
+    if (isPlayingChanged) {
+      writeBoolToSharedPreferences(keyIsPlaying, event.playbackState.playing);
+    }
+  }
+
+  FutureOr<void> _onPlayerButton(ListenPlayerButtonEvent event, Emitter<ListenState> emitter) {
+    if (_audioHandler.playbackState.value.playing) {
+      _audioHandler.pause();
+    } else {
+      _audioHandler.play();
+    }
+  }
+
+  FutureOr<void> _onBackStep(ListenBackStepEvent event, Emitter<ListenState> emitter) {
+    if (_items.isNotEmpty && _displayIndex > 0) {
+      _displayIndex--;
+      final newState = state.copyWith(itemView: _items[_displayIndex]);
+      emitter(newState);
+    }
+  }
+
+  FutureOr<void> _onForwardStep(ListenForwardStepEvent event, Emitter<ListenState> emitter) {
+    if (_items.isNotEmpty && _displayIndex < _items.length - 1) {
+      _displayIndex++;
+      final newState = state.copyWith(itemView: _items[_displayIndex]);
+      emitter(newState);
+    }
   }
 }

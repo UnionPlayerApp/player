@@ -5,10 +5,44 @@ import 'font_sizes.dart';
 
 class TextStyles {
   static const white22w400 = TextStyle(
-    fontFamily: 'Open Sans',
     color: AppColors.white,
+    fontFamily: 'Open Sans',
     fontSize: FontSizes.px22,
     fontWeight: FontWeight.w400,
-    letterSpacing: 0,
+  );
+
+  static const screenTitle = TextStyle(
+    color: AppColors.blackOlive,
+    fontFamily: 'Open Sans',
+    fontSize: FontSizes.px20,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const screenContent = TextStyle(
+    color: AppColors.blackOlive,
+    fontFamily: 'Open Sans',
+    fontSize: FontSizes.px16,
+    fontWeight: FontWeight.w400,
+  );
+
+  static const popupContent = TextStyle(
+    color: AppColors.darkLiver,
+    fontFamily: "Roboto",
+    fontSize: FontSizes.px16,
+    fontWeight: FontWeight.w400,
+  );
+
+  static const popupButton = TextStyle(
+    color: AppColors.darkLiver,
+    fontFamily: "Roboto",
+    fontSize: FontSizes.px16,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const popupTitle = TextStyle(
+    color: AppColors.darkLiver,
+    fontFamily: "Roboto",
+    fontSize: FontSizes.px16,
+    fontWeight: FontWeight.w700,
   );
 }
