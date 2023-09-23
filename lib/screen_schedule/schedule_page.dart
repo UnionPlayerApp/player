@@ -27,6 +27,17 @@ class _SchedulePageState extends State<SchedulePage> with TickerProviderStateMix
   final _itemPositionsListener = ItemPositionsListener.create();
   var _currentIndex = 0;
 
+  late final _animationController = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 1),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ScheduleBloc, ScheduleState>(
@@ -59,7 +70,7 @@ class _SchedulePageState extends State<SchedulePage> with TickerProviderStateMix
         _imageWidget(element),
         Expanded(child: _textWidget(element, context)),
         if (element.timeType.isCurrent) ...[
-          LiveAirWidget(tickerProvider: this, color: AppColors.blueGreen, isActive: true),
+          LiveAirWidget(animationController: _animationController, color: AppColors.blueGreen, isActive: true),
           const SizedBox(width: 8.0),
         ],
         _startWidget(element, context),

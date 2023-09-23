@@ -25,6 +25,18 @@ class ListenPage extends StatefulWidget {
 }
 
 class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
+
+  late final _animationController = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 1),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ListenBloc, ListenState>(
@@ -168,7 +180,11 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                LiveAirWidget(tickerProvider: this, color: AppColors.white, isActive: state.isPlaying),
+                LiveAirWidget(
+                  animationController: _animationController,
+                  color: AppColors.white,
+                  isActive: state.isPlaying,
+                ),
                 const SizedBox(
                   width: 10.0,
                 ),
