@@ -47,5 +47,7 @@
   "trackingDialogText": "The Apple company requires us to ask for your permission to use a unique advertising identifier. However, our application does not show you ads. Therefore, your answer, whatever it is, will not affect the performance of the application.\n\nSincerely,\n\nThe staff",
   "trackingDialogButton": "Continue",
   "buttonOk":  "Ok",
-  "buttonCancel": "Cancel"
+  "buttonCancel": "Cancel",
+  "yesterday": "Yesterday",
+  "tomorrow": "Tomorrow"
 }

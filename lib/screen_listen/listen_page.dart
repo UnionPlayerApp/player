@@ -9,6 +9,7 @@ import 'package:union_player_app/utils/core/image_source_type.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/ui/text_styles.dart';
+import 'package:union_player_app/utils/widgets/live_air_widget.dart';
 
 import '../utils/ui/app_colors.dart';
 import 'audio_quality_popup.dart';
@@ -18,7 +19,12 @@ import 'listen_item_view.dart';
 import 'listen_state.dart';
 
 // ignore: must_be_immutable
-class ListenPage extends StatelessWidget {
+class ListenPage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _ListenPageState();
+}
+
+class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ListenBloc, ListenState>(
@@ -80,21 +86,24 @@ class ListenPage extends StatelessWidget {
   }
 
   Widget _topActionWidget(BuildContext context, ListenState state) {
-    return Row(
-      children: [
-        const Spacer(),
-        InkWell(
-          onTap: () => _showAudioQualityPopup(context, state),
-          child: SvgPicture.asset(AppIcons.icAudioQuality),
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(top: 16.0),
+      child: Row(
+        children: [
+          const Spacer(),
+          InkWell(
+            onTap: () => _showAudioQualityPopup(context, state),
+            child: SvgPicture.asset(AppIcons.icAudioQuality),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _scheduleItemWidget(BuildContext context, ListenState state) {
     return Column(
       children: [
-        Text(translate(state.itemView.labelKey, context), style: TextStyles.screenTitle),
+        Text(translate(state.itemView.labelKey, context), style: TextStyles.screenTitle20px),
         const SizedBox(height: 20.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -119,7 +128,7 @@ class ListenPage extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 20.0),
-        Text(state.itemView.isArtistVisible ? state.itemView.artist : " ", style: TextStyles.screenTitle),
+        Text(state.itemView.isArtistVisible ? state.itemView.artist : " ", style: TextStyles.screenTitle20px),
         const SizedBox(height: 20.0),
         Text(state.itemView.title, style: TextStyles.screenContent, maxLines: 1, overflow: TextOverflow.ellipsis),
       ],
@@ -159,7 +168,7 @@ class ListenPage extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SvgPicture.asset(AppIcons.icLive),
+                LiveAirWidget(tickerProvider: this, color: AppColors.white, isActive: state.isPlaying),
                 const SizedBox(
                   width: 10.0,
                 ),

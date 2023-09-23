@@ -11,10 +11,17 @@ class TextStyles {
     fontWeight: FontWeight.w400,
   );
 
-  static const screenTitle = TextStyle(
+  static const screenTitle20px = TextStyle(
     color: AppColors.blackOlive,
     fontFamily: 'Open Sans',
     fontSize: FontSizes.px20,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const screenTitle16px = TextStyle(
+    color: AppColors.blackOlive,
+    fontFamily: 'Open Sans',
+    fontSize: FontSizes.px16,
     fontWeight: FontWeight.w700,
   );
 

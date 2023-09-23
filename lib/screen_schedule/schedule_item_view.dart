@@ -1,6 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:union_player_app/player/app_player_handler.dart';
-import 'package:union_player_app/utils/core/date_time.dart';
+import 'package:union_player_app/utils/core/date_time_ui_model.dart';
 import 'package:union_player_app/utils/core/duration.dart';
 
 import '../utils/core/relative_time_type.dart';
@@ -8,8 +8,8 @@ import '../utils/core/relative_time_type.dart';
 class ScheduleItemView {
   final String artist;
   final String duration;
-  final String finish;
-  final String start;
+  final DateTimeUiModel finish;
+  final DateTimeUiModel start;
   final String title;
   final String? description;
   final Uri? imageUri;
@@ -34,9 +34,9 @@ class ScheduleItemView {
       artist: item.artist ?? "",
       description: item.displayDescription,
       duration: formatDuration(item.duration!),
-      finish: formatDateTime(finish),
+      finish: DateTimeUiModel.fromDateTime(finish),
       imageUri: item.artUri,
-      start: formatDateTime(item.start),
+      start: DateTimeUiModel.fromDateTime(item.start),
       title: item.title,
       timeType: timeType
     );

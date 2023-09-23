@@ -29,18 +29,16 @@ class AppPage extends StatefulWidget {
 class _AppState extends State<AppPage> {
   static const _animationDuration = Duration(milliseconds: 300);
 
-  final _goToCurrentStreamController = StreamController<int>.broadcast();
-
   DateTime? _backPressTime;
   Widget? _currentPage;
 
   late final _listenPage = _blocPage<ListenPage, ListenBloc>();
-  late final _schedulePage = _blocPage<SchedulePage, ScheduleBloc>(param: _goToCurrentStreamController.stream);
+  late final _schedulePage = _blocPage<SchedulePage, ScheduleBloc>();
   late final _settingsPage = _blocPage<SettingsPage, SettingsBloc>();
 
-  Widget _blocPage<P extends Widget, B extends Bloc>({dynamic param}) => BlocProvider(
-        create: (_) => GetIt.I.get<B>(param1: param),
-        child: GetIt.I.get<P>(param1: param),
+  Widget _blocPage<P extends Widget, B extends Bloc>() => BlocProvider(
+        create: (_) => GetIt.I.get<B>(),
+        child: GetIt.I.get<P>(),
       );
 
   @override
@@ -61,6 +59,7 @@ class _AppState extends State<AppPage> {
   }
 
   Widget _bottomNavigationBar(AppState state) => BottomAppBar(
+        elevation: 0.0,
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: SizedBox(
           height: kBottomNavigationBarHeight,
@@ -112,7 +111,7 @@ class _AppState extends State<AppPage> {
 
   Widget _body(AppState state) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: SafeArea(child: _createNavPage(state)),
     );
   }

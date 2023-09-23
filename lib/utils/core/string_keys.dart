@@ -60,4 +60,6 @@ enum StringKeys {
   // button labels
   buttonOk,
   buttonCancel,
+  yesterday,
+  tomorrow,
 }

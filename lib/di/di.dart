@@ -39,10 +39,10 @@ class BindingModule {
     GetIt.I.registerFactory(() => AppPage());
     GetIt.I.registerFactory(() => FeedbackPage());
     GetIt.I.registerFactory(() => ListenPage());
+    GetIt.I.registerFactory(() => SchedulePage());
     GetIt.I.registerFactory(() => SettingsPage());
     GetIt.I.registerFactoryParam<InfoPage, List<String>, void>((params, _) => InfoPage(params: params));
     GetIt.I.registerFactoryParam<ProgressPage, String, void>((appVersion, _) => ProgressPage(version: appVersion));
-    GetIt.I.registerFactoryParam<SchedulePage, Stream<int>, void>((fabGoToCurrentStream, _) => SchedulePage(fabGoToCurrentStream));
   }
 
   static providesBlocs() {

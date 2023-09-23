@@ -151,7 +151,6 @@ class AppIcons {
   static const icArrowForward = "assets/icons/ic_arrow_forward.svg";
   static const icAudioQuality = "assets/icons/ic_audio_quality.svg";
   static const icListen = "assets/icons/ic_listen.svg";
-  static const icLive = "assets/icons/ic_live.svg";
   static const icPause = "assets/icons/ic_pause.svg";
   static const icPlay = "assets/icons/ic_play.svg";
   static const icSchedule = "assets/icons/ic_schedule.svg";

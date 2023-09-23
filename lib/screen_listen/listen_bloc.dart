@@ -113,7 +113,6 @@ class ListenBloc extends Bloc<ListenEvent, ListenState> {
 
   @override
   Future<void> close() {
-    debugPrint("ListenBloc.close()");
     _customSubscription.cancel();
     _playerSubscription.cancel();
     _queueSubscription.cancel();
