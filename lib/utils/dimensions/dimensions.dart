@@ -16,7 +16,7 @@ final EdgeInsets appBarLeadingPadding = EdgeInsets.all(3.h);
 final EdgeInsets appAudioQualitySelectorPadding = EdgeInsets.all(3.h);
 
 // MainPage
-final double mainImageSide = 200.w;
+const mainImageSize = 210.0;
 final double mainItemExtent = 335.w;
 final double mainMarginBottom = 16.h;
 

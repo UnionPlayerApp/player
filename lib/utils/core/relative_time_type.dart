@@ -1,4 +1,4 @@
-import '../localizations/string_translation.dart';
+import 'string_keys.dart';
 
 enum RelativeTimeType { previous, current, next }
 

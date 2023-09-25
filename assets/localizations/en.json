@@ -7,7 +7,7 @@
   "feedbackSubject": "From Union Radio 1 listener",
   "feedbackEmailLaunchError": "Error starting the mail program. Check the correctness of its settings",
   "pressAgainToExit": "Press again to exit",
-  "home" : "Home",
+  "listen" : "Listen",
   "schedule" : "Schedule",
   "feedback" : "Feedback",
   "settings" : "Settings",
@@ -45,5 +45,9 @@
   "willMadeNextRelease": "At next release...",
   "trackingDialogTitle": "Dear Listener!",
   "trackingDialogText": "The Apple company requires us to ask for your permission to use a unique advertising identifier. However, our application does not show you ads. Therefore, your answer, whatever it is, will not affect the performance of the application.\n\nSincerely,\n\nThe staff",
-  "trackingDialogButton": "Continue"
+  "trackingDialogButton": "Continue",
+  "buttonOk":  "Ok",
+  "buttonCancel": "Cancel",
+  "yesterday": "Yesterday",
+  "tomorrow": "Tomorrow"
 }

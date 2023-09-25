@@ -8,12 +8,12 @@ abstract class AppEvent extends Equatable {
 class AppFabPlayStopEvent extends AppEvent {}
 
 class AppNavEvent extends AppEvent {
-  final int navIndex;
+  final NavType navType;
 
-  AppNavEvent(this.navIndex);
+  AppNavEvent(this.navType);
 
   @override
-  List<Object> get props => [navIndex];
+  List<Object> get props => [navType];
 }
 
 class AppPlayerEvent extends AppEvent {

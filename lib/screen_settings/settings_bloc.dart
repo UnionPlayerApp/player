@@ -7,9 +7,9 @@ import 'package:union_player_app/screen_settings/settings_event.dart';
 import 'package:union_player_app/screen_settings/settings_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/shared_preferences.dart';
-import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/ui/app_theme.dart';
 
+import '../utils/core/string_keys.dart';
 import '../utils/core/locale_utils.dart';
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {

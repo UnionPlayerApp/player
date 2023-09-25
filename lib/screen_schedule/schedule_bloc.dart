@@ -20,11 +20,13 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
     _customSubscription = audioHandler.customEvent.listen(_onCustomEvent);
   }
 
-  FutureOr<void> _onDataLoaded(event, emitter) => emitter(
-        ScheduleLoadedState(items: event.items, currentIndex: event.currentIndex),
-      );
+  FutureOr<void> _onDataLoaded(ScheduleEventDataLoaded event, Emitter<ScheduleState> emitter) {
+    emitter(ScheduleLoadedState(items: event.items, currentIndex: event.currentIndex));
+  }
 
-  FutureOr<void> _onErrorMade(event, emitter) => emitter(state.copyWithError(errorText: event.error));
+  FutureOr<void> _onErrorMade(ScheduleEventErrorMade event, Emitter<ScheduleState> emitter) {
+    emitter(state.copyWithError(errorText: event.error));
+  }
 
   @override
   Future<void> close() async {

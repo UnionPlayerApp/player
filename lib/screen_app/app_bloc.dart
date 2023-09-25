@@ -7,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/shared_preferences.dart';
 
+import '../utils/core/nav_type.dart';
+
 part 'app_event.dart';
 
 part 'app_state.dart';
@@ -19,7 +21,9 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   late final StreamSubscription _queueSubscription;
 
   AppBloc(this._audioHandler, bool isPlaying)
-      : super(const AppState(0, defaultIsPlaying, defaultAudioQualityId, false)) {
+      : super(
+          const AppState(NavType.listen, defaultIsPlaying, defaultAudioQualityId, false),
+        ) {
     on<AppFabPlayStopEvent>(_onFabPlayStop);
     on<AppNavEvent>(_onNav);
     on<AppPlayerEvent>(_onPlayer);
@@ -50,7 +54,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   FutureOr<void> _onNav(AppNavEvent event, Emitter<AppState> emitter) {
-    final newState = state.copyWith(navIndex: event.navIndex);
+    final newState = state.copyWith(navType: event.navType);
     emitter(newState);
   }
 

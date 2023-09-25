@@ -1,17 +1,21 @@
 import 'dart:async';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:union_player_app/di/di.dart';
 import 'package:union_player_app/screen_init/init_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/core/string_keys.dart';
 import 'package:union_player_app/utils/core/shared_preferences.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/ui/app_theme.dart';
 
+import 'utils/debug/app_bloc_observer.dart';
 import 'utils/localizations/app_localizations_delegate.dart';
 
 void main() async {
@@ -22,6 +26,10 @@ void main() async {
 
     final packageInfo = await PackageInfo.fromPlatform();
     final themeMode = await SpManager.readThemeMode();
+
+    if (kDebugMode) {
+      Bloc.observer = AppBlocObserver();
+    }
 
     runApp(_app(packageInfo, themeMode));
   }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack));

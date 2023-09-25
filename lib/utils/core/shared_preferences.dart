@@ -4,8 +4,8 @@ import 'package:union_player_app/utils/core/extensions.dart';
 
 import '../constants/constants.dart';
 
-Future<int?> readIntFromSharedPreferences(String key) async {
-  return SharedPreferences.getInstance().then((sp) => sp.getInt(key));
+Future<int?> readIntFromSharedPreferences(String key, {int? defaultValue}) async {
+  return SharedPreferences.getInstance().then((sp) => sp.getInt(key) ?? defaultValue);
 }
 
 Future<bool> writeBoolToSharedPreferences(String key, bool value) async {

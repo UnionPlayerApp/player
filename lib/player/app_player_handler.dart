@@ -174,7 +174,7 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
         return _urlStreamMedium;
       case audioQualityHigh:
         return _urlStreamHigh;
-      case audioQualityUndefined:
+      case audioQualityUnknown:
         return _urlStreamMedium;
       default:
         debugPrint("Unknown AudioQualityType $audioQuality. Default quality (medium) used.");

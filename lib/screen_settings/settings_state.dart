@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:union_player_app/utils/localizations/string_translation.dart';
+
+import '../utils/core/string_keys.dart';
 
 class SettingsState extends Equatable {
   final int lang;

@@ -7,6 +7,8 @@ import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/widgets/snack_bar.dart';
 
+import '../utils/core/string_keys.dart';
+
 class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

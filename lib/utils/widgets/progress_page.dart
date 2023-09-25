@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:union_player_app/utils/ui/app_theme.dart';
-import 'package:union_player_app/utils/widgets/flags_widget.dart';
+import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/ui/app_colors.dart';
 
 class ProgressPage extends StatelessWidget {
   final String _version;
@@ -9,23 +9,23 @@ class ProgressPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = {
-      FlagsWidgetMode.init: MediaQuery.of(context).size.width,
-    };
+    const circleSize = 200.0;
+    const imageSize = 150.0;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: primaryColor,
-        titleSpacing: 0,
-        title: FlagsWidget(
-          width: width,
-          height: kToolbarHeight,
-          mode: FlagsWidgetMode.init,
-          backgroundColor: primaryColor,
-        ),
-      ),
       body: Stack(
         children: [
-          const Center(child: CircularProgressIndicator()),
+          const Center(
+            child: SizedBox(
+              width: circleSize,
+              height: circleSize,
+              child: CircularProgressIndicator(
+                color: AppColors.blueGreen,
+                strokeWidth: 6.0,
+                strokeCap: StrokeCap.round,
+              ),
+            ),
+          ),
+          Center(child: Image.asset(logoImage, width: imageSize, height: imageSize)),
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
