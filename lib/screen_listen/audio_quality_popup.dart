@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:union_player_app/utils/core/string_keys.dart';
-import 'package:union_player_app/utils/enums/audio_quality_type.dart';
+import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/enums/sound_quality_type.dart';
+import 'package:union_player_app/utils/enums/string_keys.dart';
 import 'package:union_player_app/utils/widgets/common_dialog.dart';
 import 'package:union_player_app/utils/widgets/common_radio_list.dart';
 
 import '../utils/widgets/common_text_button.dart';
 
 class AudioQualityPopup {
-  AudioQualityType audioQualityType;
+  SoundQualityType soundQualityType;
 
-  AudioQualityPopup({required this.audioQualityType});
+  AudioQualityPopup({required this.soundQualityType});
 
-  Future<AudioQualityType?> show(BuildContext context) {
-    return showDialog<AudioQualityType>(
+  Future<SoundQualityType?> show(BuildContext context) {
+    return showDialog<SoundQualityType>(
       context: context,
       builder: (context) => CommonDialog(
         context,
@@ -21,7 +22,7 @@ class AudioQualityPopup {
         actions: [
           CommonTextButton(
             context,
-            onPressed: () => Navigator.of(context).pop(audioQualityType),
+            onPressed: () => Navigator.of(context).pop(soundQualityType),
             textKey: StringKeys.buttonOk,
           ),
           CommonTextButton(
@@ -36,26 +37,26 @@ class AudioQualityPopup {
 
   Widget _content(BuildContext context) => StatefulBuilder(
         builder: (context, setState) {
-          return CommonRadioList<AudioQualityType>(
+          return CommonRadioList<SoundQualityType>(
             keys: const [
               StringKeys.settingsQualityLow,
               StringKeys.settingsQualityMedium,
               StringKeys.settingsQualityHigh,
             ],
             values: const [
-              AudioQualityType.low,
-              AudioQualityType.medium,
-              AudioQualityType.high,
+              SoundQualityType.low,
+              SoundQualityType.medium,
+              SoundQualityType.high,
             ],
-            groupValue: audioQualityType,
+            groupValue: soundQualityType,
             onChanged: (value) => _onChanged(value, setState),
           );
         },
       );
 
-  void _onChanged(AudioQualityType? value, StateSetter setState) {
+  void _onChanged(SoundQualityType? value, StateSetter setState) {
     setState(() {
-      audioQualityType = value ?? AudioQualityType.unknown;
+      soundQualityType = value ?? defaultSoundQualityType;
     });
   }
 }

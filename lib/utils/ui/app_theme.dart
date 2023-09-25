@@ -95,7 +95,7 @@ const defaultLetterSpacing = 0.03;
 
 void setThemeById(int themeId) {
   setIcAudioQuality(themeId);
-  Get.changeThemeMode(themeId.toThemeMode);
+  Get.changeThemeMode(themeId.themeMode);
 }
 
 const redCarminePink = Color(0xFFEA4C46);

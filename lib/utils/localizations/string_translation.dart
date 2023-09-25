@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-import '../core/string_keys.dart';
+import '../enums/string_keys.dart';
 import 'app_localizations.dart';
 
 String translate(StringKeys key, BuildContext context) {

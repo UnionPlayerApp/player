@@ -18,8 +18,10 @@ import 'package:union_player_app/utils/widgets/snack_bar.dart';
 
 import '../screen_listen/listen_bloc.dart';
 import '../screen_listen/listen_page.dart';
-import '../utils/core/nav_type.dart';
-import '../utils/core/string_keys.dart';
+import '../utils/enums/nav_type.dart';
+import '../utils/enums/string_keys.dart';
+import 'app_event.dart';
+import 'app_state.dart';
 
 class AppPage extends StatefulWidget {
   @override
@@ -82,7 +84,7 @@ class _AppState extends State<AppPage> {
       padding: const EdgeInsets.all(0),
       minWidth: 0,
       onPressed: () {
-        context.read<AppBloc>().add(AppNavEvent(navType));
+        context.read<AppBloc>().add(AppNavEvent(navType: navType));
       },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -119,10 +121,8 @@ class _AppState extends State<AppPage> {
   Widget _createNavPage(AppState state) {
     final navPage = _pageByNavType(state.navType);
 
-    final isActive = !state.isAudioQualitySelectorOpen;
-
     final navPageAnimated = _currentPage == null
-        ? AnimatedOpacity(opacity: isActive ? 1.0 : 0.2, duration: _animationDuration, child: navPage)
+        ? AnimatedOpacity(opacity: 1.0, duration: _animationDuration, child: navPage)
         : _currentPage == navPage
             ? navPage
             : AnimatedSwitcher(duration: _animationDuration, child: navPage);
@@ -130,9 +130,10 @@ class _AppState extends State<AppPage> {
     _currentPage = navPage;
 
     return AnimatedOpacity(
-        opacity: isActive ? 1.0 : 0.2,
-        duration: _animationDuration,
-        child: IgnorePointer(ignoring: !isActive, child: navPageAnimated));
+      opacity: 1.0,
+      duration: _animationDuration,
+      child: navPageAnimated,
+    );
   }
 
   Widget _pageByNavType(NavType navType) {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/ui/app_theme.dart';
 
-import '../core/string_keys.dart';
+import '../enums/string_keys.dart';
 
 const Duration _snackBarDefaultDuration = Duration(seconds: 2);
 

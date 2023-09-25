@@ -3,7 +3,7 @@ import 'package:union_player_app/player/app_player_handler.dart';
 import 'package:union_player_app/utils/core/date_time_ui_model.dart';
 import 'package:union_player_app/utils/core/duration.dart';
 
-import '../utils/core/relative_time_type.dart';
+import '../utils/enums/relative_time_type.dart';
 
 class ScheduleItemView {
   final String artist;

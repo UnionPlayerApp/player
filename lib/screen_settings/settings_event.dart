@@ -1,21 +1,13 @@
-class SettingsEvent {}
+import 'package:union_player_app/utils/enums/settings_item_type.dart';
 
-class SettingsEventLang extends SettingsEvent {
-  final int langId;
-
-  SettingsEventLang(this.langId);
+abstract class SettingsEvent {
+  const SettingsEvent();
 }
 
-class SettingsEventStartPlaying extends SettingsEvent {
-  final int startPlayingId;
+class SettingsItemTapEvent extends SettingsEvent {
+  final SettingsItemType itemType;
 
-  SettingsEventStartPlaying(this.startPlayingId);
-}
-
-class SettingsEventTheme extends SettingsEvent {
-  final int themeId;
-
-  SettingsEventTheme(this.themeId);
+  const SettingsItemTapEvent({required this.itemType});
 }
 
 class SettingsEventSharedPreferencesRead extends SettingsEvent {
@@ -23,5 +15,5 @@ class SettingsEventSharedPreferencesRead extends SettingsEvent {
   final int startPlayingId;
   final int themeId;
 
-  SettingsEventSharedPreferencesRead(this.langId, this.startPlayingId, this.themeId);
+  const SettingsEventSharedPreferencesRead(this.langId, this.startPlayingId, this.themeId);
 }

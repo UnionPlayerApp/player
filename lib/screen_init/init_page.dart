@@ -19,21 +19,22 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:union_player_app/model/system_data/system_data.dart';
+import 'package:union_player_app/providers/shared_preferences_manager.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_app/app_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/extensions.dart';
-import 'package:union_player_app/utils/core/shared_preferences.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
+import 'package:union_player_app/utils/enums/sound_quality_type.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/widgets/info_page.dart';
 import 'package:union_player_app/utils/widgets/progress_page.dart';
 
 import '../firebase_options.dart';
 import '../utils/core/locale_utils.dart';
-import '../utils/core/string_keys.dart';
+import '../utils/enums/start_plaing_type.dart';
+import '../utils/enums/string_keys.dart';
 
 class InitPage extends StatefulWidget {
   final PackageInfo _packageInfo;
@@ -47,7 +48,8 @@ class InitPage extends StatefulWidget {
 }
 
 class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
-  late final SystemData _systemData;
+  late final _spManager = GetIt.I.get<SPManager>();
+  late final _systemData = GetIt.I.get<SystemData>();
   late final Future<bool> _initAppFuture;
   late final UserCredential _userCredential;
   var _initStage = "initial stage";
@@ -55,11 +57,8 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance.addObserver(this);
-
-    _systemData = GetIt.I.get<SystemData>();
     _initAppFuture = _initApp();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -71,12 +70,10 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
   @override
   void didChangePlatformBrightness() {
     super.didChangePlatformBrightness();
-    SpManager.readThemeMode().then((settings) {
-      if (settings == ThemeMode.system) {
-        final themeMode = View.of(context).platformDispatcher.platformBrightness.toThemeMode;
-        Get.changeThemeMode(themeMode);
-      }
-    });
+    if (_spManager.readThemeMode() == ThemeMode.system) {
+      final systemThemeMode = View.of(context).platformDispatcher.platformBrightness.toThemeMode;
+      Get.changeThemeMode(systemThemeMode);
+    }
   }
 
   @override
@@ -169,15 +166,15 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
 
   Future<void> _initLocale() async {
     _initStage = "Locale init stage";
-    final langId = await readIntFromSharedPreferences(keyLang) ?? defaultLangId;
-    final newLocale = getLocaleById(langId);
+    final languageType = _spManager.readLanguageType();
+    final newLocale = getLocaleByLanguageType(languageType);
     return Get.updateLocale(newLocale);
   }
 
   Future<void> _initTheme() async {
     _initStage = "Theme init stage";
-    final themeId = await readIntFromSharedPreferences(keyTheme) ?? defaultThemeId;
-    setIcAudioQuality(themeId);
+    final themeMode = _spManager.readThemeMode();
+    return Get.changeThemeMode(themeMode);
   }
 
   Future _initAppTrackingTransparency() async {
@@ -266,24 +263,20 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
 
     _systemData.playerData.appTitle = translate(StringKeys.appTitle, context);
 
-    final SharedPreferences sp = await SharedPreferences.getInstance();
-
-    final int audioQualityId = sp.getInt(keyAudioQuality) ?? defaultAudioQualityId;
-    final int startPlayingId = sp.getInt(keyStartPlaying) ?? defaultStartPlayingId;
+    final soundQualityType = _spManager.readSoundQualityType();
+    final startPlayingType = _spManager.readStartPlayingType();
 
     late final bool isPlaying;
-    switch (startPlayingId) {
-      case startPlayingStart:
+
+    switch (startPlayingType) {
+      case StartPlayingType.start:
         isPlaying = true;
         break;
-      case startPlayingStop:
+      case StartPlayingType.stop:
         isPlaying = false;
         break;
-      case startPlayingLast:
-        isPlaying = sp.getBool(keyIsPlaying) ?? defaultIsPlaying;
-        break;
-      default:
-        isPlaying = defaultIsPlaying;
+      case StartPlayingType.last:
+        isPlaying = _spManager.readIsPlaying();
         break;
     }
 
@@ -298,21 +291,21 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
       ),
     );
 
-    await playerHandler.customAction(actionStart, _createPlayerTaskParams(audioQualityId, isPlaying));
+    await playerHandler.customAction(actionStart, _createPlayerTaskParams(soundQualityType, isPlaying));
 
     debugPrint("Player initialize success");
 
     return isPlaying;
   }
 
-  Map<String, dynamic> _createPlayerTaskParams(int audioQualityId, bool isPlaying) {
+  Map<String, dynamic> _createPlayerTaskParams(SoundQualityType soundQualityType, bool isPlaying) {
     final Map<String, dynamic> params = {
       keyAppTitle: _systemData.playerData.appTitle,
       keyUrlStreamLow: _systemData.streamData.streamLow,
       keyUrlStreamMedium: _systemData.streamData.streamMedium,
       keyUrlStreamHigh: _systemData.streamData.streamHigh,
       keyUrlSchedule: _systemData.xmlData.url,
-      keyAudioQuality: audioQualityId,
+      keySoundQuality: soundQualityType.integer,
       keyIsPlaying: isPlaying,
     };
     return params;

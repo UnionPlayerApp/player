@@ -2,7 +2,7 @@
   "appTitle": "Union Radio 1",
   "empty": "",
   "messageUs" : "Please write to us. We love reading your letters!",
-  "write" : "WRITE",
+  "write" : "Write to us",
   "hide" : "HIDE",
   "feedbackSubject": "From Union Radio 1 listener",
   "feedbackEmailLaunchError": "Error starting the mail program. Check the correctness of its settings",
@@ -49,5 +49,8 @@
   "buttonOk":  "Ok",
   "buttonCancel": "Cancel",
   "yesterday": "Yesterday",
-  "tomorrow": "Tomorrow"
+  "tomorrow": "Tomorrow",
+  "other": "Other",
+  "aboutRadio": "About the Union Radio 1",
+  "aboutApp": "About application"
 }

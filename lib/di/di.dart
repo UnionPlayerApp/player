@@ -21,6 +21,7 @@ import 'package:union_player_app/utils/widgets/progress_page.dart';
 import 'package:uuid/uuid.dart';
 
 import '../player/app_player.dart';
+import '../providers/shared_preferences_manager.dart';
 import '../screen_listen/listen_bloc.dart';
 import '../screen_listen/listen_page.dart';
 
@@ -33,6 +34,7 @@ class BindingModule {
     GetIt.I.registerLazySingleton<Random>(() => Random());
     GetIt.I.registerLazySingleton<SystemData>(() => SystemData());
     GetIt.I.registerLazySingleton<Uuid>(() => const Uuid());
+    GetIt.I.registerLazySingletonAsync(() => SPManager.createInstance());
   }
 
   static providesPages() {
@@ -48,7 +50,7 @@ class BindingModule {
   static providesBlocs() {
     GetIt.I.registerFactoryParam<AppBloc, bool, void>((isPlaying, _) => AppBloc(GetIt.I.get(), isPlaying));
     GetIt.I.registerFactory(() => FeedbackBloc(GetIt.I.get()));
-    GetIt.I.registerFactory(() => ListenBloc(GetIt.I.get()));
+    GetIt.I.registerFactory(() => ListenBloc(GetIt.I.get(), GetIt.I.get()));
     GetIt.I.registerFactory(() => ScheduleBloc(audioHandler: GetIt.I.get()));
     GetIt.I.registerFactory(() => SettingsBloc());
   }

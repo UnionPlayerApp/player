@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 
-import 'relative_day_type.dart';
-import 'string_keys.dart';
+import '../enums/relative_day_type.dart';
+import '../enums/string_keys.dart';
 
 class DateTimeUiModel {
   final String time;

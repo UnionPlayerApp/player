@@ -1,61 +1,27 @@
-part of 'app_bloc.dart';
+import 'package:equatable/equatable.dart';
+
+import '../utils/enums/nav_type.dart';
 
 class AppState extends Equatable {
-  final String nextArtist;
-  final String nextTitle;
-  final String presentArtist;
-  final String presentTitle;
-  final bool isAudioQualitySelectorOpen;
-  final bool isScheduleLoaded;
-  final bool playingState;
-  final int audioQualityId;
   final NavType navType;
+  final String message;
 
-  const AppState(
-    this.navType,
-    this.playingState,
-    this.audioQualityId,
-    this.isAudioQualitySelectorOpen, {
-    this.isScheduleLoaded = false,
-    this.presentTitle = "",
-    this.presentArtist = "",
-    this.nextTitle = "",
-    this.nextArtist = "",
+  const AppState({
+    required this.navType,
+    this.message = "",
   });
 
+  factory AppState.defaultState() => const AppState(navType: NavType.listen);
+
   @override
-  List<Object> get props => [
-        audioQualityId,
-        isAudioQualitySelectorOpen,
-        isScheduleLoaded,
-        navType,
-        nextArtist,
-        nextTitle,
-        playingState,
-        presentArtist,
-        presentTitle,
-      ];
+  List<Object> get props => [navType, message];
 
   AppState copyWith({
-    String? nextArtist,
-    String? nextTitle,
-    String? presentArtist,
-    String? presentTitle,
-    bool? isAudioQualitySelectorOpen,
-    bool? isScheduleLoaded,
-    bool? playingState,
-    int? audioQualityId,
     NavType? navType,
+    String? message,
   }) =>
       AppState(
-        navType ?? this.navType,
-        playingState ?? this.playingState,
-        audioQualityId ?? this.audioQualityId,
-        isAudioQualitySelectorOpen ?? this.isAudioQualitySelectorOpen,
-        nextArtist: nextArtist ?? this.nextArtist,
-        nextTitle: nextTitle ?? this.nextTitle,
-        presentArtist: presentArtist ?? this.presentArtist,
-        presentTitle: presentTitle ?? this.presentTitle,
-        isScheduleLoaded: isScheduleLoaded ?? this.isScheduleLoaded,
+        navType: navType ?? this.navType,
+        message: message ?? this.message,
       );
 }

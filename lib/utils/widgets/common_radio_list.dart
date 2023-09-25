@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:union_player_app/utils/core/string_keys.dart';
+import 'package:union_player_app/utils/enums/string_keys.dart';
 import 'package:union_player_app/utils/widgets/common_radio_button.dart';
 
 import '../localizations/string_translation.dart';

@@ -1,17 +1,19 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:union_player_app/utils/enums/language_type.dart';
+
 import '../constants/constants.dart';
 
-Locale getLocaleById(int id) {
-  switch (id) {
-    case langRU:
+Locale getLocaleByLanguageType(LanguageType languageType) {
+  switch (languageType) {
+    case LanguageType.ru:
       return localeRU;
-    case langBY:
+    case LanguageType.by:
       return localeBY;
-    case langUS:
+    case LanguageType.us:
       return localeUS;
-    default:
+    case LanguageType.system:
       return _systemLocale();
   }
 }

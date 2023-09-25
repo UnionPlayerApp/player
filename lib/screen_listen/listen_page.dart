@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:union_player_app/screen_listen/media_item_progress.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/core/image_source_type.dart';
+import 'package:union_player_app/utils/enums/image_source_type.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/ui/text_styles.dart';
@@ -200,7 +200,7 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
   }
 
   void _showAudioQualityPopup(BuildContext context, ListenState state) {
-    AudioQualityPopup(audioQualityType: state.audioQualityType).show(context).then((audioQualityType) {
+    AudioQualityPopup(soundQualityType: state.soundQualityType).show(context).then((audioQualityType) {
       if (audioQualityType != null) {
         context.read<ListenBloc>().add(ListenAudioQualityEvent(audioQualityType: audioQualityType));
       }

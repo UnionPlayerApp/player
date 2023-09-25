@@ -5,8 +5,8 @@ import 'package:union_player_app/repository/schedule_item_type.dart';
 import 'package:union_player_app/utils/core/date_time.dart';
 
 import '../utils/constants/constants.dart';
-import '../utils/core/image_source_type.dart';
-import '../utils/core/string_keys.dart';
+import '../utils/enums/image_source_type.dart';
+import '../utils/enums/string_keys.dart';
 
 // ignore: must_be_immutable
 class ListenItemView extends Equatable {

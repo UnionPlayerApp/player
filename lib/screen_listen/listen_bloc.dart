@@ -3,11 +3,12 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:union_player_app/providers/shared_preferences_manager.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/shared_preferences.dart';
-import 'package:union_player_app/utils/enums/audio_quality_type.dart';
+import 'package:union_player_app/utils/enums/sound_quality_type.dart';
 
-import '../utils/core/string_keys.dart';
+import '../utils/enums/string_keys.dart';
 import 'listen_event.dart';
 import 'listen_item_view.dart';
 import 'listen_state.dart';
@@ -16,6 +17,7 @@ class ListenBloc extends Bloc<ListenEvent, ListenState> {
   static const _unknownIndex = -1;
 
   final AudioHandler _audioHandler;
+  final SPManager _spManager;
 
   late final StreamSubscription _customSubscription;
   late final StreamSubscription _playerSubscription;
@@ -25,13 +27,7 @@ class ListenBloc extends Bloc<ListenEvent, ListenState> {
   var _currentIndex = _unknownIndex;
   var _displayIndex = _unknownIndex;
 
-  ListenBloc(this._audioHandler) : super(ListenState.empty()) {
-    _customSubscription = _audioHandler.customEvent.listen((event) => _onCustom(event));
-    _playerSubscription = _audioHandler.playbackState.listen((playbackState) => add(
-          ListenPlaybackEvent(playbackState: playbackState),
-        ));
-    _queueSubscription = _audioHandler.queue.listen((queue) => _onQueue(queue));
-
+  ListenBloc(this._audioHandler, this._spManager) : super(ListenState.empty()) {
     on<ListenAudioQualityEvent>(_onAudioQuality);
     on<ListenInitEvent>(_onInit);
     on<ListenLoadEvent>(_onLoad);
@@ -40,14 +36,19 @@ class ListenBloc extends Bloc<ListenEvent, ListenState> {
     on<ListenBackStepEvent>(_onBackStep);
     on<ListenForwardStepEvent>(_onForwardStep);
 
+    _customSubscription = _audioHandler.customEvent.listen((event) => _onCustom(event));
+    _playerSubscription = _audioHandler.playbackState.listen((playbackState) => add(
+      ListenPlaybackEvent(playbackState: playbackState),
+    ));
+    _queueSubscription = _audioHandler.queue.listen((queue) => _onQueue(queue));
+
     add(ListenInitEvent());
   }
 
   FutureOr<void> _onInit(ListenInitEvent event, Emitter<ListenState> emitter) async {
-    final audioQualityInt = await readIntFromSharedPreferences(keyAudioQuality);
-    final audioQualityType = audioQualityInt?.audioQualityType ?? AudioQualityType.unknown;
+    final soundQualityType = _spManager.readSoundQualityType();
     final newState = state.copyWith(
-      audioQualityType: audioQualityType,
+      soundQualityType: soundQualityType,
       isPlaying: _audioHandler.playbackState.value.playing,
     );
     emitter(newState);
@@ -121,19 +122,19 @@ class ListenBloc extends Bloc<ListenEvent, ListenState> {
 
   FutureOr<void> _onAudioQuality(ListenAudioQualityEvent event, Emitter<ListenState> emitter) async {
     await _setAudioQuality(event.audioQualityType);
-    final newState = state.copyWith(audioQualityType: event.audioQualityType);
+    final newState = state.copyWith(soundQualityType: event.audioQualityType);
     emitter(newState);
   }
 
-  Future<void> _setAudioQuality(AudioQualityType audioQualityType) {
+  Future<void> _setAudioQuality(SoundQualityType audioQualityType) {
     final audioQualityInt = audioQualityType.integer;
     final params = {
-      keyAudioQuality: audioQualityInt,
+      keySoundQuality: audioQualityInt,
       keyIsPlaying: _audioHandler.playbackState.value.playing,
     };
     return Future.wait([
-      _audioHandler.customAction(actionSetAudioQuality, params),
-      writeIntToSharedPreferences(keyAudioQuality, audioQualityInt),
+      _audioHandler.customAction(actionSetSoundQuality, params),
+      writeIntToSharedPreferences(keySoundQuality, audioQualityInt),
     ]);
   }
 

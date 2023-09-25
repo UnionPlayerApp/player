@@ -12,6 +12,7 @@ import 'package:union_player_app/repository/schedule_repository_event.dart';
 import 'package:union_player_app/repository/schedule_repository_interface.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/file_utils.dart';
+import 'package:union_player_app/utils/enums/sound_quality_type.dart';
 import 'package:uuid/uuid.dart';
 
 class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
@@ -66,8 +67,8 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<dynamic> customAction(String name, [Map<String, dynamic>? extras]) {
     switch (name) {
-      case actionSetAudioQuality:
-        return _setAudioQuality(extras);
+      case actionSetSoundQuality:
+        return _setSoundQuality(extras);
       case actionStart:
         return _start(extras);
       default:
@@ -76,13 +77,21 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
   }
 
   // Set audio quality and start / pause audio stream
-  Future<void> _setAudioQuality(dynamic arguments) async {
+  Future<void> _setSoundQuality(dynamic arguments) async {
     final Map<String, dynamic> params = Map.from(arguments);
 
-    final int audioQuality = params[keyAudioQuality] ?? defaultAudioQualityId;
-    final bool isPlaying = params[keyIsPlaying] ?? defaultIsPlaying;
+    final soundQuality = params[keySoundQuality];
+    final isPlaying = params[keyIsPlaying];
 
-    final audioUrl = _mapAudioQualityToUrl(audioQuality);
+    assert(
+      soundQuality is int && isPlaying is bool,
+      "Incorrect parameters set sound quality custom action: $arguments",
+    );
+
+    soundQuality as int;
+    isPlaying as bool;
+
+    final audioUrl = _mapSoundQualityToUrl(soundQuality.soundQualityType);
 
     try {
       await player.stop();
@@ -123,7 +132,7 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
 
     schedule.start(_urlSchedule);
 
-    _setAudioQuality(arguments);
+    _setSoundQuality(arguments);
   }
 
   PlaybackState _transformPlaybackEvent(PlaybackEvent event) => PlaybackState(
@@ -166,19 +175,14 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
     return uriList;
   }
 
-  String _mapAudioQualityToUrl(int audioQuality) {
-    switch (audioQuality) {
-      case audioQualityLow:
+  String _mapSoundQualityToUrl(SoundQualityType soundQuality) {
+    switch (soundQuality) {
+      case SoundQualityType.low:
         return _urlStreamLow;
-      case audioQualityMedium:
+      case SoundQualityType.medium:
         return _urlStreamMedium;
-      case audioQualityHigh:
+      case SoundQualityType.high:
         return _urlStreamHigh;
-      case audioQualityUnknown:
-        return _urlStreamMedium;
-      default:
-        debugPrint("Unknown AudioQualityType $audioQuality. Default quality (medium) used.");
-        return _urlStreamMedium;
     }
   }
 
