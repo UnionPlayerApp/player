@@ -3,6 +3,7 @@ import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/ui/app_theme.dart';
 
 import '../enums/string_keys.dart';
+import '../ui/app_colors.dart';
 
 const Duration _snackBarDefaultDuration = Duration(seconds: 2);
 
@@ -29,7 +30,7 @@ void showSnackBar(
 
   final snackBar = SnackBar(
     content: content,
-    backgroundColor: primaryColor,
+    backgroundColor: AppColors.blueGreen,
     duration: duration,
     padding: const EdgeInsets.all(8.0),
     behavior: SnackBarBehavior.floating,

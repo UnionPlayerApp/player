@@ -11,8 +11,8 @@ import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/ui/text_styles.dart';
 import 'package:union_player_app/utils/widgets/live_air_widget.dart';
 
+import '../screen_settings/popups/sound_quality_popup.dart';
 import '../utils/ui/app_colors.dart';
-import 'audio_quality_popup.dart';
 import 'listen_bloc.dart';
 import 'listen_event.dart';
 import 'listen_item_view.dart';
@@ -104,7 +104,7 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
         children: [
           const Spacer(),
           InkWell(
-            onTap: () => _showAudioQualityPopup(context, state),
+            onTap: () => _showSoundQualityPopup(context, state),
             child: SvgPicture.asset(AppIcons.icAudioQuality),
           ),
         ],
@@ -199,10 +199,10 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
     );
   }
 
-  void _showAudioQualityPopup(BuildContext context, ListenState state) {
-    AudioQualityPopup(soundQualityType: state.soundQualityType).show(context).then((audioQualityType) {
-      if (audioQualityType != null) {
-        context.read<ListenBloc>().add(ListenAudioQualityEvent(audioQualityType: audioQualityType));
+  void _showSoundQualityPopup(BuildContext context, ListenState state) {
+    SoundQualityPopup(initialValue: state.soundQualityType).show(context).then((soundQualityType) {
+      if (soundQualityType != null) {
+        context.read<ListenBloc>().add(ListenSoundQualityEvent(soundQualityType: soundQualityType));
       }
     });
   }

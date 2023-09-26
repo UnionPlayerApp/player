@@ -2,61 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:union_player_app/utils/enums/language_type.dart';
 import 'package:union_player_app/utils/enums/sound_quality_type.dart';
-import 'package:union_player_app/utils/enums/start_plaing_type.dart';
-import 'package:union_player_app/utils/enums/theme_mode.dart';
+import 'package:union_player_app/utils/enums/start_playing_type.dart';
 
 const appBarLogoImage = "assets/images/union_radio_logo_outline.svg";
 const logoImage = "assets/images/union_radio_logo.png";
 const logoImage1 = "assets/images/union_radio_logo_1.png";
-
-var icAudioQualityLow = "";
-var icAudioQualityHigh = "";
-var icAudioQualityMedium = "";
-var icAudioQualityDefault = "";
-
-const icAudioQualityLowBlack = "assets/images/audio_quality_low.png";
-const icAudioQualityHighBlack = "assets/images/audio_quality_high.png";
-const icAudioQualityMediumBlack = "assets/images/audio_quality_medium.png";
-const icAudioQualityDefaultBlack = icAudioQualityMediumBlack;
-
-const icAudioQualityLowWhite = "assets/images/audio_quality_low_white.png";
-const icAudioQualityHighWhite = "assets/images/audio_quality_high_white.png";
-const icAudioQualityMediumWhite = "assets/images/audio_quality_medium_white.png";
-const icAudioQualityDefaultWhite = icAudioQualityMediumWhite;
-
-void setIcAudioQuality(int themeId) {
-  switch (themeId) {
-    case themeLight:
-      _setIcAudioQualityToBlack();
-      break;
-    case themeDark:
-      _setIcAudioQualityToWhite();
-      break;
-    default:
-      switch (WidgetsBinding.instance.platformDispatcher.platformBrightness) {
-        case Brightness.light:
-          _setIcAudioQualityToBlack();
-          break;
-        case Brightness.dark:
-          _setIcAudioQualityToWhite();
-          break;
-      }
-  }
-}
-
-void _setIcAudioQualityToWhite() {
-  icAudioQualityLow = icAudioQualityLowWhite;
-  icAudioQualityHigh = icAudioQualityHighWhite;
-  icAudioQualityMedium = icAudioQualityMediumWhite;
-  icAudioQualityDefault = icAudioQualityDefaultWhite;
-}
-
-void _setIcAudioQualityToBlack() {
-  icAudioQualityLow = icAudioQualityLowBlack;
-  icAudioQualityHigh = icAudioQualityHighBlack;
-  icAudioQualityMedium = icAudioQualityMediumBlack;
-  icAudioQualityDefault = icAudioQualityDefaultBlack;
-}
 
 //Streams IDs
 const idStreamLow = 0;

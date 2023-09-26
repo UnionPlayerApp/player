@@ -53,7 +53,10 @@ class _SchedulePageState extends State<SchedulePage> with TickerProviderStateMix
     WidgetsBinding.instance.addPostFrameCallback((_) => _jumpToCurrentItem());
 
     return ScrollablePositionedList.separated(
-      separatorBuilder: (BuildContext context, int index) => Divider(height: listViewDividerHeight),
+      separatorBuilder: (BuildContext context, int index) => Divider(
+        height: listViewDividerHeight,
+        color: AppColors.platinum,
+      ),
       itemScrollController: _itemScrollController,
       itemPositionsListener: _itemPositionsListener,
       itemCount: state.items.length,

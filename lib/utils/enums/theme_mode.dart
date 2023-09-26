@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:union_player_app/utils/enums/string_keys.dart';
 
 import '../constants/constants.dart';
 
@@ -7,11 +8,18 @@ const _themeLight = 1;
 const _themeDark = 2;
 
 const _themeDefault = _themeSystem;
+const _themeDefaultLabelKey = StringKeys.settingsThemeSystem;
 
 const _mapType2Int = {
   ThemeMode.system: _themeSystem,
   ThemeMode.light: _themeLight,
   ThemeMode.dark: _themeDark,
+};
+
+const _mapType2StringKeys = {
+  ThemeMode.system: StringKeys.settingsThemeSystem,
+  ThemeMode.light: StringKeys.settingsThemeLight,
+  ThemeMode.dark: StringKeys.settingsThemeDark,
 };
 
 const _mapInt2Type = {
@@ -22,6 +30,8 @@ const _mapInt2Type = {
 
 extension ThemeModeExtension on ThemeMode {
   int get integer => _mapType2Int[this] ?? _themeDefault;
+
+  StringKeys get labelKey => _mapType2StringKeys[this] ?? _themeDefaultLabelKey;
 }
 
 extension ThemeModeIntExtension on int {

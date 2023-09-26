@@ -26,14 +26,14 @@ import 'package:union_player_app/screen_app/app_page.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/extensions.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
+import 'package:union_player_app/utils/enums/language_type.dart';
 import 'package:union_player_app/utils/enums/sound_quality_type.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/widgets/info_page.dart';
 import 'package:union_player_app/utils/widgets/progress_page.dart';
 
 import '../firebase_options.dart';
-import '../utils/core/locale_utils.dart';
-import '../utils/enums/start_plaing_type.dart';
+import '../utils/enums/start_playing_type.dart';
 import '../utils/enums/string_keys.dart';
 
 class InitPage extends StatefulWidget {
@@ -110,6 +110,7 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
 
   Future _initFirebase() async {
     _initStage = "Firebase init stage";
+    debugPrint(_initStage);
     try {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
@@ -126,6 +127,7 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
 
   Future<bool> _logAppStatus(bool isPlaying) async {
     _initStage = "Log App Status init stage";
+    debugPrint(_initStage);
     // TODO: need to fix
     // final appCheckToken = await FirebaseAppCheck.instance.getToken();
     const appCheckToken = "temporary unsupported";
@@ -156,6 +158,7 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
 
   FutureOr<void> _initLogger() {
     _initStage = "Logger init stage";
+    debugPrint(_initStage);
     if (kReleaseMode) {
       debugPrint = (String? message, {int? wrapWidth}) => FirebaseCrashlytics.instance.log(message ?? emptyLogMessage);
       FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
@@ -166,19 +169,19 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
 
   Future<void> _initLocale() async {
     _initStage = "Locale init stage";
-    final languageType = _spManager.readLanguageType();
-    final newLocale = getLocaleByLanguageType(languageType);
-    return Get.updateLocale(newLocale);
+    debugPrint(_initStage);
+    return Get.updateLocale(_spManager.readLanguageType().locale);
   }
 
   Future<void> _initTheme() async {
     _initStage = "Theme init stage";
-    final themeMode = _spManager.readThemeMode();
-    return Get.changeThemeMode(themeMode);
+    debugPrint(_initStage);
+    return Get.changeThemeMode(_spManager.readThemeMode());
   }
 
   Future _initAppTrackingTransparency() async {
     _initStage = "App Tracking Transparency init stage";
+    debugPrint(_initStage);
     try {
       var status = await AppTrackingTransparency.trackingAuthorizationStatus;
       if (status == TrackingStatus.notDetermined) {
@@ -216,6 +219,7 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
 
   Future _initSystemData() async {
     _initStage = "System Data init stage";
+    debugPrint(_initStage);
 
     late final CollectionReference collection;
 
@@ -258,8 +262,7 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
 
   Future<bool> _initPlayer() async {
     _initStage = "Player init stage";
-
-    debugPrint("Player initialize start");
+    debugPrint(_initStage);
 
     _systemData.playerData.appTitle = translate(StringKeys.appTitle, context);
 
@@ -340,8 +343,8 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
         translate(StringKeys.appIsNotInit5, context),
       ]);
 
-  Widget _createAppPage(bool isPlaying) => BlocProvider.value(
-        value: GetIt.I.get<AppBloc>(param1: isPlaying),
+  Widget _createAppPage(bool isPlaying) => BlocProvider(
+        create: (_) => GetIt.I.get<AppBloc>(param1: isPlaying),
         child: GetIt.I.get<AppPage>(),
       );
 

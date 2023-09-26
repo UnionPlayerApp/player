@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:union_player_app/utils/core/extensions.dart';
-
-import '../constants/constants.dart';
 
 ThemeData appThemeLight() {
   final baseThemeData = ThemeData.light();
@@ -92,11 +88,6 @@ const scaffoldBackgroundColorDark = Color(0xff616161);
 const surfaceColor = Colors.white;
 
 const defaultLetterSpacing = 0.03;
-
-void setThemeById(int themeId) {
-  setIcAudioQuality(themeId);
-  Get.changeThemeMode(themeId.themeMode);
-}
 
 const redCarminePink = Color(0xFFEA4C46);
 const redBegonia = Color(0xFFF07470);

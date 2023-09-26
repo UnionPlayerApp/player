@@ -1,17 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:union_player_app/screen_settings/popups/language_popup.dart';
+import 'package:union_player_app/screen_settings/popups/settings_popup.dart';
+import 'package:union_player_app/screen_settings/popups/sound_quality_popup.dart';
+import 'package:union_player_app/screen_settings/popups/start_playing_popup.dart';
+import 'package:union_player_app/screen_settings/popups/theme_mode_popup.dart';
 import 'package:union_player_app/screen_settings/settings_bloc.dart';
-import 'package:union_player_app/screen_settings/settings_event.dart';
 import 'package:union_player_app/screen_settings/settings_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/enums/language_type.dart';
+import 'package:union_player_app/utils/enums/sound_quality_type.dart';
+import 'package:union_player_app/utils/enums/start_playing_type.dart';
+import 'package:union_player_app/utils/enums/theme_mode.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/widgets/snack_bar.dart';
 
-import '../utils/enums/settings_item_type.dart';
-import '../utils/enums/string_keys.dart';
 import '../utils/dimensions/dimensions.dart';
+import '../utils/enums/string_keys.dart';
+import '../utils/ui/app_colors.dart';
 import '../utils/ui/text_styles.dart';
+import 'settings_event.dart';
 
 class SettingsPage extends StatelessWidget {
   @override
@@ -41,7 +50,7 @@ class SettingsPage extends StatelessWidget {
         _divider(),
         _startPlayingWidget(context, state),
         _divider(),
-        _themeWidget(context, state),
+        _themeModeWidget(context, state),
         _divider(),
         _languageWidget(context, state),
       ];
@@ -55,43 +64,52 @@ class SettingsPage extends StatelessWidget {
         _aboutAppWidget(context),
       ];
 
-  Widget _sectionTitle(BuildContext context, {required StringKeys key}) => Text(
-        translate(key, context),
-        style: TextStyles.screenTitle20px,
-      );
+  Widget _sectionTitle(BuildContext context, {required StringKeys key}) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 40.0),
+    child: Text(
+          translate(key, context),
+          style: TextStyles.screenTitle20px,
+        ),
+  );
 
-  Widget _soundQualityWidget(BuildContext context, SettingsState state) => _settingsItemWidget(
+  Widget _soundQualityWidget(BuildContext context, SettingsState state) => _settingsItemWidget<SoundQualityType>(
         context,
         labelKey: StringKeys.settingsQualityLabel,
-        valueKey: state.soundQualityKey,
-        itemType: SettingsItemType.soundQuality,
+        valueKey: state.soundQuality.labelKey,
+        popup: SoundQualityPopup(initialValue: state.soundQuality),
       );
 
-  Widget _startPlayingWidget(BuildContext context, SettingsState state) => _settingsItemWidget(
+  Widget _startPlayingWidget(BuildContext context, SettingsState state) => _settingsItemWidget<StartPlayingType>(
         context,
         labelKey: StringKeys.settingsStartPlayingLabel,
-        valueKey: state.startPlayingKey,
-        itemType: SettingsItemType.startPlaying,
+        valueKey: state.startPlaying.labelKey,
+        popup: StartPlayingPopup(initialValue: state.startPlaying),
       );
 
-  Widget _themeWidget(BuildContext context, SettingsState state) => _settingsItemWidget(
+  Widget _themeModeWidget(BuildContext context, SettingsState state) => _settingsItemWidget<ThemeMode>(
         context,
         labelKey: StringKeys.settingsThemeLabel,
-        valueKey: state.themeKey,
-        itemType: SettingsItemType.theme,
+        valueKey: state.themeMode.labelKey,
+        popup: ThemeModePopup(initialValue: state.themeMode),
       );
 
-  Widget _languageWidget(BuildContext context, SettingsState state) => _settingsItemWidget(context,
-      labelKey: StringKeys.settingsLangLabel, valueKey: state.langKey, itemType: SettingsItemType.language);
+  Widget _languageWidget(BuildContext context, SettingsState state) => _settingsItemWidget<LanguageType>(
+        context,
+        labelKey: StringKeys.settingsLangLabel,
+        valueKey: state.language.labelKey,
+        popup: LanguagePopup(initialValue: state.language),
+      );
 
-  Widget _settingsItemWidget(
+  Widget _settingsItemWidget<T>(
     BuildContext context, {
     required StringKeys labelKey,
     required StringKeys valueKey,
-    required SettingsItemType itemType,
+    required SettingsPopup<T> popup,
   }) {
     return InkWell(
-      onTap: () => context.read<SettingsBloc>().add(SettingsItemTapEvent(itemType: itemType)),
+      onTap: () => popup.show(context).then(
+            (value) => value != null ? context.read<SettingsBloc>().add(SettingsChangedEvent<T>(value: value)) : {},
+          ),
       child: Row(
         children: [
           Text(translate(labelKey, context), style: TextStyles.screenContent),
@@ -136,5 +154,8 @@ class SettingsPage extends StatelessWidget {
         ),
       );
 
-  Widget _divider() => Divider(height: listViewDividerHeight);
+  Widget _divider() => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 15.0),
+    child: Divider(height: listViewDividerHeight, color: AppColors.platinum),
+  );
 }

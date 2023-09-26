@@ -1,4 +1,3 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:equatable/equatable.dart';
 
 import '../utils/enums/nav_type.dart';

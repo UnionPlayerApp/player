@@ -1,19 +1,11 @@
-import 'package:union_player_app/utils/enums/settings_item_type.dart';
-
 abstract class SettingsEvent {
   const SettingsEvent();
 }
 
-class SettingsItemTapEvent extends SettingsEvent {
-  final SettingsItemType itemType;
+class SettingsInitEvent extends SettingsEvent {}
 
-  const SettingsItemTapEvent({required this.itemType});
-}
+class SettingsChangedEvent<T> extends SettingsEvent {
+  final T value;
 
-class SettingsEventSharedPreferencesRead extends SettingsEvent {
-  final int langId;
-  final int startPlayingId;
-  final int themeId;
-
-  const SettingsEventSharedPreferencesRead(this.langId, this.startPlayingId, this.themeId);
+  const SettingsChangedEvent({required this.value});
 }

@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:union_player_app/providers/shared_preferences_manager.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/core/shared_preferences.dart';
 import 'package:union_player_app/utils/enums/sound_quality_type.dart';
 
 import '../utils/enums/string_keys.dart';
@@ -28,7 +27,7 @@ class ListenBloc extends Bloc<ListenEvent, ListenState> {
   var _displayIndex = _unknownIndex;
 
   ListenBloc(this._audioHandler, this._spManager) : super(ListenState.empty()) {
-    on<ListenAudioQualityEvent>(_onAudioQuality);
+    on<ListenSoundQualityEvent>(_onSoundQuality);
     on<ListenInitEvent>(_onInit);
     on<ListenLoadEvent>(_onLoad);
     on<ListenPlaybackEvent>(_onPlayback);
@@ -120,21 +119,20 @@ class ListenBloc extends Bloc<ListenEvent, ListenState> {
     return super.close();
   }
 
-  FutureOr<void> _onAudioQuality(ListenAudioQualityEvent event, Emitter<ListenState> emitter) async {
-    await _setAudioQuality(event.audioQualityType);
-    final newState = state.copyWith(soundQualityType: event.audioQualityType);
+  FutureOr<void> _onSoundQuality(ListenSoundQualityEvent event, Emitter<ListenState> emitter) async {
+    await _setSoundQuality(event.soundQualityType);
+    final newState = state.copyWith(soundQualityType: event.soundQualityType);
     emitter(newState);
   }
 
-  Future<void> _setAudioQuality(SoundQualityType audioQualityType) {
-    final audioQualityInt = audioQualityType.integer;
+  Future<void> _setSoundQuality(SoundQualityType soundQualityType) {
     final params = {
-      keySoundQuality: audioQualityInt,
+      keySoundQuality: soundQualityType.integer,
       keyIsPlaying: _audioHandler.playbackState.value.playing,
     };
     return Future.wait([
       _audioHandler.customAction(actionSetSoundQuality, params),
-      writeIntToSharedPreferences(keySoundQuality, audioQualityInt),
+      _spManager.writeSoundQualityType(soundQualityType),
     ]);
   }
 
@@ -143,7 +141,7 @@ class ListenBloc extends Bloc<ListenEvent, ListenState> {
     final newState = state.copyWith(isPlaying: event.playbackState.playing);
     emitter(newState);
     if (isPlayingChanged) {
-      writeBoolToSharedPreferences(keyIsPlaying, event.playbackState.playing);
+      _spManager.writeIsPlaying(event.playbackState.playing);
     }
   }
 

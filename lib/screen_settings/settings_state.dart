@@ -1,39 +1,49 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/enums/language_type.dart';
+import 'package:union_player_app/utils/enums/sound_quality_type.dart';
+import 'package:union_player_app/utils/enums/start_playing_type.dart';
 
 import '../utils/enums/string_keys.dart';
 
 class SettingsState extends Equatable {
-  final StringKeys langKey;
+  final LanguageType language;
+  final SoundQualityType soundQuality;
+  final StartPlayingType startPlaying;
+  final ThemeMode themeMode;
   final StringKeys snackBarKey;
-  final StringKeys soundQualityKey;
-  final StringKeys startPlayingKey;
-  final StringKeys themeKey;
 
   const SettingsState({
-    required this.langKey,
-    required this.soundQualityKey,
-    required this.startPlayingKey,
-    required this.themeKey,
+    required this.language,
+    required this.soundQuality,
+    required this.startPlaying,
+    required this.themeMode,
     this.snackBarKey = StringKeys.empty,
   });
 
-  factory SettingsState.default() => SettingsState(langKey: langKey, soundQualityKey: soundQualityKey, startPlayingKey: startPlayingKey, themeKey: themeKey,)
+  factory SettingsState.defaultState() => const SettingsState(
+        language: defaultLanguageType,
+        soundQuality: defaultSoundQualityType,
+        startPlaying: defaultStartPlayingType,
+        themeMode: defaultThemeMode,
+      );
 
   @override
-  List<Object?> get props => [langKey, soundQualityKey, startPlayingKey, themeKey, snackBarKey];
+  List<Object?> get props => [language, soundQuality, startPlaying, themeMode, snackBarKey];
 
   SettingsState copyWith({
-    StringKeys? langKey,
-    StringKeys? soundQualityKey,
-    StringKeys? startPlayingKey,
-    StringKeys? themeKey,
+    LanguageType? language,
+    SoundQualityType? soundQuality,
+    StartPlayingType? startPlaying,
+    ThemeMode? themeMode,
     StringKeys? snackBarKey,
   }) =>
       SettingsState(
-        langKey: langKey ?? this.langKey,
-        soundQualityKey: soundQualityKey ?? this.soundQualityKey,
-        startPlayingKey: startPlayingKey ?? this.startPlayingKey,
-        themeKey: themeKey ?? this.themeKey,
+        language: language ?? this.language,
+        soundQuality: soundQuality ?? this.soundQuality,
+        startPlaying: startPlaying ?? this.startPlaying,
+        themeMode: themeMode ?? this.themeMode,
         snackBarKey: snackBarKey ?? this.snackBarKey,
       );
 }

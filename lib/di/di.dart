@@ -26,9 +26,14 @@ import '../screen_listen/listen_bloc.dart';
 import '../screen_listen/listen_page.dart';
 
 class BindingModule {
-  static providesTools() {
+  static void providesTools() {
     GetIt.I.registerLazySingleton<AppLogger>(() => AppLogger());
-    GetIt.I.registerLazySingleton<AudioHandler>(() => AppPlayerHandler(player: GetIt.I.get(), schedule: GetIt.I.get(), random: GetIt.I.get(), uuid: GetIt.I.get()));
+    GetIt.I.registerLazySingleton<AudioHandler>(() => AppPlayerHandler(
+          GetIt.I.get(),
+          GetIt.I.get(),
+          GetIt.I.get(),
+          GetIt.I.get(),
+        ));
     GetIt.I.registerLazySingleton<AudioPlayer>(() => AppPlayer());
     GetIt.I.registerLazySingleton<IScheduleRepository>(() => ScheduleRepositoryImpl());
     GetIt.I.registerLazySingleton<Random>(() => Random());
@@ -37,7 +42,7 @@ class BindingModule {
     GetIt.I.registerLazySingletonAsync(() => SPManager.createInstance());
   }
 
-  static providesPages() {
+  static void providesPages() {
     GetIt.I.registerFactory(() => AppPage());
     GetIt.I.registerFactory(() => FeedbackPage());
     GetIt.I.registerFactory(() => ListenPage());
@@ -47,11 +52,17 @@ class BindingModule {
     GetIt.I.registerFactoryParam<ProgressPage, String, void>((appVersion, _) => ProgressPage(version: appVersion));
   }
 
-  static providesBlocs() {
+  static void providesBlocs() {
     GetIt.I.registerFactoryParam<AppBloc, bool, void>((isPlaying, _) => AppBloc(GetIt.I.get(), isPlaying));
     GetIt.I.registerFactory(() => FeedbackBloc(GetIt.I.get()));
     GetIt.I.registerFactory(() => ListenBloc(GetIt.I.get(), GetIt.I.get()));
     GetIt.I.registerFactory(() => ScheduleBloc(audioHandler: GetIt.I.get()));
-    GetIt.I.registerFactory(() => SettingsBloc());
+    GetIt.I.registerFactory(() => SettingsBloc(GetIt.I.get(), GetIt.I.get()));
+  }
+
+  static Future<void> initAsyncSingletons() {
+    return Future.wait([
+      GetIt.I.getAsync<SPManager>(),
+    ]).then((_) => null);
   }
 }

@@ -25,13 +25,13 @@ class ListenLoadEvent extends ListenEvent {
   List<Object?> get props => [isScheduleLoaded, mediaItems, loadingError];
 }
 
-class ListenAudioQualityEvent extends ListenEvent {
-  final SoundQualityType audioQualityType;
+class ListenSoundQualityEvent extends ListenEvent {
+  final SoundQualityType soundQualityType;
 
-  const ListenAudioQualityEvent({required this.audioQualityType});
+  const ListenSoundQualityEvent({required this.soundQualityType});
 
   @override
-  List<Object?> get props => [audioQualityType];
+  List<Object?> get props => [soundQualityType];
 }
 
 class ListenInitEvent extends ListenEvent {}
