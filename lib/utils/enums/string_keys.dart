@@ -62,4 +62,7 @@ enum StringKeys {
   buttonCancel,
   yesterday,
   tomorrow,
+  other,
+  aboutRadio,
+  aboutApp,
 }

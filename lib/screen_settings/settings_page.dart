@@ -1,13 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:union_player_app/screen_settings/popups/language_popup.dart';
+import 'package:union_player_app/screen_settings/popups/settings_popup.dart';
+import 'package:union_player_app/screen_settings/popups/sound_quality_popup.dart';
+import 'package:union_player_app/screen_settings/popups/start_playing_popup.dart';
+import 'package:union_player_app/screen_settings/popups/theme_mode_popup.dart';
 import 'package:union_player_app/screen_settings/settings_bloc.dart';
-import 'package:union_player_app/screen_settings/settings_event.dart';
 import 'package:union_player_app/screen_settings/settings_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/enums/language_type.dart';
+import 'package:union_player_app/utils/enums/sound_quality_type.dart';
+import 'package:union_player_app/utils/enums/start_playing_type.dart';
+import 'package:union_player_app/utils/enums/theme_mode.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/widgets/snack_bar.dart';
 
-import '../utils/core/string_keys.dart';
+import '../utils/dimensions/dimensions.dart';
+import '../utils/enums/string_keys.dart';
+import '../utils/ui/app_colors.dart';
+import '../utils/ui/text_styles.dart';
+import 'settings_event.dart';
 
 class SettingsPage extends StatelessWidget {
   @override
@@ -25,115 +38,124 @@ class SettingsPage extends StatelessWidget {
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _createWidgetTheme(context, state),
-        _createWidgetStartPlaying(context, state),
-        _createWidgetLang(context, state),
+        ..._settingsSection(context, state),
+        ..._otherSection(context, state),
       ],
     );
   }
 
-  Widget _createWidgetTheme(BuildContext context, SettingsState state) => _createRow(
-        _createLabel(context, StringKeys.settingsThemeLabel),
-        _createButton(
-          context,
-          [
-            StringKeys.settingsThemeLight,
-            StringKeys.settingsThemeDark,
-            StringKeys.settingsThemeSystem,
-          ],
-          [
-            themeLight,
-            themeDark,
-            themeSystem,
-          ],
-          state.theme,
-          (int? value) => BlocProvider.of<SettingsBloc>(context).add(SettingsEventTheme(value ?? defaultThemeId)),
+  List<Widget> _settingsSection(BuildContext context, SettingsState state) => [
+        _sectionTitle(context, key: StringKeys.settings),
+        _soundQualityWidget(context, state),
+        _divider(),
+        _startPlayingWidget(context, state),
+        _divider(),
+        _themeModeWidget(context, state),
+        _divider(),
+        _languageWidget(context, state),
+      ];
+
+  List<Widget> _otherSection(BuildContext context, SettingsState state) => [
+        _sectionTitle(context, key: StringKeys.other),
+        _contactUsWidget(context),
+        _divider(),
+        _aboutRadioWidget(context),
+        _divider(),
+        _aboutAppWidget(context),
+      ];
+
+  Widget _sectionTitle(BuildContext context, {required StringKeys key}) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 40.0),
+    child: Text(
+          translate(key, context),
+          style: TextStyles.screenTitle20px,
         ),
+  );
+
+  Widget _soundQualityWidget(BuildContext context, SettingsState state) => _settingsItemWidget<SoundQualityType>(
+        context,
+        labelKey: StringKeys.settingsQualityLabel,
+        valueKey: state.soundQuality.labelKey,
+        popup: SoundQualityPopup(initialValue: state.soundQuality),
       );
 
-  Widget _createWidgetStartPlaying(BuildContext context, SettingsState state) => _createRow(
-        _createLabel(context, StringKeys.settingsStartPlayingLabel),
-        _createButton(
-          context,
-          [
-            StringKeys.settingsStartPlayingStart,
-            StringKeys.settingsStartPlayingStop,
-            StringKeys.settingsStartPlayingLast,
-          ],
-          [
-            startPlayingStart,
-            startPlayingStop,
-            startPlayingLast,
-          ],
-          state.startPlaying,
-          (int? value) => BlocProvider.of<SettingsBloc>(context).add(
-            SettingsEventStartPlaying(value ?? defaultStartPlayingId),
+  Widget _startPlayingWidget(BuildContext context, SettingsState state) => _settingsItemWidget<StartPlayingType>(
+        context,
+        labelKey: StringKeys.settingsStartPlayingLabel,
+        valueKey: state.startPlaying.labelKey,
+        popup: StartPlayingPopup(initialValue: state.startPlaying),
+      );
+
+  Widget _themeModeWidget(BuildContext context, SettingsState state) => _settingsItemWidget<ThemeMode>(
+        context,
+        labelKey: StringKeys.settingsThemeLabel,
+        valueKey: state.themeMode.labelKey,
+        popup: ThemeModePopup(initialValue: state.themeMode),
+      );
+
+  Widget _languageWidget(BuildContext context, SettingsState state) => _settingsItemWidget<LanguageType>(
+        context,
+        labelKey: StringKeys.settingsLangLabel,
+        valueKey: state.language.labelKey,
+        popup: LanguagePopup(initialValue: state.language),
+      );
+
+  Widget _settingsItemWidget<T>(
+    BuildContext context, {
+    required StringKeys labelKey,
+    required StringKeys valueKey,
+    required SettingsPopup<T> popup,
+  }) {
+    return InkWell(
+      onTap: () => popup.show(context).then(
+            (value) => value != null ? context.read<SettingsBloc>().add(SettingsChangedEvent<T>(value: value)) : {},
           ),
+      child: Row(
+        children: [
+          Text(translate(labelKey, context), style: TextStyles.screenContent),
+          const Spacer(),
+          Text(translate(valueKey, context), style: TextStyles.screenContent),
+        ],
+      ),
+    );
+  }
+
+  Widget _contactUsWidget(BuildContext context) => _otherItemWidget(
+        context,
+        labelKey: StringKeys.write,
+        onTap: () => debugPrint("write"),
+      );
+
+  Widget _aboutRadioWidget(BuildContext context) => _otherItemWidget(
+        context,
+        labelKey: StringKeys.aboutRadio,
+        onTap: () => debugPrint("aboutRadio"),
+      );
+
+  Widget _aboutAppWidget(BuildContext context) => _otherItemWidget(
+        context,
+        labelKey: StringKeys.aboutApp,
+        onTap: () => debugPrint("aboutApp"),
+      );
+
+  Widget _otherItemWidget(
+    BuildContext context, {
+    required StringKeys labelKey,
+    required VoidCallback onTap,
+  }) =>
+      InkWell(
+        onTap: onTap,
+        child: Row(
+          children: [
+            Text(translate(labelKey, context), style: TextStyles.screenContent),
+            const Spacer(),
+            SvgPicture.asset(AppIcons.icArrowForward),
+          ],
         ),
       );
 
-  Widget _createWidgetLang(BuildContext context, SettingsState state) => _createRow(
-        _createLabel(context, StringKeys.settingsLangLabel),
-        _createButton(
-          context,
-          [
-            StringKeys.settingsLangSystem,
-            StringKeys.settingsLangRU,
-            StringKeys.settingsLangBY,
-            StringKeys.settingsLangUS,
-          ],
-          [
-            langSystem,
-            langRU,
-            langBY,
-            langUS,
-          ],
-          state.lang,
-          (int? value) => BlocProvider.of<SettingsBloc>(context).add(SettingsEventLang(value ?? defaultLangId)),
-        ),
-      );
-
-  Widget _createRow(Widget label, Widget button) {
-    final labelContainer = Container(
-      margin: const EdgeInsets.only(left: 5.0, right: 5.0),
-      child: label,
-    );
-    return Row(children: [labelContainer, button]);
-  }
-
-  Widget _createLabel(BuildContext context, StringKeys key) {
-    final text = translate(key, context);
-    return Text(text, style: Theme.of(context).textTheme.bodyMedium, overflow: TextOverflow.ellipsis);
-  }
-
-  Widget _createButton(
-    BuildContext context,
-    List<StringKeys> keys,
-    List<int> values,
-    int selectedItem,
-    Function(int?) onChanged,
-  ) {
-    assert(keys.length == values.length);
-    assert(selectedItem < values.length);
-
-    final items = List<DropdownMenuItem<int>>.empty(growable: true);
-
-    keys.asMap().forEach((index, key) {
-      items.add(DropdownMenuItem(value: values[index], child: Text(translate(key, context))));
-    });
-
-    final textStyle = Theme.of(context).textTheme.bodyLarge;
-    final textColor = textStyle?.color;
-
-    return DropdownButton<int>(
-      value: selectedItem,
-      icon: Icon(Icons.arrow_downward_rounded, color: textColor),
-      iconSize: 24,
-      elevation: 16,
-      style: textStyle,
-      underline: Container(height: 2, color: textColor),
-      onChanged: onChanged,
-      items: items,
-    );
-  }
+  Widget _divider() => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 15.0),
+    child: Divider(height: listViewDividerHeight, color: AppColors.platinum),
+  );
 }

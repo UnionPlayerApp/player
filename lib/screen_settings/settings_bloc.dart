@@ -1,79 +1,108 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
+import 'package:audio_service/audio_service.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:union_player_app/screen_settings/settings_event.dart';
 import 'package:union_player_app/screen_settings/settings_state.dart';
-import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/core/shared_preferences.dart';
-import 'package:union_player_app/utils/ui/app_theme.dart';
+import 'package:union_player_app/utils/enums/language_type.dart';
+import 'package:union_player_app/utils/enums/settings_changing_result.dart';
+import 'package:union_player_app/utils/enums/sound_quality_type.dart';
+import 'package:union_player_app/utils/enums/start_playing_type.dart';
+import 'package:union_player_app/utils/enums/string_keys.dart';
 
-import '../utils/core/string_keys.dart';
-import '../utils/core/locale_utils.dart';
+import '../providers/shared_preferences_manager.dart';
+import '../utils/constants/constants.dart';
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
-  SettingsBloc({
-    int langId = defaultLangId,
-    int startPlayingId = defaultStartPlayingId,
-    int themeId = defaultThemeId,
-  }) : super(SettingsState(langId, startPlayingId, themeId)) {
-    on<SettingsEventSharedPreferencesRead>(_onSharedPreferencesRead);
-    on<SettingsEventTheme>(_onTheme);
-    on<SettingsEventLang>(_onLang);
-    on<SettingsEventStartPlaying>(_onStartPlaying);
-    _readStateFromSharedPreferences();
+  final AudioHandler _audioHandler;
+  final SPManager _spManager;
+
+  SettingsBloc(this._audioHandler, this._spManager) : super(SettingsState.defaultState()) {
+    on<SettingsInitEvent>(_onInit);
+    on<SettingsChangedEvent>(_onChanged);
+
+    add(SettingsInitEvent());
   }
 
-  FutureOr<void> _onSharedPreferencesRead(SettingsEventSharedPreferencesRead event, Emitter<SettingsState> emitter) {
-    final newState = SettingsState(event.langId, event.startPlayingId, event.themeId);
+  @override
+  Future<void> close() async {
+    debugPrint("CHPL => close()");
+    return super.close();
+  }
+
+  FutureOr<void> _onInit(_, Emitter<SettingsState> emitter) {
+    final newState = SettingsState(
+      language: _spManager.readLanguageType(),
+      soundQuality: _spManager.readSoundQualityType(),
+      startPlaying: _spManager.readStartPlayingType(),
+      themeMode: _spManager.readThemeMode(),
+    );
     emitter(newState);
   }
 
-  FutureOr<void> _onTheme(SettingsEventTheme event, Emitter<SettingsState> emitter) async {
-    await writeIntToSharedPreferences(keyTheme, event.themeId);
-    setThemeById(event.themeId);
-    final newState = state.copyWith(newTheme: event.themeId);
-    emitter(newState);
+  FutureOr<void> _onChanged(SettingsChangedEvent event, Emitter<SettingsState> emitter) async {
+    final result = await _setChanges(event.value);
+    switch (result) {
+      case SettingsChangingResult.successWithInit:
+        add(SettingsInitEvent());
+        return;
+      case SettingsChangingResult.successWithoutInit:
+        return;
+      case SettingsChangingResult.error:
+        emitter(state.copyWith(snackBarKey: StringKeys.anyError));
+        return;
+    }
   }
 
-  FutureOr<void> _onLang(SettingsEventLang event, Emitter<SettingsState> emitter) async {
-    await writeIntToSharedPreferences(keyLang, event.langId);
-    final newLocale = getLocaleById(event.langId);
-    Get.updateLocale(newLocale);
-    final newState = state.copyWith(newLang: event.langId);
-    emitter(newState);
+  Future<SettingsChangingResult> _setChanges(dynamic value) {
+    switch (value.runtimeType) {
+      case LanguageType:
+        return _setLanguage(value);
+      case SoundQualityType:
+        return _setSoundQuality(value);
+      case StartPlayingType:
+        return _setStartPlaying(value);
+      case ThemeMode:
+        return _setThemeMode(value);
+      default:
+        return Future.value(SettingsChangingResult.error);
+    }
   }
 
-  FutureOr<void> _onStartPlaying(SettingsEventStartPlaying event, Emitter<SettingsState> emitter) {
-    _doStartPlayingChanged(event.startPlayingId);
-    final newState = state.copyWith(newStartPlaying: event.startPlayingId, newSnackBarKey: StringKeys.empty);
-    emitter(newState);
+  Future<SettingsChangingResult> _setSoundQuality(SoundQualityType value) {
+    final params = {
+      keySoundQuality: value.integer,
+      keyIsPlaying: _audioHandler.playbackState.value.playing,
+    };
+    return Future.wait([
+      _spManager.writeSoundQualityType(value),
+      _audioHandler.customAction(actionSetSoundQuality, params),
+    ]).then(
+      (results) => results[0] as bool ? SettingsChangingResult.successWithInit : SettingsChangingResult.error,
+    );
   }
 
-  void _doStartPlayingChanged(int startPlayingId) {
-    writeIntToSharedPreferences(keyStartPlaying, startPlayingId);
+  Future<SettingsChangingResult> _setLanguage(LanguageType value) {
+    return Future.wait([
+      _spManager.writeLanguageType(value),
+      Get.updateLocale(value.locale),
+    ]).then(
+      (results) => results[0] as bool ? SettingsChangingResult.successWithoutInit : SettingsChangingResult.error,
+    );
   }
 
-  void _readStateFromSharedPreferences() async {
-    Future.wait([
-      readIntFromSharedPreferences(keyLang),
-      readIntFromSharedPreferences(keyStartPlaying),
-      readIntFromSharedPreferences(keyTheme),
-    ])
-        .then((params) => _onSharedPreferencesReadSuccess(params))
-        .catchError((error) => _onSharedPreferencesReadError(error));
+  Future<SettingsChangingResult> _setStartPlaying(StartPlayingType value) {
+    return _spManager
+        .writeStartPlayingType(value)
+        .then((result) => result ? SettingsChangingResult.successWithInit : SettingsChangingResult.error);
   }
 
-  _onSharedPreferencesReadSuccess(List<int?> params) {
-    assert(params.length == 3);
-    final int langId = params[0] ?? defaultLangId;
-    final int startPlayingId = params[1] ?? defaultStartPlayingId;
-    final int themeId = params[2] ?? defaultThemeId;
-    add(SettingsEventSharedPreferencesRead(langId, startPlayingId, themeId));
-  }
-
-  _onSharedPreferencesReadError(error) {
-    debugPrint("shared preferences read error: $error");
+  Future<SettingsChangingResult> _setThemeMode(ThemeMode value) {
+    Get.changeThemeMode(value);
+    return _spManager
+        .writeThemeMode(value)
+        .then((result) => result ? SettingsChangingResult.successWithInit : SettingsChangingResult.error);
   }
 }

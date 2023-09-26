@@ -11,7 +11,7 @@ import 'package:union_player_app/utils/ui/app_theme.dart';
 import 'package:union_player_app/utils/widgets/no_divider_banner.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-import '../utils/core/string_keys.dart';
+import '../utils/enums/string_keys.dart';
 import 'feedback_event.dart';
 
 class FeedbackPage extends StatefulWidget {

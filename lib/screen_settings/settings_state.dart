@@ -1,19 +1,49 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/utils/enums/language_type.dart';
+import 'package:union_player_app/utils/enums/sound_quality_type.dart';
+import 'package:union_player_app/utils/enums/start_playing_type.dart';
 
-import '../utils/core/string_keys.dart';
+import '../utils/enums/string_keys.dart';
 
 class SettingsState extends Equatable {
-  final int lang;
-  final int startPlaying;
-  final int theme;
+  final LanguageType language;
+  final SoundQualityType soundQuality;
+  final StartPlayingType startPlaying;
+  final ThemeMode themeMode;
   final StringKeys snackBarKey;
 
-  const SettingsState(this.lang, this.startPlaying, this.theme, {this.snackBarKey = StringKeys.empty});
+  const SettingsState({
+    required this.language,
+    required this.soundQuality,
+    required this.startPlaying,
+    required this.themeMode,
+    this.snackBarKey = StringKeys.empty,
+  });
+
+  factory SettingsState.defaultState() => const SettingsState(
+        language: defaultLanguageType,
+        soundQuality: defaultSoundQualityType,
+        startPlaying: defaultStartPlayingType,
+        themeMode: defaultThemeMode,
+      );
 
   @override
-  List<Object?> get props => [lang, startPlaying, theme, snackBarKey];
+  List<Object?> get props => [language, soundQuality, startPlaying, themeMode, snackBarKey];
 
-  SettingsState copyWith({int? newLang, int? newStartPlaying, int? newTheme, StringKeys? newSnackBarKey}) =>
-      SettingsState(newLang ?? lang, newStartPlaying ?? startPlaying, newTheme ?? theme,
-          snackBarKey: newSnackBarKey ?? snackBarKey);
+  SettingsState copyWith({
+    LanguageType? language,
+    SoundQualityType? soundQuality,
+    StartPlayingType? startPlaying,
+    ThemeMode? themeMode,
+    StringKeys? snackBarKey,
+  }) =>
+      SettingsState(
+        language: language ?? this.language,
+        soundQuality: soundQuality ?? this.soundQuality,
+        startPlaying: startPlaying ?? this.startPlaying,
+        themeMode: themeMode ?? this.themeMode,
+        snackBarKey: snackBarKey ?? this.snackBarKey,
+      );
 }

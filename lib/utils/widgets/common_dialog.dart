@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:union_player_app/utils/core/string_keys.dart';
+import 'package:union_player_app/utils/enums/string_keys.dart';
 
 import '../localizations/string_translation.dart';
 import '../ui/text_styles.dart';
@@ -7,7 +7,7 @@ import '../ui/text_styles.dart';
 class CommonDialog extends AlertDialog {
   CommonDialog(
     BuildContext context, {
-    required StringKeys title,
+    required StringKeys titleKey,
     required Widget content,
     required List<Widget> actions,
   }) : super(
@@ -15,7 +15,7 @@ class CommonDialog extends AlertDialog {
             borderRadius: BorderRadius.all(Radius.circular(30.0)),
           ),
           insetPadding: const EdgeInsets.all(16.0),
-          title: Text(translate(title, context), style: TextStyles.popupTitle),
+          title: Text(translate(titleKey, context), style: TextStyles.popupTitle),
           content: SizedBox(
             width: MediaQuery.of(context).size.width,
             child: content,

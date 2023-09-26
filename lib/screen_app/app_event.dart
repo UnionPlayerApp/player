@@ -1,55 +1,28 @@
-part of 'app_bloc.dart';
+import 'package:equatable/equatable.dart';
+
+import '../utils/enums/nav_type.dart';
 
 abstract class AppEvent extends Equatable {
+  const AppEvent();
+
   @override
   List<Object?> get props => [];
 }
 
-class AppFabPlayStopEvent extends AppEvent {}
-
 class AppNavEvent extends AppEvent {
   final NavType navType;
 
-  AppNavEvent(this.navType);
+  const AppNavEvent({required this.navType});
 
   @override
   List<Object> get props => [navType];
 }
 
-class AppPlayerEvent extends AppEvent {
-  final bool playingState;
+class AppCustomEvent extends AppEvent {
+  final String error;
 
-  AppPlayerEvent(this.playingState);
-
-  @override
-  List<Object?> get props => [playingState];
-}
-
-class AppScheduleEvent extends AppEvent {
-  final List<MediaItem>? items;
-
-  AppScheduleEvent(this.items);
+  const AppCustomEvent({required this.error});
 
   @override
-  List<Object?> get props => [items];
-}
-
-class AppAudioQualitySelectorEvent extends AppEvent {}
-
-class AppAudioQualityButtonEvent extends AppEvent {
-  final int audioQualityId;
-
-  AppAudioQualityButtonEvent(this.audioQualityId);
-
-  @override
-  List<Object?> get props => [audioQualityId];
-}
-
-class AppAudioQualityInitEvent extends AppEvent {
-  final int audioQualityId;
-
-  AppAudioQualityInitEvent(this.audioQualityId);
-
-  @override
-  List<Object?> get props => [audioQualityId];
+  List<Object?> get props => [error];
 }

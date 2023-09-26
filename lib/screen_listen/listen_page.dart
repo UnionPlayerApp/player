@@ -5,14 +5,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:union_player_app/screen_listen/media_item_progress.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/core/image_source_type.dart';
+import 'package:union_player_app/utils/enums/image_source_type.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/ui/text_styles.dart';
 import 'package:union_player_app/utils/widgets/live_air_widget.dart';
 
+import '../screen_settings/popups/sound_quality_popup.dart';
 import '../utils/ui/app_colors.dart';
-import 'audio_quality_popup.dart';
 import 'listen_bloc.dart';
 import 'listen_event.dart';
 import 'listen_item_view.dart';
@@ -104,7 +104,7 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
         children: [
           const Spacer(),
           InkWell(
-            onTap: () => _showAudioQualityPopup(context, state),
+            onTap: () => _showSoundQualityPopup(context, state),
             child: SvgPicture.asset(AppIcons.icAudioQuality),
           ),
         ],
@@ -199,10 +199,10 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
     );
   }
 
-  void _showAudioQualityPopup(BuildContext context, ListenState state) {
-    AudioQualityPopup(audioQualityType: state.audioQualityType).show(context).then((audioQualityType) {
-      if (audioQualityType != null) {
-        context.read<ListenBloc>().add(ListenAudioQualityEvent(audioQualityType: audioQualityType));
+  void _showSoundQualityPopup(BuildContext context, ListenState state) {
+    SoundQualityPopup(initialValue: state.soundQualityType).show(context).then((soundQualityType) {
+      if (soundQualityType != null) {
+        context.read<ListenBloc>().add(ListenSoundQualityEvent(soundQualityType: soundQualityType));
       }
     });
   }

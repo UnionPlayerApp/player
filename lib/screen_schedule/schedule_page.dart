@@ -7,7 +7,7 @@ import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_item_view.dart';
 import 'package:union_player_app/screen_schedule/schedule_state.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/core/relative_time_type.dart';
+import 'package:union_player_app/utils/enums/relative_time_type.dart';
 import 'package:union_player_app/utils/dimensions/dimensions.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/widgets/live_air_widget.dart';
@@ -53,7 +53,10 @@ class _SchedulePageState extends State<SchedulePage> with TickerProviderStateMix
     WidgetsBinding.instance.addPostFrameCallback((_) => _jumpToCurrentItem());
 
     return ScrollablePositionedList.separated(
-      separatorBuilder: (BuildContext context, int index) => Divider(height: listViewDividerHeight),
+      separatorBuilder: (BuildContext context, int index) => Divider(
+        height: listViewDividerHeight,
+        color: AppColors.platinum,
+      ),
       itemScrollController: _itemScrollController,
       itemPositionsListener: _itemPositionsListener,
       itemCount: state.items.length,

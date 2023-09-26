@@ -1,27 +1,11 @@
-class SettingsEvent {}
-
-class SettingsEventLang extends SettingsEvent {
-  final int langId;
-
-  SettingsEventLang(this.langId);
+abstract class SettingsEvent {
+  const SettingsEvent();
 }
 
-class SettingsEventStartPlaying extends SettingsEvent {
-  final int startPlayingId;
+class SettingsInitEvent extends SettingsEvent {}
 
-  SettingsEventStartPlaying(this.startPlayingId);
-}
+class SettingsChangedEvent<T> extends SettingsEvent {
+  final T value;
 
-class SettingsEventTheme extends SettingsEvent {
-  final int themeId;
-
-  SettingsEventTheme(this.themeId);
-}
-
-class SettingsEventSharedPreferencesRead extends SettingsEvent {
-  final int langId;
-  final int startPlayingId;
-  final int themeId;
-
-  SettingsEventSharedPreferencesRead(this.langId, this.startPlayingId, this.themeId);
+  const SettingsChangedEvent({required this.value});
 }

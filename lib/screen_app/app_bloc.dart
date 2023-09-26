@@ -1,150 +1,35 @@
 import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/core/shared_preferences.dart';
 
-import '../utils/core/nav_type.dart';
-
-part 'app_event.dart';
-
-part 'app_state.dart';
+import 'app_event.dart';
+import 'app_state.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
   final AudioHandler _audioHandler;
 
   late final StreamSubscription _customSubscription;
-  late final StreamSubscription _playerSubscription;
-  late final StreamSubscription _queueSubscription;
 
-  AppBloc(this._audioHandler, bool isPlaying)
-      : super(
-          const AppState(NavType.listen, defaultIsPlaying, defaultAudioQualityId, false),
-        ) {
-    on<AppFabPlayStopEvent>(_onFabPlayStop);
+  AppBloc(this._audioHandler, bool isPlaying) : super(AppState.defaultState()) {
     on<AppNavEvent>(_onNav);
-    on<AppPlayerEvent>(_onPlayer);
-    on<AppScheduleEvent>(_onSchedule);
-    on<AppAudioQualitySelectorEvent>(_onAudioQualitySelector);
-    on<AppAudioQualityButtonEvent>(_onAudioQualityButton);
-    on<AppAudioQualityInitEvent>(_onAudioQualityInit);
+    on<AppCustomEvent>(_onCustomEvent);
 
-    _customSubscription = _audioHandler.customEvent.listen((error) => _onCustomEvent(error));
-    _queueSubscription = _audioHandler.queue.listen((queue) => _onQueueEvent(queue));
-    _playerSubscription = _audioHandler.playbackState.listen((state) => _onPlaybackEvent(state));
-
-    _readAudioQualityIdFromSharedPreferences();
-
-    if (isPlaying) {
-      _audioHandler.play();
-    } else {
-      _audioHandler.pause();
-    }
+    _customSubscription = _audioHandler.customEvent.listen((error) => add(
+          AppCustomEvent(error: error),
+        ));
   }
 
-  FutureOr<void> _onFabPlayStop(AppFabPlayStopEvent event, Emitter<AppState> emitter) {
-    if (_audioHandler.playbackState.value.playing) {
-      _audioHandler.pause();
-    } else {
-      _audioHandler.play();
-    }
+
+  @override
+  Future<void> close() async {
+    _customSubscription.cancel();
+    super.close();
   }
 
   FutureOr<void> _onNav(AppNavEvent event, Emitter<AppState> emitter) {
     final newState = state.copyWith(navType: event.navType);
     emitter(newState);
-  }
-
-  FutureOr<void> _onPlayer(AppPlayerEvent event, Emitter<AppState> emitter) {
-    final newState = state.copyWith(playingState: event.playingState);
-    emitter(newState);
-  }
-
-  FutureOr<void> _onSchedule(AppScheduleEvent event, Emitter<AppState> emitter) {
-    late final AppState newState;
-
-    if (event.items == null || event.items!.length < 2) {
-      newState = state.copyWith(isScheduleLoaded: false);
-    } else {
-      final presentItem = event.items![0];
-      final nextItem = event.items![1];
-      newState = state.copyWith(
-          isScheduleLoaded: true,
-          presentArtist: presentItem.artist ?? "",
-          presentTitle: presentItem.title,
-          nextArtist: nextItem.artist ?? "",
-          nextTitle: nextItem.title);
-    }
-
-    emitter(newState);
-  }
-
-  FutureOr<void> _onAudioQualitySelector(AppAudioQualitySelectorEvent event, Emitter<AppState> emitter) {
-    final newState = state.copyWith(isAudioQualitySelectorOpen: !state.isAudioQualitySelectorOpen);
-    emitter(newState);
-  }
-
-  FutureOr<void> _onAudioQualityButton(AppAudioQualityButtonEvent event, Emitter<AppState> emitter) {
-    _doAudioQualityChanged(event.audioQualityId);
-    final newState = state.copyWith(isAudioQualitySelectorOpen: false, audioQualityId: event.audioQualityId);
-    emitter(newState);
-  }
-
-  FutureOr<void> _onAudioQualityInit(AppAudioQualityInitEvent event, Emitter<AppState> emitter) {
-    final newState = state.copyWith(audioQualityId: event.audioQualityId);
-    emitter(newState);
-  }
-
-  void _onCustomEvent(error) {
-    add(AppScheduleEvent(null));
-  }
-
-  void _onQueueEvent(List<MediaItem>? queue) {
-    if (queue == null || queue.isEmpty) {
-      add(AppScheduleEvent(null));
-    } else {
-      add(AppScheduleEvent(queue));
-    }
-  }
-
-  void _onPlaybackEvent(PlaybackState state) {
-    add(AppPlayerEvent(state.playing));
-    writeBoolToSharedPreferences(keyIsPlaying, state.playing);
-  }
-
-  @override
-  Future<void> close() async {
-    _customSubscription.cancel();
-    _playerSubscription.cancel();
-    _queueSubscription.cancel();
-    super.close();
-  }
-
-  void _doAudioQualityChanged(int audioQualityId) {
-    Map<String, dynamic> params = {
-      keyAudioQuality: audioQualityId,
-      keyIsPlaying: _audioHandler.playbackState.value.playing,
-    };
-    _audioHandler
-        .customAction(actionSetAudioQuality, params)
-        .then((value) => writeIntToSharedPreferences(keyAudioQuality, audioQualityId));
-  }
-
-  void _readAudioQualityIdFromSharedPreferences() async {
-    readIntFromSharedPreferences(keyAudioQuality)
-        .then((audioQualityId) => _onSharedPreferencesReadSuccess(audioQualityId))
-        .catchError((error) => _onSharedPreferencesReadError(error));
-  }
-
-  _onSharedPreferencesReadSuccess(int? audioQualityId) {
-    add(AppAudioQualityInitEvent(audioQualityId ?? defaultAudioQualityId));
-  }
-
-  _onSharedPreferencesReadError(error) {
-    debugPrint("shared preferences read error: $error");
   }
 
 // Future<void> _checkForBufferLoading() async {
@@ -232,4 +117,9 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 //     return false;
 //   }
 // }
+
+  FutureOr<void> _onCustomEvent(AppCustomEvent event, Emitter<AppState> emitter) {
+    final newState = state.copyWith(message: event.error);
+    emitter(newState);
+  }
 }

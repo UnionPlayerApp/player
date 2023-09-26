@@ -12,13 +12,14 @@ import 'package:union_player_app/repository/schedule_repository_event.dart';
 import 'package:union_player_app/repository/schedule_repository_interface.dart';
 import 'package:union_player_app/utils/constants/constants.dart';
 import 'package:union_player_app/utils/core/file_utils.dart';
+import 'package:union_player_app/utils/enums/sound_quality_type.dart';
 import 'package:uuid/uuid.dart';
 
 class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
-  final AudioPlayer player;
-  final IScheduleRepository schedule;
-  final Uuid uuid;
-  final math.Random random;
+  final AudioPlayer _player;
+  final IScheduleRepository _schedule;
+  final Uuid _uuid;
+  final math.Random _random;
 
   late final String _appTitle;
   late final Uri _appArtUri;
@@ -35,21 +36,21 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
 
   bool _isPlayingBeforeInterruption = false;
 
-  AppPlayerHandler({required this.player, required this.schedule, required this.random, required this.uuid});
+  AppPlayerHandler(this._player, this._schedule, this._random, this._uuid);
 
   @override
   Future<void> play() async {
-    if (!player.playing) {
+    if (!_player.playing) {
       _isPlayingBeforeInterruption = true;
-      return player.play();
+      return _player.play();
     }
   }
 
   @override
   Future<void> pause() async {
-    if (player.playing) {
+    if (_player.playing) {
       _isPlayingBeforeInterruption = false;
-      return player.stop();
+      return _player.stop();
     }
   }
 
@@ -58,16 +59,16 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
     debugPrint("app player handler has been stopping");
     await _scheduleStateSubscription.cancel();
     await _sessionEventSubscription.cancel();
-    await player.dispose();
-    await schedule.stop();
+    await _player.dispose();
+    await _schedule.stop();
     debugPrint("app player handler was stopped");
   }
 
   @override
   Future<dynamic> customAction(String name, [Map<String, dynamic>? extras]) {
     switch (name) {
-      case actionSetAudioQuality:
-        return _setAudioQuality(extras);
+      case actionSetSoundQuality:
+        return _setSoundQuality(extras);
       case actionStart:
         return _start(extras);
       default:
@@ -76,19 +77,27 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
   }
 
   // Set audio quality and start / pause audio stream
-  Future<void> _setAudioQuality(dynamic arguments) async {
+  Future<void> _setSoundQuality(dynamic arguments) async {
     final Map<String, dynamic> params = Map.from(arguments);
 
-    final int audioQuality = params[keyAudioQuality] ?? defaultAudioQualityId;
-    final bool isPlaying = params[keyIsPlaying] ?? defaultIsPlaying;
+    final soundQuality = params[keySoundQuality];
+    final isPlaying = params[keyIsPlaying];
 
-    final audioUrl = _mapAudioQualityToUrl(audioQuality);
+    assert(
+      soundQuality is int && isPlaying is bool,
+      "Incorrect parameters set sound quality custom action: $arguments",
+    );
+
+    soundQuality as int;
+    isPlaying as bool;
+
+    final audioUrl = _mapSoundQualityToUrl(soundQuality.soundQualityType);
 
     try {
-      await player.stop();
-      await player.setUrl(audioUrl);
+      await _player.stop();
+      await _player.setUrl(audioUrl);
       if (isPlaying) {
-        await player.play();
+        await _player.play();
       }
       _isPlayingBeforeInterruption = isPlaying;
       debugPrint("set audio stream = $audioUrl");
@@ -117,25 +126,25 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
     final configuration = const AudioSessionConfiguration.music().copyWith(androidWillPauseWhenDucked: false);
     await session.configure(configuration);
 
-    player.playbackEventStream.map(_transformPlaybackEvent).pipe(playbackState);
-    _scheduleStateSubscription = schedule.stateStream().listen(_handleScheduleEvent);
+    _player.playbackEventStream.map(_transformPlaybackEvent).pipe(playbackState);
+    _scheduleStateSubscription = _schedule.stateStream().listen(_handleScheduleEvent);
     _sessionEventSubscription = session.interruptionEventStream.listen(_handleInterruptionEvent);
 
-    schedule.start(_urlSchedule);
+    _schedule.start(_urlSchedule);
 
-    _setAudioQuality(arguments);
+    _setSoundQuality(arguments);
   }
 
   PlaybackState _transformPlaybackEvent(PlaybackEvent event) => PlaybackState(
         controls: [
-          if (player.playing) MediaControl.pause else MediaControl.play,
+          if (_player.playing) MediaControl.pause else MediaControl.play,
         ],
         androidCompactActionIndices: const [0],
         processingState: _processingState(),
-        playing: player.playing,
-        updatePosition: player.position,
-        bufferedPosition: player.bufferedPosition,
-        speed: player.speed,
+        playing: _player.playing,
+        updatePosition: _player.position,
+        bufferedPosition: _player.bufferedPosition,
+        speed: _player.speed,
         queueIndex: event.currentIndex,
       );
 
@@ -145,7 +154,7 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
         ProcessingState.buffering: AudioProcessingState.buffering,
         ProcessingState.ready: AudioProcessingState.ready,
         ProcessingState.completed: AudioProcessingState.completed,
-      }[player.processingState]!;
+      }[_player.processingState]!;
 
   Future<Uri> _createUriFromAsset(String asset) async {
     try {
@@ -166,19 +175,14 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
     return uriList;
   }
 
-  String _mapAudioQualityToUrl(int audioQuality) {
-    switch (audioQuality) {
-      case audioQualityLow:
+  String _mapSoundQualityToUrl(SoundQualityType soundQuality) {
+    switch (soundQuality) {
+      case SoundQualityType.low:
         return _urlStreamLow;
-      case audioQualityMedium:
+      case SoundQualityType.medium:
         return _urlStreamMedium;
-      case audioQualityHigh:
+      case SoundQualityType.high:
         return _urlStreamHigh;
-      case audioQualityUnknown:
-        return _urlStreamMedium;
-      default:
-        debugPrint("Unknown AudioQualityType $audioQuality. Default quality (medium) used.");
-        return _urlStreamMedium;
     }
   }
 
@@ -223,7 +227,7 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
     }
 
     return MediaItem(
-      id: uuid.v1(),
+      id: _uuid.v1(),
       album: _appTitle,
       artUri: artUri,
       artist: scheduleItem.artist,
@@ -239,7 +243,7 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
 
   Uri _getRandomUri(List<Uri> uriList) {
     assert(uriList.isNotEmpty);
-    final int index = random.nextInt(uriList.length - 1);
+    final int index = _random.nextInt(uriList.length - 1);
     return uriList[index];
   }
 
@@ -255,7 +259,7 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
         case AudioInterruptionType.unknown:
           if (_isPlayingBeforeInterruption) {
             debugPrint("audio interruption event => player stop");
-            player.stop();
+            _player.stop();
           }
           break;
       }
@@ -270,7 +274,7 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
         case AudioInterruptionType.unknown:
           if (_isPlayingBeforeInterruption) {
             debugPrint("audio interruption event => player play");
-            player.play();
+            _player.play();
           }
           break;
       }
