@@ -11,15 +11,15 @@ import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get_it/get_it.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:union_player_app/di/di.dart';
-import 'package:union_player_app/screen_init/init_page.dart';
 import 'package:union_player_app/common/constants/constants.dart';
 import 'package:union_player_app/common/enums/string_keys.dart';
 import 'package:union_player_app/common/localizations/string_translation.dart';
 import 'package:union_player_app/common/ui/app_theme.dart';
+import 'package:union_player_app/di/di.dart';
 
 import 'common/debug/app_bloc_observer.dart';
 import 'common/localizations/app_localizations_delegate.dart';
+import 'common/routes.dart';
 
 void main() async {
   runZonedGuarded<Future<void>>(
@@ -59,6 +59,7 @@ Widget _app({required PackageInfo packageInfo}) {
     statusBarBrightness: Brightness.light, // for iOS => icons are dark
     statusBarIconBrightness: Brightness.dark, // for Android => icons are dark
   ));
+  final routes = GetIt.I.get<Routes>();
   return GetMaterialApp(
     debugShowCheckedModeBanner: false,
     localizationsDelegates: const [
@@ -80,6 +81,7 @@ Widget _app({required PackageInfo packageInfo}) {
     onGenerateTitle: (context) => translate(StringKeys.appTitle, context),
     theme: appThemeLight(),
     darkTheme: appThemeDark(),
-    home: InitPage(packageInfo: packageInfo),
+    home: routes.initialPage(packageInfo: packageInfo),
+    routes: routes.getRoutes(),
   );
 }
