@@ -85,16 +85,16 @@ class _SchedulePageState extends State<SchedulePage> with TickerProviderStateMix
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (element.start.date != null) ...[
-            Text(element.start.date!, style: TextStyles.screenContent),
+            Text(element.start.date!, style: TextStyles.regular16BlackOlive),
             const SizedBox(height: 6.0),
           ],
           if (element.start.dateLabel != null) ...[
-            Text(translate(element.start.dateLabel!, context), style: TextStyles.screenContent),
+            Text(translate(element.start.dateLabel!, context), style: TextStyles.regular16BlackOlive),
             const SizedBox(height: 6.0),
           ],
           Text(
             element.start.time,
-            style: TextStyles.screenTitle20px,
+            style: TextStyles.bold20BlackOlive,
             overflow: TextOverflow.ellipsis,
           ),
         ],
@@ -102,7 +102,7 @@ class _SchedulePageState extends State<SchedulePage> with TickerProviderStateMix
 
   Text _titleWidget(ScheduleItemView element, BuildContext context) => Text(
         element.title,
-        style: TextStyles.screenTitle16px,
+        style: TextStyles.bold16BlackOlive,
         softWrap: true,
         textAlign: TextAlign.start,
         maxLines: 3,
@@ -111,7 +111,7 @@ class _SchedulePageState extends State<SchedulePage> with TickerProviderStateMix
 
   Text _artistWidget(ScheduleItemView element, BuildContext context) => Text(
         element.artist,
-        style: TextStyles.screenContent,
+        style: TextStyles.regular16BlackOlive,
         softWrap: true,
         textAlign: TextAlign.start,
         overflow: TextOverflow.ellipsis,

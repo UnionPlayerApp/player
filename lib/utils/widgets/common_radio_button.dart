@@ -34,7 +34,7 @@ class CommonRadioButton<T> extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 20.0),
-        Text(text, style: TextStyles.popupContent),
+        Text(text, style: TextStyles.regular16BlackOlive),
       ],
     );
   }

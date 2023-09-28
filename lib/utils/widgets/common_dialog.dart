@@ -15,7 +15,7 @@ class CommonDialog extends AlertDialog {
             borderRadius: BorderRadius.all(Radius.circular(30.0)),
           ),
           insetPadding: const EdgeInsets.all(16.0),
-          title: Text(translate(titleKey, context), style: TextStyles.popupTitle),
+          title: Text(translate(titleKey, context), style: TextStyles.bold16BlackOlive),
           content: SizedBox(
             width: MediaQuery.of(context).size.width,
             child: content,

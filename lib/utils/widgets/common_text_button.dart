@@ -11,6 +11,6 @@ class CommonTextButton extends TextButton {
     required StringKeys textKey,
   }) : super(
           onPressed: onPressed,
-          child: Text(translate(textKey, context), style: TextStyles.popupButton),
+          child: Text(translate(textKey, context), style: TextStyles.regular16BlackOlive),
         );
 }
