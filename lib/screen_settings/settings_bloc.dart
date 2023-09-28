@@ -11,17 +11,24 @@ import 'package:union_player_app/common/enums/settings_changing_result.dart';
 import 'package:union_player_app/common/enums/sound_quality_type.dart';
 import 'package:union_player_app/common/enums/start_playing_type.dart';
 import 'package:union_player_app/common/enums/string_keys.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../model/system_data/system_data.dart';
 import '../providers/shared_preferences_manager.dart';
 import '../common/constants/constants.dart';
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
+  static const _emailScheme = 'mailto';
+  static const _emailSubject = 'subject';
+
   final AudioHandler _audioHandler;
   final SPManager _spManager;
+  final SystemData _systemData;
 
-  SettingsBloc(this._audioHandler, this._spManager) : super(SettingsState.defaultState()) {
+  SettingsBloc(this._audioHandler, this._spManager, this._systemData) : super(SettingsState.defaultState()) {
     on<SettingsInitEvent>(_onInit);
     on<SettingsChangedEvent>(_onChanged);
+    on<SettingsContactUsEvent>(_onContactUs);
 
     add(SettingsInitEvent());
   }
@@ -104,5 +111,12 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     return _spManager
         .writeThemeMode(value)
         .then((result) => result ? SettingsChangingResult.successWithInit : SettingsChangingResult.error);
+  }
+
+  FutureOr<void> _onContactUs(SettingsContactUsEvent event, Emitter<SettingsState> emitter) {
+    final path = _systemData.emailData.mailingList.join(",");
+    final query = "$_emailSubject=${event.subject}";
+    final url = Uri(scheme: _emailScheme, path: path, query: query);
+    launchUrl(url);
   }
 }

@@ -31,8 +31,8 @@ class Routes {
 
   Widget initialPage({required PackageInfo packageInfo}) => _simplePage<InitPage>(param: packageInfo);
 
-  Widget page(BuildContext context, {required String route}) {
-    final builder = getRoutes()[route];
+  Widget page(BuildContext context, {required String routeName}) {
+    final builder = getRoutes()[routeName];
     return builder == null ? Container() : builder.call(context);
   }
 

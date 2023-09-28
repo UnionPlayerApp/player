@@ -30,9 +30,9 @@ class _AppState extends State<AppPage> {
   Widget? _currentPage;
 
   late final _routes = GetIt.I.get<Routes>();
-  late final _listenPage = _routes.page(context, route: Routes.listen);
-  late final _schedulePage = _routes.page(context, route: Routes.schedule);
-  late final _settingsPage = _routes.page(context, route: Routes.settings);
+  late final _listenPage = _routes.page(context, routeName: Routes.listen);
+  late final _schedulePage = _routes.page(context, routeName: Routes.schedule);
+  late final _settingsPage = _routes.page(context, routeName: Routes.settings);
 
   @override
   Widget build(BuildContext context) {

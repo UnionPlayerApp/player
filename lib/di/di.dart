@@ -62,7 +62,7 @@ class BindingModule {
     GetIt.I.registerFactory(() => FeedbackBloc(GetIt.I.get()));
     GetIt.I.registerFactory(() => ListenBloc(GetIt.I.get(), GetIt.I.get()));
     GetIt.I.registerFactory(() => ScheduleBloc(audioHandler: GetIt.I.get()));
-    GetIt.I.registerFactory(() => SettingsBloc(GetIt.I.get(), GetIt.I.get()));
+    GetIt.I.registerFactory(() => SettingsBloc(GetIt.I.get(), GetIt.I.get(), GetIt.I.get()));
   }
 
   static Future<void> initAsyncSingletons() {
