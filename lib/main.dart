@@ -13,13 +13,13 @@ import 'package:get_it/get_it.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:union_player_app/di/di.dart';
 import 'package:union_player_app/screen_init/init_page.dart';
-import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/enums/string_keys.dart';
-import 'package:union_player_app/utils/localizations/string_translation.dart';
-import 'package:union_player_app/utils/ui/app_theme.dart';
+import 'package:union_player_app/common/constants/constants.dart';
+import 'package:union_player_app/common/enums/string_keys.dart';
+import 'package:union_player_app/common/localizations/string_translation.dart';
+import 'package:union_player_app/common/ui/app_theme.dart';
 
-import 'utils/debug/app_bloc_observer.dart';
-import 'utils/localizations/app_localizations_delegate.dart';
+import 'common/debug/app_bloc_observer.dart';
+import 'common/localizations/app_localizations_delegate.dart';
 
 void main() async {
   runZonedGuarded<Future<void>>(

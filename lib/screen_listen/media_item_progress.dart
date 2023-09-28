@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../utils/ui/app_colors.dart';
+import '../common/ui/app_colors.dart';
 
 class MediaItemProgress extends StatefulWidget {
   final DateTime start;

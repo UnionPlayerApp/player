@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/ui/app_colors.dart';
+import 'package:union_player_app/common/constants/constants.dart';
+import 'package:union_player_app/common/ui/app_colors.dart';
 
 class ProgressPage extends StatelessWidget {
   final String _version;

@@ -4,10 +4,10 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:union_player_app/providers/shared_preferences_manager.dart';
-import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/enums/sound_quality_type.dart';
+import 'package:union_player_app/common/constants/constants.dart';
+import 'package:union_player_app/common/enums/sound_quality_type.dart';
 
-import '../utils/enums/string_keys.dart';
+import '../common/enums/string_keys.dart';
 import 'listen_event.dart';
 import 'listen_item_view.dart';
 import 'listen_state.dart';

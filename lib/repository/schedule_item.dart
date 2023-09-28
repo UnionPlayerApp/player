@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:union_player_app/repository/schedule_item_type.dart';
 
-import '../utils/core/date_time.dart';
+import '../common/core/date_time.dart';
 
 // ignore: must_be_immutable
 class ScheduleItem extends Equatable {

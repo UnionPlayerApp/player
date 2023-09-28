@@ -6,14 +6,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:union_player_app/screen_settings/settings_event.dart';
 import 'package:union_player_app/screen_settings/settings_state.dart';
-import 'package:union_player_app/utils/enums/language_type.dart';
-import 'package:union_player_app/utils/enums/settings_changing_result.dart';
-import 'package:union_player_app/utils/enums/sound_quality_type.dart';
-import 'package:union_player_app/utils/enums/start_playing_type.dart';
-import 'package:union_player_app/utils/enums/string_keys.dart';
+import 'package:union_player_app/common/enums/language_type.dart';
+import 'package:union_player_app/common/enums/settings_changing_result.dart';
+import 'package:union_player_app/common/enums/sound_quality_type.dart';
+import 'package:union_player_app/common/enums/start_playing_type.dart';
+import 'package:union_player_app/common/enums/string_keys.dart';
 
 import '../providers/shared_preferences_manager.dart';
-import '../utils/constants/constants.dart';
+import '../common/constants/constants.dart';
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   final AudioHandler _audioHandler;

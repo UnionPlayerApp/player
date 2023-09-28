@@ -11,15 +11,15 @@ import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_page.dart';
 import 'package:union_player_app/screen_settings/settings_bloc.dart';
 import 'package:union_player_app/screen_settings/settings_page.dart';
-import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/localizations/string_translation.dart';
-import 'package:union_player_app/utils/ui/app_colors.dart';
-import 'package:union_player_app/utils/widgets/snack_bar.dart';
+import 'package:union_player_app/common/constants/constants.dart';
+import 'package:union_player_app/common/localizations/string_translation.dart';
+import 'package:union_player_app/common/ui/app_colors.dart';
+import 'package:union_player_app/common/widgets/snack_bar.dart';
 
 import '../screen_listen/listen_bloc.dart';
 import '../screen_listen/listen_page.dart';
-import '../utils/enums/nav_type.dart';
-import '../utils/enums/string_keys.dart';
+import '../common/enums/nav_type.dart';
+import '../common/enums/string_keys.dart';
 import 'app_event.dart';
 import 'app_state.dart';
 

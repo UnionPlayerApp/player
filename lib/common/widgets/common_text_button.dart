@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:union_player_app/utils/enums/string_keys.dart';
+import 'package:union_player_app/common/enums/string_keys.dart';
 
 import '../localizations/string_translation.dart';
 import '../ui/text_styles.dart';

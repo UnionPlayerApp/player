@@ -1,7 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:equatable/equatable.dart';
 
-import '../utils/enums/sound_quality_type.dart';
+import '../common/enums/sound_quality_type.dart';
 
 abstract class ListenEvent extends Equatable {
   const ListenEvent();

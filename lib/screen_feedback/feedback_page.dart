@@ -5,13 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:union_player_app/screen_feedback/feedback_bloc.dart';
 import 'package:union_player_app/screen_feedback/feedback_state.dart';
-import 'package:union_player_app/utils/dimensions/dimensions.dart';
-import 'package:union_player_app/utils/localizations/string_translation.dart';
-import 'package:union_player_app/utils/ui/app_theme.dart';
-import 'package:union_player_app/utils/widgets/no_divider_banner.dart';
+import 'package:union_player_app/common/dimensions/dimensions.dart';
+import 'package:union_player_app/common/localizations/string_translation.dart';
+import 'package:union_player_app/common/ui/app_theme.dart';
+import 'package:union_player_app/common/widgets/no_divider_banner.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-import '../utils/enums/string_keys.dart';
+import '../common/enums/string_keys.dart';
 import 'feedback_event.dart';
 
 class FeedbackPage extends StatefulWidget {

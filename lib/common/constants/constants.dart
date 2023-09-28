@@ -1,8 +1,8 @@
 // Asset Constants
 import 'package:flutter/material.dart';
-import 'package:union_player_app/utils/enums/language_type.dart';
-import 'package:union_player_app/utils/enums/sound_quality_type.dart';
-import 'package:union_player_app/utils/enums/start_playing_type.dart';
+import 'package:union_player_app/common/enums/language_type.dart';
+import 'package:union_player_app/common/enums/sound_quality_type.dart';
+import 'package:union_player_app/common/enums/start_playing_type.dart';
 
 const appBarLogoImage = "assets/images/union_radio_logo_outline.svg";
 const logoImage = "assets/images/union_radio_logo.png";

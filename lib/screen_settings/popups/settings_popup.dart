@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:union_player_app/utils/enums/string_keys.dart';
-import 'package:union_player_app/utils/widgets/common_dialog.dart';
-import 'package:union_player_app/utils/widgets/common_radio_list.dart';
+import 'package:union_player_app/common/enums/string_keys.dart';
+import 'package:union_player_app/common/widgets/common_dialog.dart';
+import 'package:union_player_app/common/widgets/common_radio_list.dart';
 
-import '../../utils/widgets/common_text_button.dart';
+import '../../common/widgets/common_text_button.dart';
 
 abstract class SettingsPopup<T> {
   T currentValue;

@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_event.dart';
 import 'package:union_player_app/screen_schedule/schedule_item_view.dart';
 import 'package:union_player_app/screen_schedule/schedule_state.dart';
-import 'package:union_player_app/utils/enums/relative_time_type.dart';
+import 'package:union_player_app/common/enums/relative_time_type.dart';
 
 class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
   final AudioHandler audioHandler;

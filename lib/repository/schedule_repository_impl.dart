@@ -5,12 +5,12 @@ import 'package:rxdart/rxdart.dart';
 import 'package:union_player_app/repository/schedule_item.dart';
 import 'package:union_player_app/repository/schedule_repository_event.dart';
 import 'package:union_player_app/repository/schedule_repository_interface.dart';
-import 'package:union_player_app/utils/core/file_utils.dart';
+import 'package:union_player_app/common/core/file_utils.dart';
 import 'package:xml/xml.dart';
 
-import '../utils/core/date_time.dart';
-import '../utils/core/debug.dart';
-import '../utils/core/duration.dart';
+import '../common/core/date_time.dart';
+import '../common/core/debug.dart';
+import '../common/core/duration.dart';
 import 'schedule_item_type.dart';
 
 class ScheduleRepositoryImpl implements IScheduleRepository {

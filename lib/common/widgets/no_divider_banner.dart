@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:union_player_app/utils/dimensions/dimensions.dart';
+import 'package:union_player_app/common/dimensions/dimensions.dart';
 
 class NoDividerBanner extends MaterialBanner {
   const NoDividerBanner(

@@ -2,14 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/enums/language_type.dart';
-import 'package:union_player_app/utils/enums/sound_quality_type.dart';
-import 'package:union_player_app/utils/enums/start_playing_type.dart';
-import 'package:union_player_app/utils/enums/theme_mode.dart';
+import 'package:union_player_app/common/constants/constants.dart';
+import 'package:union_player_app/common/enums/language_type.dart';
+import 'package:union_player_app/common/enums/sound_quality_type.dart';
+import 'package:union_player_app/common/enums/start_playing_type.dart';
+import 'package:union_player_app/common/enums/theme_mode.dart';
 
-import '../utils/core/exceptions.dart';
-import '../utils/core/typedefs.dart';
+import '../common/core/exceptions.dart';
+import '../common/core/typedefs.dart';
 
 class SPManager {
   final SharedPreferences _prefs;

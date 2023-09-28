@@ -23,18 +23,18 @@ import 'package:union_player_app/model/system_data/system_data.dart';
 import 'package:union_player_app/providers/shared_preferences_manager.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_app/app_page.dart';
-import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/core/extensions.dart';
-import 'package:union_player_app/utils/dimensions/dimensions.dart';
-import 'package:union_player_app/utils/enums/language_type.dart';
-import 'package:union_player_app/utils/enums/sound_quality_type.dart';
-import 'package:union_player_app/utils/localizations/string_translation.dart';
-import 'package:union_player_app/utils/widgets/info_page.dart';
-import 'package:union_player_app/utils/widgets/progress_page.dart';
+import 'package:union_player_app/common/constants/constants.dart';
+import 'package:union_player_app/common/core/extensions.dart';
+import 'package:union_player_app/common/dimensions/dimensions.dart';
+import 'package:union_player_app/common/enums/language_type.dart';
+import 'package:union_player_app/common/enums/sound_quality_type.dart';
+import 'package:union_player_app/common/localizations/string_translation.dart';
+import 'package:union_player_app/common/widgets/info_page.dart';
+import 'package:union_player_app/common/widgets/progress_page.dart';
 
 import '../firebase_options.dart';
-import '../utils/enums/start_playing_type.dart';
-import '../utils/enums/string_keys.dart';
+import '../common/enums/start_playing_type.dart';
+import '../common/enums/string_keys.dart';
 
 class InitPage extends StatefulWidget {
   final PackageInfo _packageInfo;

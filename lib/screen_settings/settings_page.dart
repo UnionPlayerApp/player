@@ -8,18 +8,18 @@ import 'package:union_player_app/screen_settings/popups/start_playing_popup.dart
 import 'package:union_player_app/screen_settings/popups/theme_mode_popup.dart';
 import 'package:union_player_app/screen_settings/settings_bloc.dart';
 import 'package:union_player_app/screen_settings/settings_state.dart';
-import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/enums/language_type.dart';
-import 'package:union_player_app/utils/enums/sound_quality_type.dart';
-import 'package:union_player_app/utils/enums/start_playing_type.dart';
-import 'package:union_player_app/utils/enums/theme_mode.dart';
-import 'package:union_player_app/utils/localizations/string_translation.dart';
-import 'package:union_player_app/utils/widgets/snack_bar.dart';
+import 'package:union_player_app/common/constants/constants.dart';
+import 'package:union_player_app/common/enums/language_type.dart';
+import 'package:union_player_app/common/enums/sound_quality_type.dart';
+import 'package:union_player_app/common/enums/start_playing_type.dart';
+import 'package:union_player_app/common/enums/theme_mode.dart';
+import 'package:union_player_app/common/localizations/string_translation.dart';
+import 'package:union_player_app/common/widgets/snack_bar.dart';
 
-import '../utils/dimensions/dimensions.dart';
-import '../utils/enums/string_keys.dart';
-import '../utils/ui/app_colors.dart';
-import '../utils/ui/text_styles.dart';
+import '../common/dimensions/dimensions.dart';
+import '../common/enums/string_keys.dart';
+import '../common/ui/app_colors.dart';
+import '../common/ui/text_styles.dart';
 import 'settings_event.dart';
 
 class SettingsPage extends StatelessWidget {

@@ -2,11 +2,11 @@ import 'package:audio_service/audio_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:union_player_app/player/app_player_handler.dart';
 import 'package:union_player_app/repository/schedule_item_type.dart';
-import 'package:union_player_app/utils/core/date_time.dart';
+import 'package:union_player_app/common/core/date_time.dart';
 
-import '../utils/constants/constants.dart';
-import '../utils/enums/image_source_type.dart';
-import '../utils/enums/string_keys.dart';
+import '../common/constants/constants.dart';
+import '../common/enums/image_source_type.dart';
+import '../common/enums/string_keys.dart';
 
 // ignore: must_be_immutable
 class ListenItemView extends Equatable {

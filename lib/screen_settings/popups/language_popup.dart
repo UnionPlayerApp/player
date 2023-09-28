@@ -1,5 +1,5 @@
-import 'package:union_player_app/utils/enums/language_type.dart';
-import 'package:union_player_app/utils/enums/string_keys.dart';
+import 'package:union_player_app/common/enums/language_type.dart';
+import 'package:union_player_app/common/enums/string_keys.dart';
 
 import 'settings_popup.dart';
 
