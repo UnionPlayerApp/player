@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:union_player_app/utils/localizations/string_translation.dart';
 import 'package:union_player_app/utils/ui/app_theme.dart';
+import 'package:union_player_app/utils/ui/text_styles.dart';
 
 import '../enums/string_keys.dart';
 import '../ui/app_colors.dart';
@@ -25,7 +26,7 @@ void showSnackBar(
       color: colorOnPrimary,
     ),
     const SizedBox(width: 6.0),
-    Text(text),
+    Text(text, style: TextStyles.regular16White),
   ]);
 
   final snackBar = SnackBar(

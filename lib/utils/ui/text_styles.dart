@@ -1,55 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 import 'font_sizes.dart';
 
 class TextStyles {
-  static const white22w400 = TextStyle(
+  static const _regular = FontWeight.w400;
+  static const _bold = FontWeight.w700;
+
+  static final regular16BlackOlive = GoogleFonts.openSans(
+    color: AppColors.blackOlive,
+    fontSize: FontSizes.px16,
+    fontWeight: _regular,
+  );
+
+  static final regular16White = GoogleFonts.openSans(
     color: AppColors.white,
-    fontFamily: 'Open Sans',
+    fontSize: FontSizes.px16,
+    fontWeight: _regular,
+  );
+
+  static final regular22White = GoogleFonts.openSans(
+    color: AppColors.white,
     fontSize: FontSizes.px22,
-    fontWeight: FontWeight.w400,
+    fontWeight: _regular,
   );
 
-  static const screenTitle20px = TextStyle(
+  static final bold16BlackOlive = GoogleFonts.openSans(
     color: AppColors.blackOlive,
-    fontFamily: 'Open Sans',
+    fontSize: FontSizes.px16,
+    fontWeight: _bold,
+  );
+
+  static final bold20BlackOlive = GoogleFonts.openSans(
+    color: AppColors.blackOlive,
     fontSize: FontSizes.px20,
-    fontWeight: FontWeight.w700,
-  );
-
-  static const screenTitle16px = TextStyle(
-    color: AppColors.blackOlive,
-    fontFamily: 'Open Sans',
-    fontSize: FontSizes.px16,
-    fontWeight: FontWeight.w700,
-  );
-
-  static const screenContent = TextStyle(
-    color: AppColors.blackOlive,
-    fontFamily: 'Open Sans',
-    fontSize: FontSizes.px16,
-    fontWeight: FontWeight.w400,
-  );
-
-  static const popupContent = TextStyle(
-    color: AppColors.darkLiver,
-    fontFamily: "Roboto",
-    fontSize: FontSizes.px16,
-    fontWeight: FontWeight.w400,
-  );
-
-  static const popupButton = TextStyle(
-    color: AppColors.darkLiver,
-    fontFamily: "Roboto",
-    fontSize: FontSizes.px16,
-    fontWeight: FontWeight.w500,
-  );
-
-  static const popupTitle = TextStyle(
-    color: AppColors.darkLiver,
-    fontFamily: "Roboto",
-    fontSize: FontSizes.px16,
-    fontWeight: FontWeight.w700,
+    fontWeight: _bold,
   );
 }

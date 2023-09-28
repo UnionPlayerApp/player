@@ -33,6 +33,7 @@ dependencies:
   form_field_validator: ^1.1.0
   get: ^4.6.6
   get_it: ^7.6.4
+  google_fonts: ^6.1.0
   intl: ^0.18.1
   just_audio: ^0.9.34
   just_audio_web: ^0.4.8

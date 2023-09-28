@@ -68,7 +68,7 @@ class SettingsPage extends StatelessWidget {
     padding: const EdgeInsets.symmetric(vertical: 40.0),
     child: Text(
           translate(key, context),
-          style: TextStyles.screenTitle20px,
+          style: TextStyles.bold20BlackOlive,
         ),
   );
 
@@ -112,9 +112,9 @@ class SettingsPage extends StatelessWidget {
           ),
       child: Row(
         children: [
-          Text(translate(labelKey, context), style: TextStyles.screenContent),
+          Text(translate(labelKey, context), style: TextStyles.regular16BlackOlive),
           const Spacer(),
-          Text(translate(valueKey, context), style: TextStyles.screenContent),
+          Text(translate(valueKey, context), style: TextStyles.regular16BlackOlive),
         ],
       ),
     );
@@ -147,7 +147,7 @@ class SettingsPage extends StatelessWidget {
         onTap: onTap,
         child: Row(
           children: [
-            Text(translate(labelKey, context), style: TextStyles.screenContent),
+            Text(translate(labelKey, context), style: TextStyles.regular16BlackOlive),
             const Spacer(),
             SvgPicture.asset(AppIcons.icArrowForward),
           ],

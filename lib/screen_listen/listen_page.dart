@@ -115,7 +115,7 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
   Widget _scheduleItemWidget(BuildContext context, ListenState state) {
     return Column(
       children: [
-        Text(translate(state.itemView.labelKey, context), style: TextStyles.screenTitle20px),
+        Text(translate(state.itemView.labelKey, context), style: TextStyles.bold20BlackOlive),
         const SizedBox(height: 20.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -140,9 +140,9 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
           ],
         ),
         const SizedBox(height: 20.0),
-        Text(state.itemView.isArtistVisible ? state.itemView.artist : " ", style: TextStyles.screenTitle20px),
+        Text(state.itemView.isArtistVisible ? state.itemView.artist : " ", style: TextStyles.bold20BlackOlive),
         const SizedBox(height: 20.0),
-        Text(state.itemView.title, style: TextStyles.screenContent, maxLines: 1, overflow: TextOverflow.ellipsis),
+        Text(state.itemView.title, style: TextStyles.regular16BlackOlive, maxLines: 1, overflow: TextOverflow.ellipsis),
       ],
     );
   }
@@ -188,7 +188,7 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
                 const SizedBox(
                   width: 10.0,
                 ),
-                const Text("LIVE", style: TextStyles.white22w400),
+                Text("LIVE", style: TextStyles.regular22White),
                 const SizedBox(width: 20.0),
                 SvgPicture.asset(state.isPlaying ? AppIcons.icPause : AppIcons.icPlay),
               ],
