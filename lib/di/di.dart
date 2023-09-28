@@ -10,8 +10,8 @@ import 'package:union_player_app/repository/schedule_repository_impl.dart';
 import 'package:union_player_app/repository/schedule_repository_interface.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
 import 'package:union_player_app/screen_app/app_page.dart';
-import 'package:union_player_app/screen_feedback/feedback_bloc.dart';
-import 'package:union_player_app/screen_feedback/feedback_page.dart';
+import 'package:union_player_app/screen_about_radio/about_radio_bloc.dart';
+import 'package:union_player_app/screen_about_radio/about_radio_page.dart';
 import 'package:union_player_app/screen_init/init_page.dart';
 import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_page.dart';
@@ -48,7 +48,7 @@ class BindingModule {
 
   static void providesPages() {
     GetIt.I.registerFactory(() => AppPage());
-    GetIt.I.registerFactory(() => FeedbackPage());
+    GetIt.I.registerFactory(() => AboutRadioPage());
     GetIt.I.registerFactory(() => ListenPage());
     GetIt.I.registerFactory(() => SchedulePage());
     GetIt.I.registerFactory(() => SettingsPage());
@@ -59,7 +59,7 @@ class BindingModule {
 
   static void providesBlocs() {
     GetIt.I.registerFactoryParam<AppBloc, bool, void>((isPlaying, _) => AppBloc(GetIt.I.get(), isPlaying));
-    GetIt.I.registerFactory(() => FeedbackBloc(GetIt.I.get()));
+    GetIt.I.registerFactory(() => AboutRadioBloc(GetIt.I.get()));
     GetIt.I.registerFactory(() => ListenBloc(GetIt.I.get(), GetIt.I.get()));
     GetIt.I.registerFactory(() => ScheduleBloc(audioHandler: GetIt.I.get()));
     GetIt.I.registerFactory(() => SettingsBloc(GetIt.I.get(), GetIt.I.get(), GetIt.I.get()));

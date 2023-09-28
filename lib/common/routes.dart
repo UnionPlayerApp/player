@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:union_player_app/screen_about_radio/about_radio_bloc.dart';
+import 'package:union_player_app/screen_about_radio/about_radio_page.dart';
 import 'package:union_player_app/screen_init/init_page.dart';
 
 import '../screen_listen/listen_bloc.dart';
@@ -22,7 +24,7 @@ class Routes {
   Map<String, WidgetBuilder> getRoutes() {
     return {
       aboutApp: (_) => Container(),
-      aboutRadio: (_) => Container(),
+      aboutRadio: (_) => _blocPage<AboutRadioPage, AboutRadioBloc>(),
       listen: (_) => _blocPage<ListenPage, ListenBloc>(),
       schedule: (_) => _blocPage<SchedulePage, ScheduleBloc>(),
       settings: (_) => _blocPage<SettingsPage, SettingsBloc>(),
