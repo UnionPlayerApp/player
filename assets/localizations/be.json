@@ -52,5 +52,10 @@
   "tomorrow": "Заўтра",
   "other": "Іншы",
   "aboutRadio": "Пра Першае Радыё Саюза",
-  "aboutApp": "Пра мабільнае прыкладанне"
+  "aboutApp": "Пра мабільнае прыкладанне",
+  "roleDeveloper": "Развіццё",
+  "roleDesigner": "Дызайн UX/UI",
+  "versionLabel": "Версія",
+  "contactAppNotFound":  "Гэта прыкладанне адсутнічае на тэлефоне",
+  "contactAppLaunchError":  "Памылка запуску прыкладання"
 }

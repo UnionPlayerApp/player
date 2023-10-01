@@ -52,5 +52,10 @@
   "tomorrow": "Завтра",
   "other": "Прочее",
   "aboutRadio": "О Первом Союзном Радио",
-  "aboutApp": "О приложении"
+  "aboutApp": "О приложении",
+  "roleDeveloper": "Разработка",
+  "roleDesigner": "UX/UI-дизайн",
+  "versionLabel": "Версия",
+  "contactAppNotFound":  "Это приложение отсутствует на телефоне",
+  "contactAppLaunchError":  "Ошибка запуска приложения"
 }

@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/common/constants/constants.dart';
 
-import '../utils/enums/sound_quality_type.dart';
+import '../common/enums/sound_quality_type.dart';
 import 'listen_item_view.dart';
 
 class ListenState extends Equatable {

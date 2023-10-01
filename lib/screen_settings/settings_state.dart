@@ -1,11 +1,11 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/enums/language_type.dart';
-import 'package:union_player_app/utils/enums/sound_quality_type.dart';
-import 'package:union_player_app/utils/enums/start_playing_type.dart';
+import 'package:union_player_app/common/constants/constants.dart';
+import 'package:union_player_app/common/enums/language_type.dart';
+import 'package:union_player_app/common/enums/sound_quality_type.dart';
+import 'package:union_player_app/common/enums/start_playing_type.dart';
 
-import '../utils/enums/string_keys.dart';
+import '../common/enums/string_keys.dart';
 
 class SettingsState extends Equatable {
   final LanguageType language;

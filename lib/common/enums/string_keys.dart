@@ -65,4 +65,9 @@ enum StringKeys {
   other,
   aboutRadio,
   aboutApp,
+  roleDeveloper,
+  roleDesigner,
+  versionLabel,
+  contactAppNotFound,
+  contactAppLaunchError,
 }

@@ -1,5 +1,5 @@
-import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/enums/string_keys.dart';
+import 'package:union_player_app/common/constants/constants.dart';
+import 'package:union_player_app/common/enums/string_keys.dart';
 
 enum SoundQualityType {
   low,

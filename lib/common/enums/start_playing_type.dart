@@ -1,4 +1,4 @@
-import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/common/constants/constants.dart';
 
 import 'string_keys.dart';
 

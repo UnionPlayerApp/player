@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
-import 'package:union_player_app/utils/enums/relative_day_type.dart';
+import 'package:union_player_app/common/enums/relative_day_type.dart';
 
 const _moscowDiff = Duration(hours: -3);
 

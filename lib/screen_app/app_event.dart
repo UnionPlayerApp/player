@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../utils/enums/nav_type.dart';
+import '../common/enums/nav_type.dart';
 
 abstract class AppEvent extends Equatable {
   const AppEvent();

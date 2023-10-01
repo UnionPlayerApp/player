@@ -10,9 +10,9 @@ import 'package:union_player_app/repository/schedule_item.dart';
 import 'package:union_player_app/repository/schedule_item_type.dart';
 import 'package:union_player_app/repository/schedule_repository_event.dart';
 import 'package:union_player_app/repository/schedule_repository_interface.dart';
-import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/core/file_utils.dart';
-import 'package:union_player_app/utils/enums/sound_quality_type.dart';
+import 'package:union_player_app/common/constants/constants.dart';
+import 'package:union_player_app/common/core/file_utils.dart';
+import 'package:union_player_app/common/enums/sound_quality_type.dart';
 import 'package:uuid/uuid.dart';
 
 class AppPlayerHandler extends BaseAudioHandler with SeekHandler {

@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:simple_animations/animation_builder/loop_animation_builder.dart';
 import 'package:simple_animations/animation_builder/mirror_animation_builder.dart';
-import 'package:union_player_app/utils/constants/constants.dart';
+import 'package:union_player_app/common/constants/constants.dart';
 
 enum FlagsWidgetMode { stop, init, play }
 

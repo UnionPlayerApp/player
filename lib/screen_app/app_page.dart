@@ -6,20 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:union_player_app/common/constants/constants.dart';
+import 'package:union_player_app/common/localizations/string_translation.dart';
+import 'package:union_player_app/common/ui/app_colors.dart';
+import 'package:union_player_app/common/widgets/snack_bar.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
-import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
-import 'package:union_player_app/screen_schedule/schedule_page.dart';
-import 'package:union_player_app/screen_settings/settings_bloc.dart';
-import 'package:union_player_app/screen_settings/settings_page.dart';
-import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/localizations/string_translation.dart';
-import 'package:union_player_app/utils/ui/app_colors.dart';
-import 'package:union_player_app/utils/widgets/snack_bar.dart';
 
-import '../screen_listen/listen_bloc.dart';
-import '../screen_listen/listen_page.dart';
-import '../utils/enums/nav_type.dart';
-import '../utils/enums/string_keys.dart';
+import '../common/enums/nav_type.dart';
+import '../common/enums/string_keys.dart';
+import '../common/routes.dart';
 import 'app_event.dart';
 import 'app_state.dart';
 
@@ -34,14 +29,10 @@ class _AppState extends State<AppPage> {
   DateTime? _backPressTime;
   Widget? _currentPage;
 
-  late final _listenPage = _blocPage<ListenPage, ListenBloc>();
-  late final _schedulePage = _blocPage<SchedulePage, ScheduleBloc>();
-  late final _settingsPage = _blocPage<SettingsPage, SettingsBloc>();
-
-  Widget _blocPage<P extends Widget, B extends Bloc>() => BlocProvider(
-        create: (_) => GetIt.I.get<B>(),
-        child: GetIt.I.get<P>(),
-      );
+  late final _routes = GetIt.I.get<Routes>();
+  late final _listenPage = _routes.page(context, routeName: Routes.listen);
+  late final _schedulePage = _routes.page(context, routeName: Routes.schedule);
+  late final _settingsPage = _routes.page(context, routeName: Routes.settings);
 
   @override
   Widget build(BuildContext context) {

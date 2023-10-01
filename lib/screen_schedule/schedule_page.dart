@@ -6,15 +6,15 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_item_view.dart';
 import 'package:union_player_app/screen_schedule/schedule_state.dart';
-import 'package:union_player_app/utils/constants/constants.dart';
-import 'package:union_player_app/utils/enums/relative_time_type.dart';
-import 'package:union_player_app/utils/dimensions/dimensions.dart';
-import 'package:union_player_app/utils/localizations/string_translation.dart';
-import 'package:union_player_app/utils/widgets/live_air_widget.dart';
+import 'package:union_player_app/common/constants/constants.dart';
+import 'package:union_player_app/common/enums/relative_time_type.dart';
+import 'package:union_player_app/common/dimensions/dimensions.dart';
+import 'package:union_player_app/common/localizations/string_translation.dart';
+import 'package:union_player_app/common/widgets/live_air_widget.dart';
 
-import '../utils/ui/app_colors.dart';
-import '../utils/ui/text_styles.dart';
-import '../utils/widgets/snack_bar.dart';
+import '../common/ui/app_colors.dart';
+import '../common/ui/text_styles.dart';
+import '../common/widgets/snack_bar.dart';
 
 // ignore: must_be_immutable
 class SchedulePage extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:union_player_app/utils/localizations/string_translation.dart';
-import 'package:union_player_app/utils/ui/app_theme.dart';
-import 'package:union_player_app/utils/ui/text_styles.dart';
+import 'package:union_player_app/common/localizations/string_translation.dart';
+import 'package:union_player_app/common/ui/app_theme.dart';
+import 'package:union_player_app/common/ui/text_styles.dart';
 
 import '../enums/string_keys.dart';
 import '../ui/app_colors.dart';
@@ -26,7 +26,7 @@ void showSnackBar(
       color: colorOnPrimary,
     ),
     const SizedBox(width: 6.0),
-    Text(text, style: TextStyles.regular16White),
+    Flexible(child: Text(text, style: TextStyles.regular16White, maxLines: 3, overflow: TextOverflow.ellipsis)),
   ]);
 
   final snackBar = SnackBar(
