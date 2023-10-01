@@ -1,12 +1,9 @@
-import 'package:equatable/equatable.dart';
+import 'package:union_player_app/common/enums/string_keys.dart';
 
 import 'developer_model.dart';
 
-abstract class AboutAppState extends Equatable {
+abstract class AboutAppState {
   const AboutAppState();
-
-  @override
-  List<Object> get props => [];
 }
 
 class AboutAppLoadingState extends AboutAppState {
@@ -14,12 +11,25 @@ class AboutAppLoadingState extends AboutAppState {
 }
 
 class AboutAppLoadedState extends AboutAppState {
-  final String versionName;
-  final int versionCode;
+  final String version;
+  final String buildNumber;
   final List<DeveloperModel> developers;
+  final StringKeys? toastKey;
+  final String? toastParam;
 
-  const AboutAppLoadedState({required this.versionName, required this.versionCode, required this.developers});
+  const AboutAppLoadedState({
+    required this.version,
+    required this.buildNumber,
+    required this.developers,
+    this.toastKey,
+    this.toastParam,
+  });
 
-  @override
-  List<Object> get props => [versionName, versionCode, developers];
+  AboutAppLoadedState copyWith({StringKeys? toastKey, String? toastParam}) => AboutAppLoadedState(
+        version: version,
+        buildNumber: buildNumber,
+        developers: developers,
+        toastKey: toastKey,
+        toastParam: toastParam,
+      );
 }

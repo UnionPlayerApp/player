@@ -52,5 +52,10 @@
   "tomorrow": "Tomorrow",
   "other": "Other",
   "aboutRadio": "About the Union Radio 1",
-  "aboutApp": "About application"
+  "aboutApp": "About application",
+  "roleDeveloper": "Development",
+  "roleDesigner": "UX/UI design",
+  "versionLabel": "Version",
+  "contactAppNotFound":  "This application is absent on the phone",
+  "contactAppLaunchError":  "Application launch error"
 }

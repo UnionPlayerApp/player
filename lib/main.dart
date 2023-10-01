@@ -28,7 +28,7 @@ void main() async {
 
       await _initLocator();
 
-      final packageInfo = await PackageInfo.fromPlatform();
+      final packageInfo = GetIt.I.get<PackageInfo>();
 
       if (kDebugMode) {
         Bloc.observer = AppBlocObserver();

@@ -76,9 +76,13 @@ const gaPlayerStart = "UPA_PLAYER_START";
 const gaPlayerStop = "UPA_PLAYER_STOP";
 const gaAppStatus = "UPA_APP_STATUS";
 
-const localeUS = Locale('en', 'US');
-const localeRU = Locale('ru', 'RU');
-const localeBY = Locale('be', 'BY');
+const languageEN = 'en';
+const languageRU = 'ru';
+const languageBE = 'be';
+
+const localeUS = Locale(languageEN, 'US');
+const localeRU = Locale(languageRU, 'RU');
+const localeBY = Locale(languageBE, 'BY');
 
 const supportedLocales = [
   localeUS,
@@ -95,10 +99,15 @@ class AppIcons {
   static const icPlay = "assets/icons/ic_play.svg";
   static const icSchedule = "assets/icons/ic_schedule.svg";
   static const icSettings = "assets/icons/ic_settings.svg";
+  static const icEmail = "assets/icons/ic_email.svg";
+  static const icTelegram = "assets/icons/ic_telegram.svg";
+  static const icWhatsapp = "assets/icons/ic_whatsapp.svg";
 }
 
 class AppImages {
   static const imDisk0 = "assets/images/disk_0.png";
   static const imDisk1 = "assets/images/disk_1.png";
   static const imDisk2 = "assets/images/disk_2.png";
+  static const imCircle150Blur8 = "assets/images/circle_150_blur_8.png";
+  static const imRadioLogo = "assets/images/union_radio_logo.png";
 }

@@ -26,7 +26,7 @@ void showSnackBar(
       color: colorOnPrimary,
     ),
     const SizedBox(width: 6.0),
-    Text(text, style: TextStyles.regular16White),
+    Flexible(child: Text(text, style: TextStyles.regular16White, maxLines: 3, overflow: TextOverflow.ellipsis)),
   ]);
 
   final snackBar = SnackBar(

@@ -46,6 +46,7 @@ class BindingModule {
     GetIt.I.registerLazySingleton<SystemData>(() => SystemData());
     GetIt.I.registerLazySingleton<Uuid>(() => const Uuid());
     GetIt.I.registerLazySingletonAsync(() => SPManager.createInstance());
+    GetIt.I.registerLazySingletonAsync(() => PackageInfo.fromPlatform());
   }
 
   static void providesPages() {
@@ -62,7 +63,7 @@ class BindingModule {
 
   static void providesBlocs() {
     GetIt.I.registerFactoryParam<AppBloc, bool, void>((isPlaying, _) => AppBloc(GetIt.I.get(), isPlaying));
-    GetIt.I.registerFactory(() => AboutAppBloc(GetIt.I.get()));
+    GetIt.I.registerFactory(() => AboutAppBloc(GetIt.I.get(), GetIt.I.get()));
     GetIt.I.registerFactory(() => AboutRadioBloc(GetIt.I.get()));
     GetIt.I.registerFactory(() => ListenBloc(GetIt.I.get(), GetIt.I.get()));
     GetIt.I.registerFactory(() => ScheduleBloc(audioHandler: GetIt.I.get()));
@@ -72,6 +73,7 @@ class BindingModule {
   static Future<void> initAsyncSingletons() {
     return Future.wait([
       GetIt.I.getAsync<SPManager>(),
+      GetIt.I.getAsync<PackageInfo>(),
     ]).then((_) => null);
   }
 }
