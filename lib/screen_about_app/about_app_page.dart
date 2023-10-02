@@ -8,8 +8,6 @@ import 'package:union_player_app/screen_about_app/developer_model.dart';
 
 import '../common/constants/constants.dart';
 import '../common/enums/string_keys.dart';
-import '../common/ui/app_colors.dart';
-import '../common/ui/text_styles.dart';
 import 'about_app_bloc.dart';
 import 'about_app_state.dart';
 
@@ -31,16 +29,13 @@ class _AboutAppState extends State<AboutAppPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.white,
-        elevation: 0.0,
         leading: IconButton(
           iconSize: 20.0,
           icon: SvgPicture.asset(AppIcons.icArrowBack),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(translate(StringKeys.aboutApp, context), style: TextStyles.bold20BlackOlive),
+        title: Text(translate(StringKeys.aboutApp, context), style: Theme.of(context).textTheme.titleMedium),
       ),
-      backgroundColor: AppColors.white,
       body: BlocConsumer<AboutAppBloc, AboutAppState>(
         listenWhen: (_, state) => state is AboutAppLoadedState && state.toastKey != null,
         listener: (context, state) {
@@ -88,7 +83,7 @@ class _AboutAppState extends State<AboutAppPage> {
       padding: const EdgeInsets.all(15.0),
       child: Column(
         children: [
-          Text(text, style: TextStyles.regular16BlackOlive),
+          Text(text, style: Theme.of(context).textTheme.bodySmall),
           const SizedBox(height: 15.0),
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -129,7 +124,7 @@ class _AboutAppState extends State<AboutAppPage> {
     final text = "${translate(StringKeys.versionLabel, context)} ${state.version} (${state.buildNumber})";
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 30.0),
-      child: Text(text, style: TextStyles.regular16BlackOlive),
+      child: Text(text, style: Theme.of(context).textTheme.bodySmall),
     );
   }
 }

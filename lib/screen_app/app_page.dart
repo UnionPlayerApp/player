@@ -8,7 +8,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:union_player_app/common/constants/constants.dart';
 import 'package:union_player_app/common/localizations/string_translation.dart';
-import 'package:union_player_app/common/ui/app_colors.dart';
 import 'package:union_player_app/common/widgets/snack_bar.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
 
@@ -42,7 +41,6 @@ class _AppState extends State<AppPage> {
         return WillPopScope(
           onWillPop: () => _onWillPop(),
           child: Scaffold(
-            backgroundColor: AppColors.white,
             body: _body(state),
             bottomNavigationBar: _bottomNavigationBar(state),
           ),

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:union_player_app/common/localizations/string_translation.dart';
-import 'package:union_player_app/common/ui/app_theme.dart';
-import 'package:union_player_app/common/ui/text_styles.dart';
 
 import '../enums/string_keys.dart';
 import '../ui/app_colors.dart';
@@ -23,10 +21,17 @@ void showSnackBar(
   final content = Row(children: [
     const Icon(
       Icons.info_rounded,
-      color: colorOnPrimary,
+      color: AppColors.white,
     ),
     const SizedBox(width: 6.0),
-    Flexible(child: Text(text, style: TextStyles.regular16White, maxLines: 3, overflow: TextOverflow.ellipsis)),
+    Flexible(
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.labelSmall,
+        maxLines: 3,
+        overflow: TextOverflow.ellipsis,
+      ),
+    ),
   ]);
 
   final snackBar = SnackBar(

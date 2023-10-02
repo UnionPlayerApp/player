@@ -3,17 +3,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:union_player_app/common/constants/constants.dart';
+import 'package:union_player_app/common/dimensions/dimensions.dart';
+import 'package:union_player_app/common/enums/relative_time_type.dart';
+import 'package:union_player_app/common/localizations/string_translation.dart';
+import 'package:union_player_app/common/widgets/live_air_widget.dart';
 import 'package:union_player_app/screen_schedule/schedule_bloc.dart';
 import 'package:union_player_app/screen_schedule/schedule_item_view.dart';
 import 'package:union_player_app/screen_schedule/schedule_state.dart';
-import 'package:union_player_app/common/constants/constants.dart';
-import 'package:union_player_app/common/enums/relative_time_type.dart';
-import 'package:union_player_app/common/dimensions/dimensions.dart';
-import 'package:union_player_app/common/localizations/string_translation.dart';
-import 'package:union_player_app/common/widgets/live_air_widget.dart';
 
 import '../common/ui/app_colors.dart';
-import '../common/ui/text_styles.dart';
 import '../common/widgets/snack_bar.dart';
 
 // ignore: must_be_immutable
@@ -53,10 +52,7 @@ class _SchedulePageState extends State<SchedulePage> with TickerProviderStateMix
     WidgetsBinding.instance.addPostFrameCallback((_) => _jumpToCurrentItem());
 
     return ScrollablePositionedList.separated(
-      separatorBuilder: (BuildContext context, int index) => Divider(
-        height: listViewDividerHeight,
-        color: AppColors.platinum,
-      ),
+      separatorBuilder: (BuildContext context, int index) => Divider(height: listViewDividerHeight),
       itemScrollController: _itemScrollController,
       itemPositionsListener: _itemPositionsListener,
       itemCount: state.items.length,
@@ -85,16 +81,16 @@ class _SchedulePageState extends State<SchedulePage> with TickerProviderStateMix
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (element.start.date != null) ...[
-            Text(element.start.date!, style: TextStyles.regular16BlackOlive),
+            Text(element.start.date!, style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: 6.0),
           ],
           if (element.start.dateLabel != null) ...[
-            Text(translate(element.start.dateLabel!, context), style: TextStyles.regular16BlackOlive),
+            Text(translate(element.start.dateLabel!, context), style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: 6.0),
           ],
           Text(
             element.start.time,
-            style: TextStyles.bold20BlackOlive,
+            style: Theme.of(context).textTheme.titleMedium,
             overflow: TextOverflow.ellipsis,
           ),
         ],
@@ -102,7 +98,7 @@ class _SchedulePageState extends State<SchedulePage> with TickerProviderStateMix
 
   Text _titleWidget(ScheduleItemView element, BuildContext context) => Text(
         element.title,
-        style: TextStyles.bold16BlackOlive,
+        style: Theme.of(context).textTheme.titleSmall,
         softWrap: true,
         textAlign: TextAlign.start,
         maxLines: 3,
@@ -111,7 +107,7 @@ class _SchedulePageState extends State<SchedulePage> with TickerProviderStateMix
 
   Text _artistWidget(ScheduleItemView element, BuildContext context) => Text(
         element.artist,
-        style: TextStyles.regular16BlackOlive,
+        style: Theme.of(context).textTheme.bodySmall,
         softWrap: true,
         textAlign: TextAlign.start,
         overflow: TextOverflow.ellipsis,

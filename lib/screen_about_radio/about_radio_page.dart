@@ -10,8 +10,6 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 import '../common/constants/constants.dart';
 import '../common/enums/string_keys.dart';
-import '../common/ui/app_colors.dart';
-import '../common/ui/text_styles.dart';
 import 'about_radio_event.dart';
 
 class AboutRadioPage extends StatefulWidget {
@@ -33,16 +31,16 @@ class _AboutRadioState extends State<AboutRadioPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.white,
-        elevation: 0.0,
         leading: IconButton(
           iconSize: 20.0,
           icon: SvgPicture.asset(AppIcons.icArrowBack),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(translate(StringKeys.aboutRadio, context), style: TextStyles.bold20BlackOlive),
+        title: Text(
+          translate(StringKeys.aboutRadio, context),
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
       ),
-      backgroundColor: AppColors.white,
       body: BlocBuilder<AboutRadioBloc, AboutRadioState>(
         builder: (context, state) => _stateWidget(context, state),
       ),
@@ -99,10 +97,10 @@ class _AboutRadioState extends State<AboutRadioPage> {
   }
 
   Widget _appLogoWidget() => Stack(
-    alignment: Alignment.center,
-    children: [
-      Image.asset(AppImages.imRadioLogo, width: 125.0, height: 125.0),
-      Image.asset(AppImages.imCircle150Blur8),
-    ],
-  );
+        alignment: Alignment.center,
+        children: [
+          Image.asset(AppImages.imRadioLogo, width: 125.0, height: 125.0),
+          Image.asset(AppImages.imCircle150Blur8),
+        ],
+      );
 }
