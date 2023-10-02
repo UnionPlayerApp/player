@@ -19,8 +19,6 @@ import 'package:union_player_app/screen_settings/settings_state.dart';
 import '../common/dimensions/dimensions.dart';
 import '../common/enums/string_keys.dart';
 import '../common/routes.dart';
-import '../common/ui/app_colors.dart';
-import '../common/ui/text_styles.dart';
 import 'settings_event.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -69,7 +67,7 @@ class SettingsPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 40.0),
         child: Text(
           translate(key, context),
-          style: TextStyles.bold20BlackOlive,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
       );
 
@@ -113,9 +111,9 @@ class SettingsPage extends StatelessWidget {
           ),
       child: Row(
         children: [
-          Text(translate(labelKey, context), style: TextStyles.regular16BlackOlive),
+          Text(translate(labelKey, context), style: Theme.of(context).textTheme.bodySmall),
           const Spacer(),
-          Text(translate(valueKey, context), style: TextStyles.regular16BlackOlive),
+          Text(translate(valueKey, context), style: Theme.of(context).textTheme.bodySmall),
         ],
       ),
     );
@@ -154,7 +152,7 @@ class SettingsPage extends StatelessWidget {
         onTap: onTap,
         child: Row(
           children: [
-            Text(translate(labelKey, context), style: TextStyles.regular16BlackOlive),
+            Text(translate(labelKey, context), style: Theme.of(context).textTheme.bodySmall),
             const Spacer(),
             SvgPicture.asset(AppIcons.icArrowForward),
           ],
@@ -163,6 +161,6 @@ class SettingsPage extends StatelessWidget {
 
   Widget _divider() => Padding(
         padding: const EdgeInsets.symmetric(vertical: 15.0),
-        child: Divider(height: listViewDividerHeight, color: AppColors.platinum),
+        child: Divider(height: listViewDividerHeight),
       );
 }

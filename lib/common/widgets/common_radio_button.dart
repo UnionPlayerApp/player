@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../ui/text_styles.dart';
-
 class CommonRadioButton<T> extends StatelessWidget {
   final String text;
   final T value;
@@ -34,7 +32,7 @@ class CommonRadioButton<T> extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 20.0),
-        Text(text, style: TextStyles.regular16BlackOlive),
+        Text(text, style: Theme.of(context).textTheme.bodySmall),
       ],
     );
   }
