@@ -167,6 +167,7 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
   }
 
   Widget _playerButton(BuildContext context, ListenState state) {
+    final contentColor = Theme.of(context).bottomNavigationBarTheme.unselectedItemColor!.withOpacity(0.8);
     return GestureDetector(
       onTap: () => context.read<ListenBloc>().add(ListenPlayerButtonEvent()),
       child: Row(
@@ -188,15 +189,16 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
               children: [
                 LiveAirWidget(
                   animationController: _animationController,
-                  color: AppColors.white,
+                  color: contentColor,
                   isActive: state.isPlaying,
                 ),
-                const SizedBox(
-                  width: 10.0,
-                ),
-                Text("LIVE", style: Theme.of(context).textTheme.labelMedium),
+                const SizedBox(width: 10.0),
+                Text("LIVE", style: Theme.of(context).textTheme.labelMedium?.copyWith(color: contentColor)),
                 const SizedBox(width: 20.0),
-                SvgPicture.asset(state.isPlaying ? AppIcons.icPause : AppIcons.icPlay),
+                SvgPicture.asset(
+                  state.isPlaying ? AppIcons.icPause : AppIcons.icPlay,
+                  colorFilter: ColorFilter.mode(contentColor, BlendMode.srcIn),
+                ),
               ],
             ),
           ),
