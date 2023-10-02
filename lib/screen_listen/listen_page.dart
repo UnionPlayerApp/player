@@ -167,7 +167,8 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
   }
 
   Widget _playerButton(BuildContext context, ListenState state) {
-    final contentColor = Theme.of(context).bottomNavigationBarTheme.unselectedItemColor!.withOpacity(0.8);
+    final contentStyle = Theme.of(context).textTheme.labelMedium;
+    final contentColor = contentStyle!.color!;
     return GestureDetector(
       onTap: () => context.read<ListenBloc>().add(ListenPlayerButtonEvent()),
       child: Row(
@@ -193,7 +194,7 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
                   isActive: state.isPlaying,
                 ),
                 const SizedBox(width: 10.0),
-                Text("LIVE", style: Theme.of(context).textTheme.labelMedium?.copyWith(color: contentColor)),
+                Text("LIVE", style: contentStyle),
                 const SizedBox(width: 20.0),
                 SvgPicture.asset(
                   state.isPlaying ? AppIcons.icPause : AppIcons.icPlay,

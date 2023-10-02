@@ -75,9 +75,15 @@ ThemeData appThemeDark() {
     appBarTheme: _appBarThemeDark(base.appBarTheme),
     bottomAppBarTheme: _appBottomAppBarThemeDark(base.bottomAppBarTheme),
     bottomNavigationBarTheme: _appBottomNavigationBarThemeDark(base.bottomNavigationBarTheme),
+    iconTheme: _appIconThemeDark(base.iconTheme),
     progressIndicatorTheme: _appProgressIndicatorThemeDark(base.progressIndicatorTheme),
+    textTheme: _appTextThemeDark(base.textTheme),
   );
 }
+
+IconThemeData _appIconThemeDark(IconThemeData base) => base.copyWith(
+      color: AppColors.blackOlive80,
+    );
 
 AppBarTheme _appBarThemeDark(AppBarTheme base) => base.copyWith(
       backgroundColor: AppColors.gray,
@@ -93,5 +99,10 @@ BottomNavigationBarThemeData _appBottomNavigationBarThemeDark(BottomNavigationBa
     );
 
 ProgressIndicatorThemeData _appProgressIndicatorThemeDark(ProgressIndicatorThemeData base) => base.copyWith(
-      linearTrackColor: AppColors.blackOlive.withOpacity(0.8),
+      linearTrackColor: AppColors.blackOlive80,
+    );
+
+TextTheme _appTextThemeDark(TextTheme base) => base.copyWith(
+      labelSmall: base.labelSmall!.copyWith(color: AppColors.blackOlive80),
+      labelMedium: base.labelMedium!.copyWith(color: AppColors.blackOlive80),
     );
