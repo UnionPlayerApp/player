@@ -92,7 +92,7 @@ class SPManager {
   Future<bool> writeIsPlaying(bool isPlaying) => _prefs.setBool(keyIsPlaying, isPlaying);
 
   Future<bool> writeStartPlayingType(StartPlayingType startPlayingType) => _prefs.setInt(
-        keyIsPlaying,
+        keyStartPlaying,
         startPlayingType.integer,
       );
 

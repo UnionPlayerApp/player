@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:union_player_app/common/localizations/string_translation.dart';
 
 import '../enums/string_keys.dart';
-import '../ui/app_colors.dart';
 
 const Duration _snackBarDefaultDuration = Duration(seconds: 2);
 
@@ -19,10 +18,7 @@ void showSnackBar(
   }
 
   final content = Row(children: [
-    const Icon(
-      Icons.info_rounded,
-      color: AppColors.white,
-    ),
+    const Icon(Icons.info_rounded),
     const SizedBox(width: 6.0),
     Flexible(
       child: Text(
@@ -36,7 +32,6 @@ void showSnackBar(
 
   final snackBar = SnackBar(
     content: content,
-    backgroundColor: AppColors.blueGreen,
     duration: duration,
     padding: const EdgeInsets.all(8.0),
     behavior: SnackBarBehavior.floating,

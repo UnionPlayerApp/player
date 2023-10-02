@@ -10,20 +10,20 @@ class InfoPage extends StatelessWidget {
         super(key: key);
 
   Widget mapStr(BuildContext context, String str) => Padding(
-      padding: const EdgeInsets.fromLTRB(
-          _textPadding, _textPadding, _textPadding, _textPadding),
+      padding: const EdgeInsets.fromLTRB(_textPadding, _textPadding, _textPadding, _textPadding),
       child: Text(
         str,
-        style: Theme.of(context).textTheme.bodyMedium,
+        style: Theme.of(context).textTheme.bodySmall,
         textAlign: TextAlign.center,
       ));
 
-  List<Widget> createChildren(BuildContext context) =>
-      params.sublist(1).map((str) => mapStr(context, str)).toList();
+  List<Widget> createChildren(BuildContext context) => params.sublist(1).map((str) => mapStr(context, str)).toList();
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: Text(params[0])),
+        appBar: AppBar(
+          title: Text(params[0], style: Theme.of(context).textTheme.titleMedium),
+        ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

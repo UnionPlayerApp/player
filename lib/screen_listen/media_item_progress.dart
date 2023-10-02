@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../common/ui/app_colors.dart';
-
 class MediaItemProgress extends StatefulWidget {
   final DateTime start;
   final DateTime finish;
@@ -55,17 +53,19 @@ class _MediaItemProgressState extends State<MediaItemProgress> {
         _timer = Timer(const Duration(seconds: 1), () => setState(() {}));
       }
 
+      final progressIndicatorColor = Theme.of(context).progressIndicatorTheme.color!;
+
       return Stack(
         children: [
           Container(
             height: indicatorSize,
             width: double.infinity,
             alignment: Alignment.center,
-            child: const Divider(
+            child: Divider(
               thickness: strokeSize,
               indent: indicatorSize / 2,
               endIndent: indicatorSize / 2,
-              color: AppColors.gray,
+              color: Theme.of(context).progressIndicatorTheme.linearTrackColor!,
             ),
           ),
           Positioned(
@@ -75,9 +75,9 @@ class _MediaItemProgressState extends State<MediaItemProgress> {
               width: indicatorSize,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(indicatorSize / 2),
-                color: AppColors.blueGreen,
+                color: progressIndicatorColor,
                 boxShadow: [
-                  BoxShadow(color: AppColors.blueGreen.withOpacity(0.5), blurRadius: 20),
+                  BoxShadow(color: progressIndicatorColor.withOpacity(0.5), blurRadius: 20),
                 ],
               ),
             ),
@@ -86,9 +86,9 @@ class _MediaItemProgressState extends State<MediaItemProgress> {
             height: indicatorSize,
             width: position,
             alignment: Alignment.centerLeft,
-            child: const Divider(
+            child: Divider(
               thickness: strokeSize,
-              color: AppColors.blueGreen,
+              color: progressIndicatorColor,
             ),
           ),
         ],
