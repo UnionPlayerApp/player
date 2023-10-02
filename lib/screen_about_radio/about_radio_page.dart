@@ -84,9 +84,25 @@ class _AboutRadioState extends State<AboutRadioPage> {
 
   Widget _webViewWidget(BuildContext context, AboutRadioWebViewState state) {
     final gestureRecognizers = {Factory(() => EagerGestureRecognizer())};
-    return WebViewWidget(
-      controller: state.controller,
-      gestureRecognizers: gestureRecognizers,
+    return Column(
+      children: [
+        const SizedBox(height: 30.0),
+        _appLogoWidget(),
+        Expanded(
+          child: WebViewWidget(
+            controller: state.controller,
+            gestureRecognizers: gestureRecognizers,
+          ),
+        ),
+      ],
     );
   }
+
+  Widget _appLogoWidget() => Stack(
+    alignment: Alignment.center,
+    children: [
+      Image.asset(AppImages.imRadioLogo, width: 125.0, height: 125.0),
+      Image.asset(AppImages.imCircle150Blur8),
+    ],
+  );
 }

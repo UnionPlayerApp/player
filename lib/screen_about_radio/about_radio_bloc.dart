@@ -45,8 +45,7 @@ class AboutRadioBloc extends Bloc<AboutRadioEvent, AboutRadioState> {
           return NavigationDecision.navigate;
         },
       ),
-    )
-    ..loadRequest(Uri.parse('https://flutter.dev'));
+    );
 
   FutureOr<void> _onInitial(InitialEvent event, Emitter<AboutRadioState> emitter) {
     emitter(const AboutRadioLoadingState());
