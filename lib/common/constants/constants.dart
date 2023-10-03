@@ -90,6 +90,8 @@ const supportedLocales = [
   localeBY,
 ];
 
+const defaultLocale = localeUS;
+
 class AppIcons {
   static const icArrowBack = "assets/icons/ic_arrow_back.svg";
   static const icArrowForward = "assets/icons/ic_arrow_forward.svg";

@@ -49,7 +49,7 @@ class AboutRadioBloc extends Bloc<AboutRadioEvent, AboutRadioState> {
 
   FutureOr<void> _onInitial(InitialEvent event, Emitter<AboutRadioState> emitter) {
     emitter(const AboutRadioLoadingState());
-    final url = _urlByLocale(event.locale);
+    final url = _buildUrl(event.locale, event.isDarkMode);
     final uri = Uri.parse(url);
     _webViewController.loadRequest(uri);
   }
@@ -62,16 +62,10 @@ class AboutRadioBloc extends Bloc<AboutRadioEvent, AboutRadioState> {
     emitter(AboutRadioErrorState(event.errorDescription));
   }
 
-  String _urlByLocale(Locale locale) {
-    debugPrint("locale.countryCode: ${locale.countryCode}");
-    switch (locale.countryCode) {
-      case "BY":
-        return _systemData.aboutData.urlBy;
-      case "RU":
-        return _systemData.aboutData.urlRu;
-      case "EN":
-      default:
-        return _systemData.aboutData.urlEn;
-    }
+  String _buildUrl(Locale locale, bool isDarkMode) {
+    final darkModeSuffix = isDarkMode ? "-dark" : "";
+    final url = "${_systemData.aboutData.url}-${locale.languageCode.toLowerCase()}$darkModeSuffix";
+    debugPrint("About Radio url: $url");
+    return url;
   }
 }

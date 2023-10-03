@@ -76,7 +76,7 @@ Widget _app({required PackageInfo packageInfo}) {
           return supportedLocale;
         }
       }
-      return supportedLocales.first;
+      return defaultLocale;
     },
     onGenerateTitle: (context) => translate(StringKeys.appTitle, context),
     theme: appThemeLight(),

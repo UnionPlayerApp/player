@@ -69,6 +69,8 @@ AppBarTheme _appBarTheme(AppBarTheme base) => base.copyWith(
 ThemeData appThemeDark() {
   final base = appThemeLight();
   return base.copyWith(
+    brightness: Brightness.dark,
+    // color section
     dialogBackgroundColor: AppColors.gray,
     scaffoldBackgroundColor: AppColors.gray,
     // themes section
