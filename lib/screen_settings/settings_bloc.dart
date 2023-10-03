@@ -4,18 +4,18 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:union_player_app/screen_settings/settings_event.dart';
-import 'package:union_player_app/screen_settings/settings_state.dart';
 import 'package:union_player_app/common/enums/language_type.dart';
 import 'package:union_player_app/common/enums/settings_changing_result.dart';
 import 'package:union_player_app/common/enums/sound_quality_type.dart';
 import 'package:union_player_app/common/enums/start_playing_type.dart';
 import 'package:union_player_app/common/enums/string_keys.dart';
+import 'package:union_player_app/screen_settings/settings_event.dart';
+import 'package:union_player_app/screen_settings/settings_state.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../common/constants/constants.dart';
 import '../model/system_data/system_data.dart';
 import '../providers/shared_preferences_manager.dart';
-import '../common/constants/constants.dart';
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   static const _emailScheme = 'mailto';
@@ -24,6 +24,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   final AudioHandler _audioHandler;
   final SPManager _spManager;
   final SystemData _systemData;
+
+  var _isClosed = false;
 
   SettingsBloc(this._audioHandler, this._spManager, this._systemData) : super(SettingsState.defaultState()) {
     on<SettingsInitEvent>(_onInit);
@@ -34,8 +36,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   }
 
   @override
-  Future<void> close() async {
-    debugPrint("CHPL => close()");
+  Future<void> close() {
+    _isClosed = true;
     return super.close();
   }
 
@@ -96,7 +98,13 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       _spManager.writeLanguageType(value),
       Get.updateLocale(value.locale),
     ]).then(
-      (results) => results[0] as bool ? SettingsChangingResult.successWithoutInit : SettingsChangingResult.error,
+      (results) {
+        if (results[0] as bool) {
+          return _isClosed ? SettingsChangingResult.successWithoutInit : SettingsChangingResult.successWithInit;
+        } else {
+          return SettingsChangingResult.error;
+        }
+      },
     );
   }
 

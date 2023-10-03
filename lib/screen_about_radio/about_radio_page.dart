@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:union_player_app/common/localizations/string_translation.dart';
 import 'package:union_player_app/screen_about_radio/about_radio_bloc.dart';
 import 'package:union_player_app/screen_about_radio/about_radio_state.dart';
@@ -23,8 +24,7 @@ class _AboutRadioState extends State<AboutRadioPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final currentLocale = Localizations.localeOf(context);
-    _bloc.add(InitialEvent(locale: currentLocale));
+    _bloc.add(InitialEvent(locale: Get.locale ?? defaultLocale, isDarkMode: Get.isDarkMode));
   }
 
   @override

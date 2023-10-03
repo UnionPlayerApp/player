@@ -6,11 +6,12 @@ abstract class AboutRadioEvent extends Equatable {}
 
 class InitialEvent extends AboutRadioEvent {
   final Locale locale;
+  final bool isDarkMode;
 
-  InitialEvent({required this.locale});
+  InitialEvent({required this.locale, required this.isDarkMode});
 
   @override
-  List<Object?> get props => [locale];
+  List<Object?> get props => [locale, isDarkMode];
 }
 
 class WebViewLoadSuccessEvent extends AboutRadioEvent {
