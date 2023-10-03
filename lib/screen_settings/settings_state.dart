@@ -30,7 +30,13 @@ class SettingsState extends Equatable {
       );
 
   @override
-  List<Object?> get props => [language, soundQuality, startPlaying, themeMode, snackBarKey];
+  List<Object?> get props => [
+        language,
+        soundQuality,
+        startPlaying,
+        themeMode,
+        snackBarKey,
+      ];
 
   SettingsState copyWith({
     LanguageType? language,
