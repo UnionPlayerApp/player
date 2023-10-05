@@ -85,7 +85,7 @@ ThemeData appThemeDark() {
 }
 
 IconThemeData _appIconThemeDark(IconThemeData base) => base.copyWith(
-      color: AppColors.blackOlive80,
+      color: AppColors.cultured,
     );
 
 AppBarTheme _appBarThemeDark(AppBarTheme base) => base.copyWith(
