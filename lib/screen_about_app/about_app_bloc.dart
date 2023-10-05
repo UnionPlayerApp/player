@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,7 +46,10 @@ class AboutAppBloc extends Bloc<AboutAppEvent, AboutAppState> {
   }
 
   FutureOr<void> _onWhatsapp(AboutAppWhatsappEvent event, Emitter<AboutAppState> emitter) async {
-    final newState = await _onContact(url: "whatsapp://send?phone=${event.developerModel.whatsapp}");
+    final url = Platform.isIOS
+        ? 'https://wa.me/${event.developerModel.whatsapp}'
+        : 'whatsapp://send/?phone=${event.developerModel.whatsapp}';
+    final newState = await _onContact(url: url);
     if (newState != null) {
       emitter(newState);
     }
