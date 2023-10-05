@@ -26,7 +26,11 @@ class _AboutRadioState extends State<AboutRadioPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _bloc.add(InitialEvent(locale: Get.locale ?? defaultLocale, isDarkMode: Get.isDarkMode));
+    _bloc.add(InitialEvent(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      isDarkMode: Get.isDarkMode,
+      locale: Get.locale ?? defaultLocale,
+    ));
   }
 
   @override

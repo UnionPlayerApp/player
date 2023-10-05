@@ -20,7 +20,6 @@ class AboutRadioBloc extends Bloc<AboutRadioEvent, AboutRadioState> {
 
   late final _webViewController = WebViewController()
     ..setJavaScriptMode(JavaScriptMode.unrestricted)
-    ..setBackgroundColor(const Color(0x00000000))
     ..setNavigationDelegate(
       NavigationDelegate(
         onProgress: (progress) {
@@ -51,7 +50,9 @@ class AboutRadioBloc extends Bloc<AboutRadioEvent, AboutRadioState> {
     emitter(const AboutRadioLoadingState());
     final url = _buildUrl(event.locale, event.isDarkMode);
     final uri = Uri.parse(url);
-    _webViewController.loadRequest(uri);
+    _webViewController
+      ..setBackgroundColor(event.backgroundColor)
+      ..loadRequest(uri);
   }
 
   FutureOr<void> _onWebViewLoadSuccess(WebViewLoadSuccessEvent event, Emitter<AboutRadioState> emitter) {
