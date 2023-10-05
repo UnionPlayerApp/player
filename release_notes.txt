@@ -1,6 +1,7 @@
-Release 2.0.2+37, 03/10/2023
+Release 2.0.2+37, 05/10/2023
 
-UP-73 Fixed the designer remarks
+UP-74 Fixed the designer remarks & Implement correct dark theme
+UP-73 Fixed the designer remarks & Implement adaptive sizes
 UP-72 Updated iOS settings and issues.
 
 Release 2.0.1+36, 03/10/2023
