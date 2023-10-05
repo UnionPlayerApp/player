@@ -103,7 +103,12 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
           const Spacer(),
           InkWell(
             onTap: () => _showSoundQualityPopup(context, state),
-            child: SvgPicture.asset(AppIcons.icAudioQuality, width: 20.w, height: 24.h),
+            child: SvgPicture.asset(
+              AppIcons.icAudioQuality,
+              width: 20.w,
+              height: 24.h,
+              colorFilter: ColorFilter.mode(Theme.of(context).textTheme.titleMedium!.color!, BlendMode.srcIn),
+            ),
           ),
         ],
       ),
@@ -114,6 +119,7 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
     final arrowWidth = 11.w;
     final arrowHeight = 18.h;
     final scale = ScreenUtil().scale;
+    final colorFilter = ColorFilter.mode(Theme.of(context).textTheme.titleMedium!.color!, BlendMode.srcIn);
     return Column(
       children: [
         Text(translate(state.itemView.labelKey, context), style: Theme.of(context).textTheme.titleMedium),
@@ -123,7 +129,12 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
           children: [
             InkWell(
               onTap: () => context.read<ListenBloc>().add(ListenBackStepEvent()),
-              child: SvgPicture.asset(AppIcons.icArrowBack, height: arrowHeight, width: arrowWidth),
+              child: SvgPicture.asset(
+                AppIcons.icArrowBack,
+                height: arrowHeight,
+                width: arrowWidth,
+                colorFilter: colorFilter,
+              ),
             ),
             Stack(
               alignment: Alignment.center,
@@ -136,7 +147,12 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
             ),
             InkWell(
               onTap: () => context.read<ListenBloc>().add(ListenForwardStepEvent()),
-              child: SvgPicture.asset(AppIcons.icArrowForward, height: arrowHeight, width: arrowWidth),
+              child: SvgPicture.asset(
+                AppIcons.icArrowForward,
+                height: arrowHeight,
+                width: arrowWidth,
+                colorFilter: colorFilter,
+              ),
             ),
           ],
         ),

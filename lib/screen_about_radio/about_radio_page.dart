@@ -35,7 +35,10 @@ class _AboutRadioState extends State<AboutRadioPage> {
       appBar: AppBar(
         leading: IconButton(
           iconSize: 20.r,
-          icon: SvgPicture.asset(AppIcons.icArrowBack),
+          icon: SvgPicture.asset(
+            AppIcons.icArrowBack,
+            colorFilter: ColorFilter.mode(Theme.of(context).appBarTheme.titleTextStyle!.color!, BlendMode.srcIn),
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(translate(StringKeys.aboutRadio, context)),
