@@ -38,7 +38,7 @@ ProgressIndicatorThemeData _appProgressIndicatorTheme(ProgressIndicatorThemeData
 RadioThemeData _appRadioTheme(RadioThemeData base) => base.copyWith(
       fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
         if (states.contains(MaterialState.selected)) {
-          return AppColors.lapisLazuli;
+          return AppColors.celadonBlue;
         } else {
           return AppColors.blackOlive;
         }
@@ -62,6 +62,7 @@ AppBarTheme _appBarTheme(AppBarTheme base) => base.copyWith(
       centerTitle: true,
       backgroundColor: AppColors.white,
       elevation: 0.0,
+      titleTextStyle: TextStyles.bold20BlackOlive,
     );
 
 // *** dark themes ***

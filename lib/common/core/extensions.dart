@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 extension BrightnessExtensions on Brightness {
   ThemeMode get toThemeMode {
@@ -9,4 +12,8 @@ extension BrightnessExtensions on Brightness {
         return ThemeMode.dark;
     }
   }
+}
+
+extension ScreenUtilExtension on ScreenUtil {
+  double get scale => 1 / min(scaleWidth, scaleHeight);
 }

@@ -15,26 +15,24 @@ import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:union_player_app/model/system_data/system_data.dart';
-import 'package:union_player_app/providers/shared_preferences_manager.dart';
-import 'package:union_player_app/screen_app/app_bloc.dart';
-import 'package:union_player_app/screen_app/app_page.dart';
 import 'package:union_player_app/common/constants/constants.dart';
 import 'package:union_player_app/common/core/extensions.dart';
-import 'package:union_player_app/common/dimensions/dimensions.dart';
 import 'package:union_player_app/common/enums/language_type.dart';
 import 'package:union_player_app/common/enums/sound_quality_type.dart';
 import 'package:union_player_app/common/localizations/string_translation.dart';
 import 'package:union_player_app/common/widgets/info_page.dart';
 import 'package:union_player_app/common/widgets/progress_page.dart';
+import 'package:union_player_app/model/system_data/system_data.dart';
+import 'package:union_player_app/providers/shared_preferences_manager.dart';
+import 'package:union_player_app/screen_app/app_bloc.dart';
+import 'package:union_player_app/screen_app/app_page.dart';
 
-import '../firebase_options.dart';
 import '../common/enums/start_playing_type.dart';
 import '../common/enums/string_keys.dart';
+import '../firebase_options.dart';
 
 class InitPage extends StatefulWidget {
   final PackageInfo _packageInfo;
@@ -85,10 +83,7 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
     return FutureBuilder(
       initialData: defaultIsPlaying,
       future: _initAppFuture,
-      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        final homePage = _createHomePage(snapshot);
-        return _wrapScreenUtilInit(homePage);
-      },
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) => _createHomePage(snapshot),
     );
   }
 
@@ -326,13 +321,6 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
       }
     }
     return _progressPage();
-  }
-
-  Widget _wrapScreenUtilInit(Widget homePage) {
-    return ScreenUtilInit(
-      designSize: const Size(prototypeDeviceWidth, prototypeDeviceHeight),
-      builder: (_, __) => homePage,
-    );
   }
 
   List<String> _createInfoPageStrings() => ([

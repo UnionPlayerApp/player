@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LiveAirWidget extends StatelessWidget {
-  static const _size = 10.0;
+  final _size = 9.r;
 
   final AnimationController animationController;
   final Color color;

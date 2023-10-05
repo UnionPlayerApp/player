@@ -7,11 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get_it/get_it.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:union_player_app/common/constants/constants.dart';
+import 'package:union_player_app/common/dimensions/dimensions.dart';
 import 'package:union_player_app/common/enums/string_keys.dart';
 import 'package:union_player_app/common/localizations/string_translation.dart';
 import 'package:union_player_app/common/ui/app_theme.dart';
@@ -60,28 +62,32 @@ Widget _app({required PackageInfo packageInfo}) {
     statusBarIconBrightness: Brightness.dark, // for Android => icons are dark
   ));
   final routes = GetIt.I.get<Routes>();
-  return GetMaterialApp(
-    debugShowCheckedModeBanner: false,
-    localizationsDelegates: const [
-      AppLocalizationsDelegate(),
-      GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate,
-      GlobalCupertinoLocalizations.delegate,
-    ],
-    supportedLocales: supportedLocales,
-    localeResolutionCallback: (Locale? locale, Iterable<Locale> supportedLocales) {
-      for (var supportedLocale in supportedLocales) {
-        if (supportedLocale.languageCode == locale?.languageCode ||
-            supportedLocale.countryCode == locale?.countryCode) {
-          return supportedLocale;
+  return ScreenUtilInit(
+    designSize: const Size(prototypeDeviceWidth, prototypeDeviceHeight),
+    builder: (context, child) => GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        AppLocalizationsDelegate(),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: supportedLocales,
+      localeResolutionCallback: (Locale? locale, Iterable<Locale> supportedLocales) {
+        try {
+          return supportedLocales.firstWhere((supportedLocale) =>
+              supportedLocale.languageCode == locale?.languageCode ||
+              supportedLocale.countryCode == locale?.countryCode);
+        } catch (_) {
+          return defaultLocale;
         }
-      }
-      return defaultLocale;
-    },
-    onGenerateTitle: (context) => translate(StringKeys.appTitle, context),
-    theme: appThemeLight(),
-    darkTheme: appThemeDark(),
-    home: routes.initialPage(packageInfo: packageInfo),
-    routes: routes.getRoutes(),
+      },
+      onGenerateTitle: (context) => translate(StringKeys.appTitle, context),
+      theme: appThemeLight(),
+      darkTheme: appThemeDark(),
+      home: child,
+      routes: routes.getRoutes(),
+    ),
+    child: routes.initialPage(packageInfo: packageInfo),
   );
 }

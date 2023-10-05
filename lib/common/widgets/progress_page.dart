@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:union_player_app/common/constants/constants.dart';
 
 class ProgressPage extends StatelessWidget {
@@ -8,17 +9,17 @@ class ProgressPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const circleSize = 200.0;
-    const imageSize = 150.0;
+    final circleSize = 200.r;
+    final imageSize = 150.r;
     return Scaffold(
       body: Stack(
         children: [
-          const Center(
+          Center(
             child: SizedBox(
               width: circleSize,
               height: circleSize,
               child: CircularProgressIndicator(
-                strokeWidth: 6.0,
+                strokeWidth: 6.r,
                 strokeCap: StrokeCap.round,
               ),
             ),
@@ -27,8 +28,8 @@ class ProgressPage extends StatelessWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12.0),
-              child: Text(_version, style: Theme.of(context).textTheme.labelLarge),
+              padding: EdgeInsets.symmetric(vertical: 12.h),
+              child: Text(_version, style: Theme.of(context).textTheme.titleSmall),
             ),
           ),
         ],

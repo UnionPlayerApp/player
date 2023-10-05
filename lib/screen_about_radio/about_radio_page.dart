@@ -2,8 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:union_player_app/common/core/extensions.dart';
 import 'package:union_player_app/common/localizations/string_translation.dart';
 import 'package:union_player_app/screen_about_radio/about_radio_bloc.dart';
 import 'package:union_player_app/screen_about_radio/about_radio_state.dart';
@@ -32,14 +34,11 @@ class _AboutRadioState extends State<AboutRadioPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          iconSize: 20.0,
+          iconSize: 20.r,
           icon: SvgPicture.asset(AppIcons.icArrowBack),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(
-          translate(StringKeys.aboutRadio, context),
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
+        title: Text(translate(StringKeys.aboutRadio, context)),
       ),
       body: BlocBuilder<AboutRadioBloc, AboutRadioState>(
         builder: (context, state) => _stateWidget(context, state),
@@ -84,7 +83,7 @@ class _AboutRadioState extends State<AboutRadioPage> {
     final gestureRecognizers = {Factory(() => EagerGestureRecognizer())};
     return Column(
       children: [
-        const SizedBox(height: 30.0),
+        SizedBox(height: 30.h),
         _appLogoWidget(),
         Expanded(
           child: WebViewWidget(
@@ -96,11 +95,14 @@ class _AboutRadioState extends State<AboutRadioPage> {
     );
   }
 
-  Widget _appLogoWidget() => Stack(
-        alignment: Alignment.center,
-        children: [
-          Image.asset(AppImages.imRadioLogo, width: 125.0, height: 125.0),
-          Image.asset(AppImages.imCircle150Blur8),
-        ],
-      );
+  Widget _appLogoWidget() {
+    final logoSize = 125.r;
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Image.asset(AppImages.imRadioLogo, width: logoSize, height: logoSize),
+        Image.asset(AppImages.imCircle150Blur8, scale: ScreenUtil().scale),
+      ],
+    );
+  }
 }

@@ -1,5 +1,8 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 class FontSizes {
-  static const px16 = 16.0;
-  static const px20 = 20.0;
-  static const px22 = 22.0;
+  static get px15 => 15.sp;
+  static get px16 => 16.sp;
+  static get px20 => 20.sp;
+  static get px22 => 22.sp;
 }

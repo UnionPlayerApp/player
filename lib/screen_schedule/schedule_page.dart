@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:union_player_app/common/constants/constants.dart';
 import 'package:union_player_app/common/dimensions/dimensions.dart';
@@ -24,7 +25,6 @@ class SchedulePage extends StatefulWidget {
 class _SchedulePageState extends State<SchedulePage> with TickerProviderStateMixin {
   final _itemScrollController = ItemScrollController();
   final _itemPositionsListener = ItemPositionsListener.create();
-  var _currentIndex = 0;
 
   late final _animationController = AnimationController(
     vsync: this,
@@ -48,16 +48,18 @@ class _SchedulePageState extends State<SchedulePage> with TickerProviderStateMix
   Widget _loadingPage() => const Center(child: CircularProgressIndicator());
 
   Widget _loadedPage(BuildContext context, ScheduleLoadedState state) {
-    _currentIndex = state.currentIndex;
-    WidgetsBinding.instance.addPostFrameCallback((_) => _jumpToCurrentItem());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _jumpToItemByIndex(state.currentIndex));
 
     return ScrollablePositionedList.separated(
-      separatorBuilder: (BuildContext context, int index) => Divider(height: listViewDividerHeight),
+      separatorBuilder: (BuildContext context, int index) => Padding(
+        padding: EdgeInsets.symmetric(vertical: 11.h),
+        child: Divider(height: listViewDividerHeight),
+      ),
       itemScrollController: _itemScrollController,
       itemPositionsListener: _itemPositionsListener,
       itemCount: state.items.length,
       itemBuilder: (BuildContext context, int index) => Padding(
-        padding: EdgeInsets.all(scheduleItemPadding),
+        padding: EdgeInsets.symmetric(vertical: 19.h),
         child: _programElement(context, state.items[index]),
       ),
     );
@@ -70,7 +72,7 @@ class _SchedulePageState extends State<SchedulePage> with TickerProviderStateMix
         Expanded(child: _textWidget(element, context)),
         if (element.timeType.isCurrent) ...[
           LiveAirWidget(animationController: _animationController, color: AppColors.blueGreen, isActive: true),
-          const SizedBox(width: 8.0),
+          SizedBox(width: 8.h),
         ],
         _startWidget(element, context),
       ],
@@ -82,17 +84,13 @@ class _SchedulePageState extends State<SchedulePage> with TickerProviderStateMix
         children: [
           if (element.start.date != null) ...[
             Text(element.start.date!, style: Theme.of(context).textTheme.bodySmall),
-            const SizedBox(height: 6.0),
+            SizedBox(height: 7.h),
           ],
           if (element.start.dateLabel != null) ...[
             Text(translate(element.start.dateLabel!, context), style: Theme.of(context).textTheme.bodySmall),
-            const SizedBox(height: 6.0),
+            SizedBox(height: 7.h),
           ],
-          Text(
-            element.start.time,
-            style: Theme.of(context).textTheme.titleMedium,
-            overflow: TextOverflow.ellipsis,
-          ),
+          Text(element.start.time, style: Theme.of(context).textTheme.titleMedium),
         ],
       );
 
@@ -115,9 +113,8 @@ class _SchedulePageState extends State<SchedulePage> with TickerProviderStateMix
       );
 
   Widget _imageWidget(ScheduleItemView element) {
-    const imageSize = 78.0;
-    const radius = imageSize / 2;
-    const offset = 6.0;
+    final imageSize = 78.r;
+    final borderRadius = BorderRadius.circular(imageSize / 2);
 
     late final Image image;
     if (element.imageUri != null && element.imageUri!.path.isNotEmpty) {
@@ -129,13 +126,10 @@ class _SchedulePageState extends State<SchedulePage> with TickerProviderStateMix
 
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(radius),
-        boxShadow: const [
-          BoxShadow(color: Colors.black45, offset: Offset(offset, offset), blurRadius: 15, spreadRadius: 0),
-        ],
+        borderRadius: borderRadius,
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
+        borderRadius: borderRadius,
         child: image,
       ),
     );
@@ -143,13 +137,13 @@ class _SchedulePageState extends State<SchedulePage> with TickerProviderStateMix
 
   Widget _textWidget(ScheduleItemView element, BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: scheduleItemPadding),
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _titleWidget(element, context),
           if (element.artist.isNotEmpty) ...[
-            SizedBox(height: scheduleItemPadding),
+            SizedBox(height: 8.h),
             _artistWidget(element, context),
           ],
         ],
@@ -157,10 +151,10 @@ class _SchedulePageState extends State<SchedulePage> with TickerProviderStateMix
     );
   }
 
-  void _jumpToCurrentItem() {
-    if (_currentIndex != -1) {
+  void _jumpToItemByIndex(int index) {
+    if (index != -1) {
       _itemScrollController.jumpTo(
-        index: _currentIndex,
+        index: index,
         alignment: 0.5,
       );
     }

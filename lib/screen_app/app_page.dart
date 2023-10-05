@@ -4,6 +4,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:union_player_app/common/constants/constants.dart';
@@ -14,6 +15,7 @@ import 'package:union_player_app/screen_app/app_bloc.dart';
 import '../common/enums/nav_type.dart';
 import '../common/enums/string_keys.dart';
 import '../common/routes.dart';
+import '../common/ui/font_sizes.dart';
 import 'app_event.dart';
 import 'app_state.dart';
 
@@ -51,9 +53,8 @@ class _AppState extends State<AppPage> {
 
   Widget _bottomNavigationBar(AppState state) => BottomAppBar(
         elevation: 0.0,
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: SizedBox(
-          height: kBottomNavigationBarHeight,
+          height: (80 + 2 * 26).h,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -66,11 +67,14 @@ class _AppState extends State<AppPage> {
       );
 
   Widget _buttonAppBar(BuildContext context, AppState state, NavType navType, String iconName, StringKeys nameTab) {
+    final iconSize = 24.r;
+    final theme = Theme.of(context);
     final color = state.navType == navType
-        ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor
-        : Theme.of(context).bottomNavigationBarTheme.unselectedItemColor;
+        ? theme.bottomNavigationBarTheme.selectedItemColor
+        : theme.bottomNavigationBarTheme.unselectedItemColor;
+    final textStyle = theme.textTheme.bodySmall!.copyWith(color: color, fontSize: FontSizes.px15);
     return MaterialButton(
-      padding: const EdgeInsets.all(0),
+      padding: EdgeInsets.zero,
       minWidth: 0,
       onPressed: () {
         context.read<AppBloc>().add(AppNavEvent(navType: navType));
@@ -78,9 +82,14 @@ class _AppState extends State<AppPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SvgPicture.asset(iconName, colorFilter: ColorFilter.mode(color!, BlendMode.srcIn)),
-          const SizedBox(height: 8.0),
-          Text(translate(nameTab, context), style: TextStyle(color: color)),
+          SvgPicture.asset(
+            iconName,
+            colorFilter: ColorFilter.mode(color!, BlendMode.srcIn),
+            width: iconSize,
+            height: iconSize,
+          ),
+          SizedBox(height: 8.h),
+          Text(translate(nameTab, context), style: textStyle),
         ],
       ),
     );
@@ -102,7 +111,7 @@ class _AppState extends State<AppPage> {
 
   Widget _body(AppState state) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: EdgeInsets.symmetric(horizontal: 16.h),
       child: SafeArea(child: _createNavPage(state)),
     );
   }

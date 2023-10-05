@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MediaItemProgress extends StatefulWidget {
   final DateTime start;
@@ -24,8 +25,8 @@ class _MediaItemProgressState extends State<MediaItemProgress> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      const indicatorSize = 20.0;
-      const strokeSize = 2.0;
+      final indicatorSize = 20.r;
+      final strokeSize = 2.h;
 
       if (widget.start.isAfter(widget.finish)) {
         return SizedBox.fromSize(size: Size(constraints.maxWidth, indicatorSize));
@@ -77,7 +78,7 @@ class _MediaItemProgressState extends State<MediaItemProgress> {
                 borderRadius: BorderRadius.circular(indicatorSize / 2),
                 color: progressIndicatorColor,
                 boxShadow: [
-                  BoxShadow(color: progressIndicatorColor.withOpacity(0.5), blurRadius: 20),
+                  BoxShadow(color: progressIndicatorColor.withOpacity(0.5), blurRadius: 20.r),
                 ],
               ),
             ),

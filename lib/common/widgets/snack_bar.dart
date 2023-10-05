@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:union_player_app/common/localizations/string_translation.dart';
 
 import '../enums/string_keys.dart';
@@ -19,7 +20,7 @@ void showSnackBar(
 
   final content = Row(children: [
     const Icon(Icons.info_rounded),
-    const SizedBox(width: 6.0),
+    SizedBox(width: 6.w),
     Flexible(
       child: Text(
         text,
@@ -33,9 +34,9 @@ void showSnackBar(
   final snackBar = SnackBar(
     content: content,
     duration: duration,
-    padding: const EdgeInsets.all(8.0),
+    padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 8.w),
     behavior: SnackBarBehavior.floating,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
   );
 
   ScaffoldMessenger.of(context).showSnackBar(snackBar);

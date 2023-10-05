@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-const _textPadding = 5.0;
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class InfoPage extends StatelessWidget {
   final List<String> params;
@@ -10,7 +9,7 @@ class InfoPage extends StatelessWidget {
         super(key: key);
 
   Widget mapStr(BuildContext context, String str) => Padding(
-      padding: const EdgeInsets.fromLTRB(_textPadding, _textPadding, _textPadding, _textPadding),
+      padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
       child: Text(
         str,
         style: Theme.of(context).textTheme.bodySmall,
@@ -22,7 +21,7 @@ class InfoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text(params[0], style: Theme.of(context).textTheme.titleMedium),
+          title: Text(params[0]),
         ),
         body: Center(
           child: Column(
