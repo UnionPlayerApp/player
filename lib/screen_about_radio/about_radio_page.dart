@@ -26,7 +26,11 @@ class _AboutRadioState extends State<AboutRadioPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _bloc.add(InitialEvent(locale: Get.locale ?? defaultLocale, isDarkMode: Get.isDarkMode));
+    _bloc.add(InitialEvent(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      isDarkMode: Get.isDarkMode,
+      locale: Get.locale ?? defaultLocale,
+    ));
   }
 
   @override
@@ -35,7 +39,10 @@ class _AboutRadioState extends State<AboutRadioPage> {
       appBar: AppBar(
         leading: IconButton(
           iconSize: 20.r,
-          icon: SvgPicture.asset(AppIcons.icArrowBack),
+          icon: SvgPicture.asset(
+            AppIcons.icArrowBack,
+            colorFilter: ColorFilter.mode(Theme.of(context).appBarTheme.titleTextStyle!.color!, BlendMode.srcIn),
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(translate(StringKeys.aboutRadio, context)),

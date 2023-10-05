@@ -155,7 +155,10 @@ class SettingsPage extends StatelessWidget {
           children: [
             Text(translate(labelKey, context), style: Theme.of(context).textTheme.bodySmall),
             const Spacer(),
-            SvgPicture.asset(AppIcons.icArrowForward),
+            SvgPicture.asset(
+              AppIcons.icArrowForward,
+              colorFilter: ColorFilter.mode(Theme.of(context).textTheme.titleMedium!.color!, BlendMode.srcIn),
+            ),
           ],
         ),
       );

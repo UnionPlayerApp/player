@@ -127,6 +127,9 @@ class _SchedulePageState extends State<SchedulePage> with TickerProviderStateMix
     return Container(
       decoration: BoxDecoration(
         borderRadius: borderRadius,
+        boxShadow: [
+          BoxShadow(color: AppColors.celadonBlue.withOpacity(0.2), blurRadius: 20.r),
+        ],
       ),
       child: ClipRRect(
         borderRadius: borderRadius,

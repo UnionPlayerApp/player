@@ -72,8 +72,8 @@ ThemeData appThemeDark() {
   return base.copyWith(
     brightness: Brightness.dark,
     // color section
-    dialogBackgroundColor: AppColors.gray,
-    scaffoldBackgroundColor: AppColors.gray,
+    dialogBackgroundColor: AppColors.jungleGreen,
+    scaffoldBackgroundColor: AppColors.jungleGreen,
     // themes section
     appBarTheme: _appBarThemeDark(base.appBarTheme),
     bottomAppBarTheme: _appBottomAppBarThemeDark(base.bottomAppBarTheme),
@@ -85,27 +85,31 @@ ThemeData appThemeDark() {
 }
 
 IconThemeData _appIconThemeDark(IconThemeData base) => base.copyWith(
-      color: AppColors.blackOlive80,
+      color: AppColors.cultured,
     );
 
 AppBarTheme _appBarThemeDark(AppBarTheme base) => base.copyWith(
-      backgroundColor: AppColors.gray,
-    );
+      backgroundColor: AppColors.jungleGreen,
+      titleTextStyle: base.titleTextStyle!.copyWith(color: AppColors.cultured),
+);
 
 BottomAppBarTheme _appBottomAppBarThemeDark(BottomAppBarTheme base) => base.copyWith(
-      color: AppColors.gray,
+      color: AppColors.jungleGreen,
     );
 
 BottomNavigationBarThemeData _appBottomNavigationBarThemeDark(BottomNavigationBarThemeData base) => base.copyWith(
-      selectedItemColor: AppColors.celadonBlue,
-      unselectedItemColor: AppColors.blackOlive,
+      selectedItemColor: AppColors.blueGreen,
+      unselectedItemColor: AppColors.auroMetalSaurus,
     );
 
 ProgressIndicatorThemeData _appProgressIndicatorThemeDark(ProgressIndicatorThemeData base) => base.copyWith(
-      linearTrackColor: AppColors.blackOlive80,
+      linearTrackColor: AppColors.cultured,
     );
 
 TextTheme _appTextThemeDark(TextTheme base) => base.copyWith(
-      labelSmall: base.labelSmall!.copyWith(color: AppColors.blackOlive80),
-      labelMedium: base.labelMedium!.copyWith(color: AppColors.blackOlive80),
+      bodySmall: base.bodySmall!.copyWith(color: AppColors.cultured),
+      labelSmall: base.labelSmall!.copyWith(color: AppColors.cultured),
+      labelMedium: base.labelMedium!.copyWith(color: AppColors.cultured),
+      titleSmall: base.titleSmall!.copyWith(color: AppColors.cultured),
+      titleMedium: base.titleMedium!.copyWith(color: AppColors.cultured),
     );
