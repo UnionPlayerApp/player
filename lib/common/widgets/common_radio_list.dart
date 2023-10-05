@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:union_player_app/common/enums/string_keys.dart';
 import 'package:union_player_app/common/widgets/common_radio_button.dart';
 
@@ -32,7 +33,7 @@ class CommonRadioList<T> extends StatelessWidget {
         ),
       );
       if (index < lastIndex) {
-        children.add(const SizedBox(height: 20.0));
+        children.add(SizedBox(height: 20.h));
       }
     }
     return Column(

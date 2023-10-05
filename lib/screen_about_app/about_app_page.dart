@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:union_player_app/common/core/extensions.dart';
 import 'package:union_player_app/common/localizations/string_translation.dart';
 import 'package:union_player_app/common/widgets/snack_bar.dart';
 import 'package:union_player_app/screen_about_app/about_app_event.dart';
@@ -30,11 +32,11 @@ class _AboutAppState extends State<AboutAppPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          iconSize: 20.0,
+          iconSize: 20.r,
           icon: SvgPicture.asset(AppIcons.icArrowBack),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(translate(StringKeys.aboutApp, context), style: Theme.of(context).textTheme.titleMedium),
+        title: Text(translate(StringKeys.aboutApp, context)),
       ),
       body: BlocConsumer<AboutAppBloc, AboutAppState>(
         listenWhen: (_, state) => state is AboutAppLoadedState && state.toastKey != null,
@@ -62,13 +64,13 @@ class _AboutAppState extends State<AboutAppPage> {
 
   Widget _loadedWidget(BuildContext context, AboutAppLoadedState state) => Column(
         children: [
-          const SizedBox(height: 30.0),
+          SizedBox(height: 30.h),
           _appLogoWidget(),
           _versionWidget(context, state),
           Expanded(
             child: ListView.separated(
               itemBuilder: (context, index) => _personWidget(context, model: state.developers[index]),
-              separatorBuilder: (_, index) => const SizedBox(height: 30.0),
+              separatorBuilder: (_, index) => SizedBox(height: 30.h),
               itemCount: state.developers.length,
             ),
           ),
@@ -80,11 +82,11 @@ class _AboutAppState extends State<AboutAppPage> {
   Widget _personWidget(BuildContext context, {required DeveloperModel model}) {
     final text = "${translate(model.roleKey, context)} - ${model.firstName} ${model.lastName}";
     return Padding(
-      padding: const EdgeInsets.all(15.0),
+      padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 15.w),
       child: Column(
         children: [
           Text(text, style: Theme.of(context).textTheme.bodySmall),
-          const SizedBox(height: 15.0),
+          SizedBox(height: 15.h),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -105,25 +107,28 @@ class _AboutAppState extends State<AboutAppPage> {
   }
 
   Widget _contactButton({required String assetPath, required AboutAppContactEvent event}) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+        padding: EdgeInsets.symmetric(horizontal: 15.h),
         child: InkWell(
           onTap: () => _bloc.add(event),
           child: SvgPicture.asset(assetPath),
         ),
       );
 
-  Widget _appLogoWidget() => Stack(
-        alignment: Alignment.center,
-        children: [
-          Image.asset(AppImages.imRadioLogo, width: 125.0, height: 125.0),
-          Image.asset(AppImages.imCircle150Blur8),
-        ],
-      );
+  Widget _appLogoWidget() {
+    final logoSize = 125.r;
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Image.asset(AppImages.imRadioLogo, width: logoSize, height: logoSize),
+        Image.asset(AppImages.imCircle150Blur8, scale: ScreenUtil().scale),
+      ],
+    );
+  }
 
   Widget _versionWidget(BuildContext context, AboutAppLoadedState state) {
     final text = "${translate(StringKeys.versionLabel, context)} ${state.version} (${state.buildNumber})";
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 30.0),
+      padding: EdgeInsets.symmetric(vertical: 30.h),
       child: Text(text, style: Theme.of(context).textTheme.bodySmall),
     );
   }

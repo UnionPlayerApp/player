@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CommonRadioButton<T> extends StatelessWidget {
   final String text;
@@ -15,11 +16,12 @@ class CommonRadioButton<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = 20.r;
     return Row(
       children: [
         SizedBox(
-          width: 20.0,
-          height: 20.0,
+          width: size,
+          height: size,
           child: Radio<T>(
             visualDensity: const VisualDensity(
               horizontal: VisualDensity.minimumDensity,
@@ -31,7 +33,7 @@ class CommonRadioButton<T> extends StatelessWidget {
             onChanged: onChanged,
           ),
         ),
-        const SizedBox(width: 20.0),
+        SizedBox(width: 20.w),
         Text(text, style: Theme.of(context).textTheme.bodySmall),
       ],
     );

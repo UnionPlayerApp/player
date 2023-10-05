@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:union_player_app/common/constants/constants.dart';
 import 'package:union_player_app/common/enums/language_type.dart';
@@ -64,7 +65,7 @@ class SettingsPage extends StatelessWidget {
       ];
 
   Widget _sectionTitle(BuildContext context, {required StringKeys key}) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 40.0),
+        padding: EdgeInsets.symmetric(vertical: 40.h),
         child: Text(
           translate(key, context),
           style: Theme.of(context).textTheme.titleMedium,
@@ -160,7 +161,7 @@ class SettingsPage extends StatelessWidget {
       );
 
   Widget _divider() => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 15.0),
+        padding: EdgeInsets.symmetric(vertical: 15.h),
         child: Divider(height: listViewDividerHeight),
       );
 }

@@ -2,9 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:union_player_app/common/constants/constants.dart';
-import 'package:union_player_app/common/dimensions/dimensions.dart';
+import 'package:union_player_app/common/core/extensions.dart';
 import 'package:union_player_app/common/enums/image_source_type.dart';
 import 'package:union_player_app/common/localizations/string_translation.dart';
 import 'package:union_player_app/common/widgets/live_air_widget.dart';
@@ -24,6 +25,8 @@ class ListenPage extends StatefulWidget {
 }
 
 class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
+  final _mainImageSize = 210.r;
+
   late final _animationController = AnimationController(
     vsync: this,
     duration: const Duration(seconds: 1),
@@ -45,6 +48,7 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
           _scheduleItemWidget(context, state),
           MediaItemProgress(start: state.itemView.start, finish: state.itemView.finish),
           _playerButton(context, state),
+          SizedBox(height: 9.h),
         ],
       ),
     );
@@ -54,8 +58,8 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
     final file = File(imageSource);
     return _imageContainer(Image.file(
       file,
-      width: mainImageSize,
-      height: mainImageSize,
+      width: _mainImageSize,
+      height: _mainImageSize,
       fit: BoxFit.cover,
     ));
   }
@@ -63,8 +67,8 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
   Widget _imageWidgetFromAssets(String imageSource) {
     return _imageContainer(Image.asset(
       imageSource,
-      width: mainImageSize,
-      height: mainImageSize,
+      width: _mainImageSize,
+      height: _mainImageSize,
       fit: BoxFit.cover,
     ));
   }
@@ -72,24 +76,20 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
   Widget _imageWidgetFromNetwork(String imageSource) {
     return _imageContainer(Image.network(
       imageSource,
-      width: mainImageSize,
-      height: mainImageSize,
+      width: _mainImageSize,
+      height: _mainImageSize,
       fit: BoxFit.cover,
     ));
   }
 
   Widget _imageContainer(Image image) {
-    const radius = mainImageSize / 2;
-    const offset = 10.0;
+    final borderRadius = BorderRadius.circular(_mainImageSize / 2);
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(radius),
-        boxShadow: const [
-          BoxShadow(color: Colors.black45, offset: Offset(offset, offset), blurRadius: 15, spreadRadius: 0),
-        ],
+        borderRadius: borderRadius,
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
+        borderRadius: borderRadius,
         child: image,
       ),
     );
@@ -97,13 +97,13 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
 
   Widget _topActionWidget(BuildContext context, ListenState state) {
     return Padding(
-      padding: const EdgeInsets.only(top: 16.0),
+      padding: EdgeInsets.only(top: 27.h),
       child: Row(
         children: [
           const Spacer(),
           InkWell(
             onTap: () => _showSoundQualityPopup(context, state),
-            child: SvgPicture.asset(AppIcons.icAudioQuality),
+            child: SvgPicture.asset(AppIcons.icAudioQuality, width: 20.w, height: 24.h),
           ),
         ],
       ),
@@ -111,38 +111,41 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
   }
 
   Widget _scheduleItemWidget(BuildContext context, ListenState state) {
+    final arrowWidth = 11.w;
+    final arrowHeight = 18.h;
+    final scale = ScreenUtil().scale;
     return Column(
       children: [
         Text(translate(state.itemView.labelKey, context), style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 20.0),
+        SizedBox(height: 19.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             InkWell(
               onTap: () => context.read<ListenBloc>().add(ListenBackStepEvent()),
-              child: SvgPicture.asset(AppIcons.icArrowBack),
+              child: SvgPicture.asset(AppIcons.icArrowBack, height: arrowHeight, width: arrowWidth),
             ),
             Stack(
               alignment: Alignment.center,
               children: [
-                Image.asset(AppImages.imDisk0),
-                Image.asset(AppImages.imDisk1),
-                Image.asset(AppImages.imDisk2),
+                Image.asset(AppImages.imDisk0, scale: scale),
+                Image.asset(AppImages.imDisk1, scale: scale),
+                Image.asset(AppImages.imDisk2, scale: scale),
                 _scheduleImageWidget(state.itemView),
               ],
             ),
             InkWell(
               onTap: () => context.read<ListenBloc>().add(ListenForwardStepEvent()),
-              child: SvgPicture.asset(AppIcons.icArrowForward),
+              child: SvgPicture.asset(AppIcons.icArrowForward, height: arrowHeight, width: arrowWidth),
             ),
           ],
         ),
-        const SizedBox(height: 20.0),
+        SizedBox(height: 19.h),
         Text(
           state.itemView.isArtistVisible ? state.itemView.artist : " ",
           style: Theme.of(context).textTheme.titleMedium,
         ),
-        const SizedBox(height: 20.0),
+        SizedBox(height: 19.h),
         Text(
           state.itemView.title,
           style: Theme.of(context).textTheme.bodySmall,
@@ -167,7 +170,7 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
   }
 
   Widget _playerButton(BuildContext context, ListenState state) {
-    final contentStyle = Theme.of(context).textTheme.labelMedium;
+    final contentStyle = Theme.of(context).textTheme.labelSmall;
     final contentColor = contentStyle!.color!;
     return GestureDetector(
       onTap: () => context.read<ListenBloc>().add(ListenPlayerButtonEvent()),
@@ -176,7 +179,7 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
         children: [
           Container(
             alignment: Alignment.center,
-            padding: const EdgeInsets.all(21.0),
+            padding: EdgeInsets.symmetric(vertical: 21.h, horizontal: 21.w),
             decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -184,7 +187,7 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
                     AppColors.blueGreen.withOpacity(0.25),
                   ],
                 ),
-                borderRadius: const BorderRadius.all(Radius.circular(40.0))),
+                borderRadius: BorderRadius.all(Radius.circular(40.r))),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -193,12 +196,14 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
                   color: contentColor,
                   isActive: state.isPlaying,
                 ),
-                const SizedBox(width: 10.0),
+                SizedBox(width: 10.w),
                 Text("LIVE", style: contentStyle),
-                const SizedBox(width: 20.0),
+                SizedBox(width: 20.w),
                 SvgPicture.asset(
                   state.isPlaying ? AppIcons.icPause : AppIcons.icPlay,
                   colorFilter: ColorFilter.mode(contentColor, BlendMode.srcIn),
+                  width: 22.w,
+                  height: 30.h,
                 ),
               ],
             ),
