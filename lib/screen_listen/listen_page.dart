@@ -116,26 +116,15 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
   }
 
   Widget _scheduleItemWidget(BuildContext context, ListenState state) {
-    final arrowWidth = 11.w;
-    final arrowHeight = 18.h;
     final scale = ScreenUtil().scale;
-    final colorFilter = ColorFilter.mode(Theme.of(context).textTheme.titleMedium!.color!, BlendMode.srcIn);
     return Column(
       children: [
         Text(translate(state.itemView.labelKey, context), style: Theme.of(context).textTheme.titleMedium),
         SizedBox(height: 19.h),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
           children: [
-            InkWell(
-              onTap: () => context.read<ListenBloc>().add(ListenBackStepEvent()),
-              child: SvgPicture.asset(
-                AppIcons.icArrowBack,
-                height: arrowHeight,
-                width: arrowWidth,
-                colorFilter: colorFilter,
-              ),
-            ),
+            _arrowButton(context, assetName: AppIcons.icArrowBack, event: ListenBackStepEvent(), isStart: true),
             Stack(
               alignment: Alignment.center,
               children: [
@@ -145,15 +134,7 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
                 _scheduleImageWidget(state.itemView),
               ],
             ),
-            InkWell(
-              onTap: () => context.read<ListenBloc>().add(ListenForwardStepEvent()),
-              child: SvgPicture.asset(
-                AppIcons.icArrowForward,
-                height: arrowHeight,
-                width: arrowWidth,
-                colorFilter: colorFilter,
-              ),
-            ),
+            _arrowButton(context, assetName: AppIcons.icArrowForward, event: ListenForwardStepEvent(), isStart: false),
           ],
         ),
         SizedBox(height: 19.h),
@@ -169,6 +150,37 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
           overflow: TextOverflow.ellipsis,
         ),
       ],
+    );
+  }
+
+  Widget _arrowButton(
+    BuildContext context, {
+    required String assetName,
+    required ListenEvent event,
+    required bool isStart,
+  }) {
+    final buttonHeight = 50.h;
+    final arrowWidth = 11.w;
+    final arrowHeight = 18.h;
+    final colorFilter = ColorFilter.mode(Theme.of(context).textTheme.titleMedium!.color!, BlendMode.srcIn);
+    final isTextDirectionLtr = Directionality.of(context).isLtr;
+    final alignmentStart = isTextDirectionLtr ? Alignment.centerLeft : Alignment.centerRight;
+    final alignmentEnd = isTextDirectionLtr ? Alignment.centerRight : Alignment.centerLeft;
+    return Expanded(
+      child: InkWell(
+        onTap: () => context.read<ListenBloc>().add(event),
+        child: Container(
+          height: buttonHeight,
+          alignment: isStart ? alignmentStart : alignmentEnd,
+          child: SvgPicture.asset(
+            assetName,
+            height: arrowHeight,
+            width: arrowWidth,
+            colorFilter: colorFilter,
+            fit: BoxFit.none,
+          ),
+        ),
+      ),
     );
   }
 

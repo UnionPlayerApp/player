@@ -17,3 +17,7 @@ extension BrightnessExtensions on Brightness {
 extension ScreenUtilExtension on ScreenUtil {
   double get scale => 1 / min(scaleWidth, scaleHeight);
 }
+
+extension TextDirectionExtension on TextDirection {
+  bool get isLtr => this == TextDirection.ltr;
+}
