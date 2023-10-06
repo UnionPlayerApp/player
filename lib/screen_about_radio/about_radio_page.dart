@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -87,7 +85,6 @@ class _AboutRadioState extends State<AboutRadioPage> {
   }
 
   Widget _webViewWidget(BuildContext context, AboutRadioWebViewState state) {
-    final gestureRecognizers = {Factory(() => EagerGestureRecognizer())};
     return Column(
       children: [
         SizedBox(height: 30.h),
@@ -95,7 +92,7 @@ class _AboutRadioState extends State<AboutRadioPage> {
         Expanded(
           child: WebViewWidget(
             controller: state.controller,
-            gestureRecognizers: gestureRecognizers,
+            gestureRecognizers: const {},
           ),
         ),
       ],
