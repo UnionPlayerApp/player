@@ -8,12 +8,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:union_player_app/common/constants/constants.dart';
-import 'package:union_player_app/common/localizations/string_translation.dart';
 import 'package:union_player_app/common/widgets/snack_bar.dart';
 import 'package:union_player_app/screen_app/app_bloc.dart';
 
 import '../common/enums/nav_type.dart';
 import '../common/enums/string_keys.dart';
+import '../common/localizations/string_translation.dart';
 import '../common/routes.dart';
 import '../common/ui/font_sizes.dart';
 import 'app_event.dart';
@@ -73,24 +73,22 @@ class _AppState extends State<AppPage> {
         ? theme.bottomNavigationBarTheme.selectedItemColor
         : theme.bottomNavigationBarTheme.unselectedItemColor;
     final textStyle = theme.textTheme.bodySmall!.copyWith(color: color, fontSize: FontSizes.px15);
-    return MaterialButton(
-      padding: EdgeInsets.zero,
-      minWidth: 0,
-      onPressed: () {
-        context.read<AppBloc>().add(AppNavEvent(navType: navType));
-      },
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SvgPicture.asset(
-            iconName,
-            colorFilter: ColorFilter.mode(color!, BlendMode.srcIn),
-            width: iconSize,
-            height: iconSize,
-          ),
-          SizedBox(height: 8.h),
-          Text(translate(nameTab, context), style: textStyle),
-        ],
+    return Expanded(
+      child: InkWell(
+        onTap: () => context.read<AppBloc>().add(AppNavEvent(navType: navType)),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              iconName,
+              colorFilter: ColorFilter.mode(color!, BlendMode.srcIn),
+              width: iconSize,
+              height: iconSize,
+            ),
+            SizedBox(height: 8.h),
+            Text(translate(nameTab, context), style: textStyle),
+          ],
+        ),
       ),
     );
   }
