@@ -1,3 +1,13 @@
+Release 2.0.4+39, 08/10/2023
+
+UP-75 Added rotation. Updated buttons.
+
+UP-75 Update WebView settings.
+
+Release 2.0.3+38, 06/10/2023
+
+UP-75 Update WebView settings.
+
 Release 2.0.2+37, 05/10/2023
 
 UP-74 Fixed the designer remarks & Implement correct dark theme

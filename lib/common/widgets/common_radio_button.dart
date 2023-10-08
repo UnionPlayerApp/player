@@ -17,25 +17,28 @@ class CommonRadioButton<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = 20.r;
-    return Row(
-      children: [
-        SizedBox(
-          width: size,
-          height: size,
-          child: Radio<T>(
-            visualDensity: const VisualDensity(
-              horizontal: VisualDensity.minimumDensity,
-              vertical: VisualDensity.minimumDensity,
+    return InkWell(
+      child: Row(
+        children: [
+          SizedBox(
+            width: size,
+            height: size,
+            child: Radio<T>(
+              visualDensity: const VisualDensity(
+                horizontal: VisualDensity.minimumDensity,
+                vertical: VisualDensity.minimumDensity,
+              ),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              value: value,
+              groupValue: groupValue,
+              onChanged: null,
             ),
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            value: value,
-            groupValue: groupValue,
-            onChanged: onChanged,
           ),
-        ),
-        SizedBox(width: 20.w),
-        Text(text, style: Theme.of(context).textTheme.bodySmall),
-      ],
+          SizedBox(width: 20.w),
+          Text(text, style: Theme.of(context).textTheme.bodySmall),
+        ],
+      ),
+      onTap: () => onChanged(value),
     );
   }
 }

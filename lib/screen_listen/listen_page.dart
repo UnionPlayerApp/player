@@ -15,7 +15,6 @@ import '../common/ui/app_colors.dart';
 import '../screen_settings/popups/sound_quality_popup.dart';
 import 'listen_bloc.dart';
 import 'listen_event.dart';
-import 'listen_item_view.dart';
 import 'listen_state.dart';
 
 // ignore: must_be_immutable
@@ -30,33 +29,56 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
   late final _animationController = AnimationController(
     vsync: this,
     duration: const Duration(seconds: 1),
-  )..repeat();
+  )
+    ..repeat();
+
+  late final _rotationController = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 3),
+  );
+
+  var _isRotationEnable = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _rotationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _rotationController.reset();
+        if (_isRotationEnable) {
+          _rotationController.forward();
+        }
+      }
+    });
+  }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _rotationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ListenBloc, ListenState>(
-      builder: (context, state) => Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _topActionWidget(context, state),
-          _scheduleItemWidget(context, state),
-          MediaItemProgress(start: state.itemView.start, finish: state.itemView.finish),
-          _playerButton(context, state),
-          SizedBox(height: 9.h),
-        ],
-      ),
+      builder: (context, state) =>
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _topActionWidget(context, state),
+              _scheduleItemWidget(context, state),
+              MediaItemProgress(start: state.itemView.start, finish: state.itemView.finish),
+              _playerButton(context, state),
+              SizedBox(height: 9.h),
+            ],
+          ),
     );
   }
 
-  Widget _imageWidgetFromFile(String imageSource) {
-    final file = File(imageSource);
-    return _imageContainer(Image.file(
+  Widget _imageWidgetFromFile(ListenState state) {
+    final file = File(state.itemView.imageSource);
+    return _imageContainer(state, Image.file(
       file,
       width: _mainImageSize,
       height: _mainImageSize,
@@ -64,33 +86,42 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
     ));
   }
 
-  Widget _imageWidgetFromAssets(String imageSource) {
-    return _imageContainer(Image.asset(
-      imageSource,
+  Widget _imageWidgetFromAssets(ListenState state) {
+    return _imageContainer(state, Image.asset(
+      state.itemView.imageSource,
       width: _mainImageSize,
       height: _mainImageSize,
       fit: BoxFit.cover,
     ));
   }
 
-  Widget _imageWidgetFromNetwork(String imageSource) {
-    return _imageContainer(Image.network(
-      imageSource,
+  Widget _imageWidgetFromNetwork(ListenState state) {
+    return _imageContainer(state, Image.network(
+      state.itemView.imageSource,
       width: _mainImageSize,
       height: _mainImageSize,
       fit: BoxFit.cover,
     ));
   }
 
-  Widget _imageContainer(Image image) {
+  Widget _imageContainer(ListenState state, Image image) {
+    if (state.isPlaying) {
+      _rotationController.forward();
+    }
+
+    _isRotationEnable = state.isPlaying;
+
     final borderRadius = BorderRadius.circular(_mainImageSize / 2);
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: borderRadius,
-      ),
-      child: ClipRRect(
-        borderRadius: borderRadius,
-        child: image,
+    return RotationTransition(
+      turns: Tween(begin: 0.0, end: 1.0).animate(_rotationController),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: borderRadius,
+        ),
+        child: ClipRRect(
+          borderRadius: borderRadius,
+          child: image,
+        ),
       ),
     );
   }
@@ -116,44 +147,25 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
   }
 
   Widget _scheduleItemWidget(BuildContext context, ListenState state) {
-    final arrowWidth = 11.w;
-    final arrowHeight = 18.h;
     final scale = ScreenUtil().scale;
-    final colorFilter = ColorFilter.mode(Theme.of(context).textTheme.titleMedium!.color!, BlendMode.srcIn);
     return Column(
       children: [
         Text(translate(state.itemView.labelKey, context), style: Theme.of(context).textTheme.titleMedium),
         SizedBox(height: 19.h),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
           children: [
-            InkWell(
-              onTap: () => context.read<ListenBloc>().add(ListenBackStepEvent()),
-              child: SvgPicture.asset(
-                AppIcons.icArrowBack,
-                height: arrowHeight,
-                width: arrowWidth,
-                colorFilter: colorFilter,
-              ),
-            ),
+            _arrowButton(context, assetName: AppIcons.icArrowBack, event: ListenBackStepEvent(), isStart: true),
             Stack(
               alignment: Alignment.center,
               children: [
                 Image.asset(AppImages.imDisk0, scale: scale),
                 Image.asset(AppImages.imDisk1, scale: scale),
                 Image.asset(AppImages.imDisk2, scale: scale),
-                _scheduleImageWidget(state.itemView),
+                _scheduleImageWidget(state),
               ],
             ),
-            InkWell(
-              onTap: () => context.read<ListenBloc>().add(ListenForwardStepEvent()),
-              child: SvgPicture.asset(
-                AppIcons.icArrowForward,
-                height: arrowHeight,
-                width: arrowWidth,
-                colorFilter: colorFilter,
-              ),
-            ),
+            _arrowButton(context, assetName: AppIcons.icArrowForward, event: ListenForwardStepEvent(), isStart: false),
           ],
         ),
         SizedBox(height: 19.h),
@@ -172,16 +184,47 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _scheduleImageWidget(ListenItemView itemView) {
-    switch (itemView.imageSourceType) {
+  Widget _arrowButton(BuildContext context, {
+    required String assetName,
+    required ListenEvent event,
+    required bool isStart,
+  }) {
+    final buttonHeight = 50.h;
+    final arrowWidth = 11.w;
+    final arrowHeight = 18.h;
+    final colorFilter = ColorFilter.mode(Theme.of(context).textTheme.titleMedium!.color!, BlendMode.srcIn);
+    final isTextDirectionLtr = Directionality.of(context).isLtr;
+    final alignmentStart = isTextDirectionLtr ? Alignment.centerLeft : Alignment.centerRight;
+    final alignmentEnd = isTextDirectionLtr ? Alignment.centerRight : Alignment.centerLeft;
+    return Expanded(
+      child: InkWell(
+        onTap: () => context.read<ListenBloc>().add(event),
+        borderRadius: BorderRadius.circular(10.r),
+        child: Container(
+          height: buttonHeight,
+          alignment: isStart ? alignmentStart : alignmentEnd,
+          child: SvgPicture.asset(
+            assetName,
+            height: arrowHeight,
+            width: arrowWidth,
+            colorFilter: colorFilter,
+            fit: BoxFit.none,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _scheduleImageWidget(ListenState state) {
+    switch (state.itemView.imageSourceType) {
       case ImageSourceType.none:
         return const SizedBox();
       case ImageSourceType.file:
-        return _imageWidgetFromFile(itemView.imageSource);
+        return _imageWidgetFromFile(state);
       case ImageSourceType.network:
-        return _imageWidgetFromNetwork(itemView.imageSource);
+        return _imageWidgetFromNetwork(state);
       case ImageSourceType.assets:
-        return _imageWidgetFromAssets(itemView.imageSource);
+        return _imageWidgetFromAssets(state);
     }
   }
 
