@@ -76,6 +76,7 @@ class _AppState extends State<AppPage> {
     return Expanded(
       child: InkWell(
         onTap: () => context.read<AppBloc>().add(AppNavEvent(navType: navType)),
+        borderRadius: BorderRadius.circular(10.r),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
