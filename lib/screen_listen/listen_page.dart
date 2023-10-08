@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tuple/tuple.dart';
 import 'package:union_player_app/common/constants/constants.dart';
 import 'package:union_player_app/common/core/extensions.dart';
 import 'package:union_player_app/common/enums/image_source_type.dart';
@@ -29,8 +30,7 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
   late final _animationController = AnimationController(
     vsync: this,
     duration: const Duration(seconds: 1),
-  )
-    ..repeat();
+  )..repeat();
 
   late final _rotationController = AnimationController(
     vsync: this,
@@ -62,46 +62,51 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ListenBloc, ListenState>(
-      builder: (context, state) =>
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _topActionWidget(context, state),
-              _scheduleItemWidget(context, state),
-              MediaItemProgress(start: state.itemView.start, finish: state.itemView.finish),
-              _playerButton(context, state),
-              SizedBox(height: 9.h),
-            ],
-          ),
+      builder: (context, state) => Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _topActionWidget(context, state),
+          _scheduleItemWidget(context, state),
+          MediaItemProgress(start: state.itemView.start, finish: state.itemView.finish),
+          _playerButton(context, state),
+          SizedBox(height: 9.h),
+        ],
+      ),
     );
   }
 
   Widget _imageWidgetFromFile(ListenState state) {
     final file = File(state.itemView.imageSource);
-    return _imageContainer(state, Image.file(
-      file,
-      width: _mainImageSize,
-      height: _mainImageSize,
-      fit: BoxFit.cover,
-    ));
+    return _imageContainer(
+        state,
+        Image.file(
+          file,
+          width: _mainImageSize,
+          height: _mainImageSize,
+          fit: BoxFit.cover,
+        ));
   }
 
   Widget _imageWidgetFromAssets(ListenState state) {
-    return _imageContainer(state, Image.asset(
-      state.itemView.imageSource,
-      width: _mainImageSize,
-      height: _mainImageSize,
-      fit: BoxFit.cover,
-    ));
+    return _imageContainer(
+        state,
+        Image.asset(
+          state.itemView.imageSource,
+          width: _mainImageSize,
+          height: _mainImageSize,
+          fit: BoxFit.cover,
+        ));
   }
 
   Widget _imageWidgetFromNetwork(ListenState state) {
-    return _imageContainer(state, Image.network(
-      state.itemView.imageSource,
-      width: _mainImageSize,
-      height: _mainImageSize,
-      fit: BoxFit.cover,
-    ));
+    return _imageContainer(
+        state,
+        Image.network(
+          state.itemView.imageSource,
+          width: _mainImageSize,
+          height: _mainImageSize,
+          fit: BoxFit.cover,
+        ));
   }
 
   Widget _imageContainer(ListenState state, Image image) {
@@ -148,6 +153,7 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
 
   Widget _scheduleItemWidget(BuildContext context, ListenState state) {
     final scale = ScreenUtil().scale;
+    final diskNames = _diskNamesByBrightness(context);
     return Column(
       children: [
         Text(translate(state.itemView.labelKey, context), style: Theme.of(context).textTheme.titleMedium),
@@ -159,9 +165,9 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
             Stack(
               alignment: Alignment.center,
               children: [
-                Image.asset(AppImages.imDisk0, scale: scale),
-                Image.asset(AppImages.imDisk1, scale: scale),
-                Image.asset(AppImages.imDisk2, scale: scale),
+                Image.asset(diskNames.item1, scale: scale),
+                Image.asset(diskNames.item2, scale: scale),
+                Image.asset(diskNames.item3, scale: scale),
                 _scheduleImageWidget(state),
               ],
             ),
@@ -184,7 +190,8 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _arrowButton(BuildContext context, {
+  Widget _arrowButton(
+    BuildContext context, {
     required String assetName,
     required ListenEvent event,
     required bool isStart,
@@ -279,4 +286,8 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
       }
     });
   }
+
+  Tuple3<String, String, String> _diskNamesByBrightness(BuildContext context) => Theme.of(context).brightness.isLight
+      ? const Tuple3(AppImages.imDisk0, AppImages.imDisk1, AppImages.imDisk2)
+      : const Tuple3(AppImages.imDiskDark0, AppImages.imDiskDark1, AppImages.imDiskDark2);
 }

@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:union_player_app/common/core/extensions.dart';
 import 'package:union_player_app/common/localizations/string_translation.dart';
+import 'package:union_player_app/common/widgets/app_logo_widget.dart';
 import 'package:union_player_app/common/widgets/snack_bar.dart';
 import 'package:union_player_app/screen_about_app/about_app_event.dart';
 import 'package:union_player_app/screen_about_app/developer_model.dart';
 
 import '../common/constants/constants.dart';
 import '../common/enums/string_keys.dart';
+import '../common/widgets/about_widget.dart';
 import 'about_app_bloc.dart';
 import 'about_app_state.dart';
 
@@ -18,7 +19,7 @@ class AboutAppPage extends StatefulWidget {
   State<StatefulWidget> createState() => _AboutAppState();
 }
 
-class _AboutAppState extends State<AboutAppPage> {
+class _AboutAppState extends AboutWidgetState<AboutAppPage> {
   late final _bloc = context.read<AboutAppBloc>();
 
   @override
@@ -28,20 +29,10 @@ class _AboutAppState extends State<AboutAppPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          iconSize: 20.r,
-          icon: SvgPicture.asset(
-            AppIcons.icArrowBack,
-            colorFilter: ColorFilter.mode(Theme.of(context).appBarTheme.titleTextStyle!.color!, BlendMode.srcIn),
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(translate(StringKeys.aboutApp, context)),
-      ),
-      body: BlocConsumer<AboutAppBloc, AboutAppState>(
+  StringKeys get titleKey => StringKeys.aboutApp;
+
+  @override
+  Widget bodyBuilder(BuildContext context) => BlocConsumer<AboutAppBloc, AboutAppState>(
         listenWhen: (_, state) => state is AboutAppLoadedState && state.toastKey != null,
         listener: (context, state) {
           state as AboutAppLoadedState;
@@ -51,9 +42,7 @@ class _AboutAppState extends State<AboutAppPage> {
           showSnackBar(context, messageText: message);
         },
         builder: (context, state) => _stateWidget(context, state),
-      ),
-    );
-  }
+      );
 
   Widget _stateWidget(BuildContext context, AboutAppState state) {
     switch (state.runtimeType) {
@@ -68,7 +57,7 @@ class _AboutAppState extends State<AboutAppPage> {
   Widget _loadedWidget(BuildContext context, AboutAppLoadedState state) => Column(
         children: [
           SizedBox(height: 30.h),
-          _appLogoWidget(),
+          const AppLogoWidget(),
           _versionWidget(context, state),
           Expanded(
             child: ListView.separated(
@@ -116,17 +105,6 @@ class _AboutAppState extends State<AboutAppPage> {
           child: SvgPicture.asset(assetPath),
         ),
       );
-
-  Widget _appLogoWidget() {
-    final logoSize = 125.r;
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Image.asset(AppImages.imRadioLogo, width: logoSize, height: logoSize),
-        Image.asset(AppImages.imCircle150Blur8, scale: ScreenUtil().scale),
-      ],
-    );
-  }
 
   Widget _versionWidget(BuildContext context, AboutAppLoadedState state) {
     final text = "${translate(StringKeys.versionLabel, context)} ${state.version} (${state.buildNumber})";

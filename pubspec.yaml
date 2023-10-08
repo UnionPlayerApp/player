@@ -3,7 +3,7 @@ description: A Union Player Flutter application.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 2.0.4+39
+version: 2.0.5+40
 
 environment:
   sdk: ">=2.13.0 <4.0.0"
@@ -44,6 +44,7 @@ dependencies:
   scrollable_positioned_list: ^0.3.8
   shared_preferences: ^2.2.1
   simple_animations: ^5.0.2
+  tuple: ^2.0.2
   url_launcher: ^6.1.14
   uuid: ^3.0.7
   webview_flutter: ^4.4.1

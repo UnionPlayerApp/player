@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:union_player_app/common/core/extensions.dart';
 import 'package:union_player_app/common/localizations/string_translation.dart';
+import 'package:union_player_app/common/widgets/about_widget.dart';
 import 'package:union_player_app/screen_about_radio/about_radio_bloc.dart';
 import 'package:union_player_app/screen_about_radio/about_radio_state.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../common/constants/constants.dart';
 import '../common/enums/string_keys.dart';
+import '../common/widgets/app_logo_widget.dart';
 import 'about_radio_event.dart';
 
 class AboutRadioPage extends StatefulWidget {
@@ -18,7 +18,7 @@ class AboutRadioPage extends StatefulWidget {
   State<StatefulWidget> createState() => _AboutRadioState();
 }
 
-class _AboutRadioState extends State<AboutRadioPage> {
+class _AboutRadioState extends AboutWidgetState<AboutRadioPage> {
   late final _bloc = context.read<AboutRadioBloc>();
 
   @override
@@ -32,24 +32,12 @@ class _AboutRadioState extends State<AboutRadioPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          iconSize: 20.r,
-          icon: SvgPicture.asset(
-            AppIcons.icArrowBack,
-            colorFilter: ColorFilter.mode(Theme.of(context).appBarTheme.titleTextStyle!.color!, BlendMode.srcIn),
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(translate(StringKeys.aboutRadio, context)),
-      ),
-      body: BlocBuilder<AboutRadioBloc, AboutRadioState>(
+  StringKeys get titleKey => StringKeys.aboutRadio;
+
+  @override
+  Widget bodyBuilder(BuildContext context) => BlocBuilder<AboutRadioBloc, AboutRadioState>(
         builder: (context, state) => _stateWidget(context, state),
-      ),
-    );
-  }
+      );
 
   Widget _stateWidget(BuildContext context, AboutRadioState state) {
     switch (state.runtimeType) {
@@ -88,24 +76,13 @@ class _AboutRadioState extends State<AboutRadioPage> {
     return Column(
       children: [
         SizedBox(height: 30.h),
-        _appLogoWidget(),
+        const AppLogoWidget(),
         Expanded(
           child: WebViewWidget(
             controller: state.controller,
             gestureRecognizers: const {},
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _appLogoWidget() {
-    final logoSize = 125.r;
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Image.asset(AppImages.imRadioLogo, width: logoSize, height: logoSize),
-        Image.asset(AppImages.imCircle150Blur8, scale: ScreenUtil().scale),
       ],
     );
   }
