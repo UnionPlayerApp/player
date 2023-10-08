@@ -59,9 +59,9 @@ TextTheme _appTextTheme(TextTheme base) => base.copyWith(
     );
 
 AppBarTheme _appBarTheme(AppBarTheme base) => base.copyWith(
-      centerTitle: true,
       backgroundColor: AppColors.white,
       elevation: 0.0,
+      titleSpacing: 0.0,
       titleTextStyle: TextStyles.bold20BlackOlive,
     );
 
@@ -73,6 +73,7 @@ ThemeData appThemeDark() {
     brightness: Brightness.dark,
     // color section
     dialogBackgroundColor: AppColors.jungleGreen,
+    dividerColor: AppColors.blackOlive,
     scaffoldBackgroundColor: AppColors.jungleGreen,
     // themes section
     appBarTheme: _appBarThemeDark(base.appBarTheme),
@@ -91,7 +92,7 @@ IconThemeData _appIconThemeDark(IconThemeData base) => base.copyWith(
 AppBarTheme _appBarThemeDark(AppBarTheme base) => base.copyWith(
       backgroundColor: AppColors.jungleGreen,
       titleTextStyle: base.titleTextStyle!.copyWith(color: AppColors.cultured),
-);
+    );
 
 BottomAppBarTheme _appBottomAppBarThemeDark(BottomAppBarTheme base) => base.copyWith(
       color: AppColors.jungleGreen,

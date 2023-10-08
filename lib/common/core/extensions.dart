@@ -21,3 +21,7 @@ extension ScreenUtilExtension on ScreenUtil {
 extension TextDirectionExtension on TextDirection {
   bool get isLtr => this == TextDirection.ltr;
 }
+
+extension BrightnessExtension on Brightness {
+  bool get isLight => this == Brightness.light;
+}

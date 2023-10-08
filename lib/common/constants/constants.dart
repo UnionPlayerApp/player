@@ -110,6 +110,10 @@ class AppImages {
   static const imDisk0 = "assets/images/disk_0.png";
   static const imDisk1 = "assets/images/disk_1.png";
   static const imDisk2 = "assets/images/disk_2.png";
-  static const imCircle150Blur8 = "assets/images/circle_150_blur_8.png";
+  static const imDisk3 = "assets/images/disk_3.png";
+  static const imDiskDark0 = "assets/images/disk_0_dark.png";
+  static const imDiskDark1 = "assets/images/disk_1_dark.png";
+  static const imDiskDark2 = "assets/images/disk_2_dark.png";
+  static const imDiskDark3 = "assets/images/disk_3_dark.png";
   static const imRadioLogo = "assets/images/union_radio_logo.png";
 }

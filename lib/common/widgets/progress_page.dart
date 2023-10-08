@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:union_player_app/common/constants/constants.dart';
+import 'package:union_player_app/common/core/extensions.dart';
+
+import '../ui/app_colors.dart';
 
 class ProgressPage extends StatelessWidget {
   final String _version;
@@ -11,6 +14,7 @@ class ProgressPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final circleSize = 200.r;
     final imageSize = 150.r;
+    final imageColor = Theme.of(context).brightness.isLight ? null : AppColors.cultured;
     return Scaffold(
       body: Stack(
         children: [
@@ -24,7 +28,7 @@ class ProgressPage extends StatelessWidget {
               ),
             ),
           ),
-          Center(child: Image.asset(logoImage, width: imageSize, height: imageSize)),
+          Center(child: Image.asset(logoImage, width: imageSize, height: imageSize, color: imageColor)),
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
