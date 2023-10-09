@@ -32,30 +32,9 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
     duration: const Duration(seconds: 1),
   )..repeat();
 
-  late final _rotationController = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 3),
-  );
-
-  var _isRotationEnable = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _rotationController.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        _rotationController.reset();
-        if (_isRotationEnable) {
-          _rotationController.forward();
-        }
-      }
-    });
-  }
-
   @override
   void dispose() {
     _animationController.dispose();
-    _rotationController.dispose();
     super.dispose();
   }
 
@@ -110,24 +89,14 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
   }
 
   Widget _imageContainer(ListenState state, Image image) {
-    // TODO: rejected by customer. Should be changed by rotation of the background of the program label.
-    // if (state.isPlaying) {
-    //   _rotationController.forward();
-    // }
-    //
-    // _isRotationEnable = state.isPlaying;
-
     final borderRadius = BorderRadius.circular(_mainImageSize / 2);
-    return RotationTransition(
-      turns: Tween(begin: 0.0, end: 1.0).animate(_rotationController),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: borderRadius,
-        ),
-        child: ClipRRect(
-          borderRadius: borderRadius,
-          child: image,
-        ),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: borderRadius,
+      ),
+      child: ClipRRect(
+        borderRadius: borderRadius,
+        child: image,
       ),
     );
   }
