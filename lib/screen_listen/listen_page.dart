@@ -110,11 +110,12 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
   }
 
   Widget _imageContainer(ListenState state, Image image) {
-    if (state.isPlaying) {
-      _rotationController.forward();
-    }
-
-    _isRotationEnable = state.isPlaying;
+    // TODO: rejected by customer. Should be changed by rotation of the background of the program label.
+    // if (state.isPlaying) {
+    //   _rotationController.forward();
+    // }
+    //
+    // _isRotationEnable = state.isPlaying;
 
     final borderRadius = BorderRadius.circular(_mainImageSize / 2);
     return RotationTransition(

@@ -57,5 +57,6 @@
   "roleDesigner": "Дызайн UX/UI",
   "versionLabel": "Версія",
   "contactAppNotFound":  "Гэта прыкладанне адсутнічае на тэлефоне",
-  "contactAppLaunchError":  "Памылка запуску прыкладання"
+  "contactAppLaunchError":  "Памылка запуску прыкладання",
+  "customerInfo": "Па загадзе Тэлевізійнай радыёвяшчальнай арганізацыі Саюза \"ТРА Саюза\""
 }
