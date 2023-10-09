@@ -57,5 +57,6 @@
   "roleDesigner": "UX/UI design",
   "versionLabel": "Version",
   "contactAppNotFound":  "This application is absent on the phone",
-  "contactAppLaunchError":  "Application launch error"
+  "contactAppLaunchError":  "Application launch error",
+  "customerInfo": "By order of the Television radio broadcasting organization of the Union State \"TRBO of the Union\""
 }

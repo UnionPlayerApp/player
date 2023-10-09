@@ -66,6 +66,7 @@ class _AboutAppState extends AboutWidgetState<AboutAppPage> {
               itemCount: state.developers.length,
             ),
           ),
+          _customerWidget(context),
         ],
       );
 
@@ -111,6 +112,20 @@ class _AboutAppState extends AboutWidgetState<AboutAppPage> {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 30.h),
       child: Text(text, style: Theme.of(context).textTheme.bodySmall),
+    );
+  }
+
+  Widget _customerWidget(BuildContext context) {
+    final style = Theme.of(context).textTheme.bodySmall;
+    return Padding(
+      padding: EdgeInsets.all(8.r),
+      child: Column(
+        children: [
+          Text(translate(StringKeys.customerInfo, context), style: style, textAlign: TextAlign.center),
+          SizedBox(height: 8.h),
+          Text("2021 - 2023", style: style),
+        ],
+      ),
     );
   }
 }

@@ -25,7 +25,7 @@ class _MediaItemProgressState extends State<MediaItemProgress> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      final indicatorSize = 20.r;
+      final indicatorSize = 4.r;
       final strokeSize = 2.h;
 
       if (widget.start.isAfter(widget.finish)) {
@@ -77,18 +77,15 @@ class _MediaItemProgressState extends State<MediaItemProgress> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(indicatorSize / 2),
                 color: progressIndicatorColor,
-                boxShadow: [
-                  BoxShadow(color: progressIndicatorColor.withOpacity(0.5), blurRadius: 20.r),
-                ],
               ),
             ),
           ),
           Container(
             height: indicatorSize,
-            width: position,
-            alignment: Alignment.centerLeft,
+            width: position + indicatorSize / 2,
+            alignment: Alignment.bottomLeft,
             child: Divider(
-              thickness: strokeSize,
+              thickness: indicatorSize,
               color: progressIndicatorColor,
             ),
           ),
