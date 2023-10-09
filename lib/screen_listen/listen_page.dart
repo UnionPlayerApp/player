@@ -261,3 +261,4 @@ class _ListenPageState extends State<ListenPage> with TickerProviderStateMixin {
       ? const Tuple3(AppImages.imDisk0, AppImages.imDisk1, AppImages.imDisk2)
       : const Tuple3(AppImages.imDiskDark0, AppImages.imDiskDark1, AppImages.imDiskDark2);
 }
+
