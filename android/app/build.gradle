@@ -71,7 +71,7 @@ flutter {
 }
 
 dependencies {
-    implementation platform('com.google.firebase:firebase-bom:30.3.2')
+    implementation platform('com.google.firebase:firebase-bom:32.8.1')
     implementation 'com.google.firebase:firebase-analytics-ktx'
-    implementation 'com.google.firebase:firebase-appcheck-debug:16.0.2'
+    implementation 'com.google.firebase:firebase-appcheck-debug:17.1.2'
 }
