@@ -33,6 +33,14 @@ class _AppState extends State<AppPage> {
   late final _schedulePage = _routes.page(context, routeName: Routes.schedule);
   late final _settingsPage = _routes.page(context, routeName: Routes.settings);
 
+  AppBloc? _bloc;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _bloc ??= BlocProvider.of(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     FirebaseAnalytics.instance.logEvent(name: gaAppStart);
@@ -50,13 +58,15 @@ class _AppState extends State<AppPage> {
     );
   }
 
-  void _onPopInvoked(_) {
+  void _onPopInvoked(_) async {
     final now = DateTime.now();
     const duration = Duration(seconds: 2);
     if (_backPressTime == null || now.difference(_backPressTime!) > duration) {
       _backPressTime = now;
       showSnackBar(context, messageKey: StringKeys.pressAgainToExit, duration: duration);
     } else {
+      await _bloc?.stop();
+      FirebaseAnalytics.instance.logEvent(name: gaAppStop);
       SystemNavigator.pop();
     }
   }
@@ -85,7 +95,7 @@ class _AppState extends State<AppPage> {
     final textStyle = theme.textTheme.bodySmall!.copyWith(color: color, fontSize: FontSizes.px15);
     return Expanded(
       child: InkWell(
-        onTap: () => context.read<AppBloc>().add(AppNavEvent(navType: navType)),
+        onTap: () => _bloc?.add(AppNavEvent(navType: navType)),
         borderRadius: BorderRadius.circular(10.r),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

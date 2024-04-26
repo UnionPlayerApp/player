@@ -27,6 +27,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     super.close();
   }
 
+  Future<void> stop() => _audioHandler.stop();
+
   FutureOr<void> _onNav(AppNavEvent event, Emitter<AppState> emitter) {
     final newState = state.copyWith(navType: event.navType);
     emitter(newState);
