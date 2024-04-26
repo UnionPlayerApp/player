@@ -4,43 +4,16 @@ import 'package:union_player_app/common/enums/language_type.dart';
 import 'package:union_player_app/common/enums/sound_quality_type.dart';
 import 'package:union_player_app/common/enums/start_playing_type.dart';
 
-const appBarLogoImage = "assets/images/union_radio_logo_outline.svg";
 const logoImage = "assets/images/union_radio_logo.png";
-const logoImage1 = "assets/images/union_radio_logo_1.png";
-
-//Streams IDs
-const idStreamLow = 0;
-const idStreamMedium = 1;
-const idStreamHigh = 2;
-
-// Периодичность проверки буффера плеера на заполненность. В сек.
-const playerBufferCheckDuration = 3;
-const playerBufferUncheckableDuration = 5;
-const playerBufferHighCapacity = 15;
-const playerBufferLowCapacity = 2;
-const internetConnectionCheckDuration = 1;
 
 // Logger
 const logName = "UPA";
 const emptyLogMessage = "Empty log message";
 
-// FeedbackScreen
-const phonePattern = r'(^(?:[+0]9)?[0-9]{10,12}$)';
-const maxMessageLength = 400;
-
-// Периодичность проверки первого элемента расписания на завершение, сек
-const scheduleCheckInterval = 5;
-
 const audioNotificationChannelName = "Union Radio App Notification Channel";
-const audioNotificationIcon = "mipmap/ic_notification_transparent"; //"mipmap/ic_notification";
-
-const appInternationalTitle = "Union Radio 1";
+const audioNotificationIcon = "mipmap/ic_notification_transparent";
 
 const audioBackgroundTaskLogoAsset = "assets/images/union_radio_logo_1.png";
-
-const startPlayingStart = 0;
-const startPlayingStop = 1;
-const startPlayingLast = 2;
 
 const defaultSoundQualityType = SoundQualityType.medium;
 const defaultThemeMode = ThemeMode.system;
