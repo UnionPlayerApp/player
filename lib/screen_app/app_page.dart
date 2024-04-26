@@ -1,8 +1,6 @@
-import 'dart:async';
-
-import 'package:audio_service/audio_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -40,8 +38,9 @@ class _AppState extends State<AppPage> {
     FirebaseAnalytics.instance.logEvent(name: gaAppStart);
     return BlocBuilder<AppBloc, AppState>(
       builder: (BuildContext context, AppState state) {
-        return WillPopScope(
-          onWillPop: () => _onWillPop(),
+        return PopScope(
+          canPop: false,
+          onPopInvoked: _onPopInvoked,
           child: Scaffold(
             body: _body(state),
             bottomNavigationBar: _bottomNavigationBar(state),
@@ -49,6 +48,17 @@ class _AppState extends State<AppPage> {
         );
       },
     );
+  }
+
+  void _onPopInvoked(_) {
+    final now = DateTime.now();
+    const duration = Duration(seconds: 2);
+    if (_backPressTime == null || now.difference(_backPressTime!) > duration) {
+      _backPressTime = now;
+      showSnackBar(context, messageKey: StringKeys.pressAgainToExit, duration: duration);
+    } else {
+      SystemNavigator.pop();
+    }
   }
 
   Widget _bottomNavigationBar(AppState state) => BottomAppBar(
@@ -92,20 +102,6 @@ class _AppState extends State<AppPage> {
         ),
       ),
     );
-  }
-
-  Future<bool> _onWillPop() async {
-    final now = DateTime.now();
-    const duration = Duration(seconds: 2);
-    if (_backPressTime == null || now.difference(_backPressTime!) > duration) {
-      _backPressTime = now;
-      showSnackBar(context, messageKey: StringKeys.pressAgainToExit, duration: duration);
-      return Future.value(false);
-    } else {
-      await GetIt.I.get<AudioHandler>().stop();
-      FirebaseAnalytics.instance.logEvent(name: gaAppStop);
-      return Future.value(true);
-    }
   }
 
   Widget _body(AppState state) {
