@@ -19,13 +19,13 @@ abstract class AboutAppContactEvent extends AboutAppEvent {
 }
 
 class AboutAppEmailEvent extends AboutAppContactEvent {
-  const AboutAppEmailEvent({required DeveloperModel developerModel}) : super(developerModel: developerModel);
+  const AboutAppEmailEvent({required super.developerModel});
 }
 
 class AboutAppTelegramEvent extends AboutAppContactEvent {
-  const AboutAppTelegramEvent({required DeveloperModel developerModel}) : super(developerModel: developerModel);
+  const AboutAppTelegramEvent({required super.developerModel});
 }
 
 class AboutAppWhatsappEvent extends AboutAppContactEvent {
-  const AboutAppWhatsappEvent({required DeveloperModel developerModel}) : super(developerModel: developerModel);
+  const AboutAppWhatsappEvent({required super.developerModel});
 }

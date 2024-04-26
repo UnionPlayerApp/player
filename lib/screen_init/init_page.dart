@@ -37,9 +37,8 @@ import '../firebase_options.dart';
 class InitPage extends StatefulWidget {
   final PackageInfo _packageInfo;
 
-  const InitPage({Key? key, required PackageInfo packageInfo})
-      : _packageInfo = packageInfo,
-        super(key: key);
+  const InitPage({super.key, required PackageInfo packageInfo})
+      : _packageInfo = packageInfo;
 
   @override
   InitPageState createState() => InitPageState();

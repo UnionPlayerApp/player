@@ -4,9 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class InfoPage extends StatelessWidget {
   final List<String> params;
 
-  InfoPage({Key? key, required this.params})
-      : assert(params.isNotEmpty),
-        super(key: key);
+  InfoPage({super.key, required this.params})
+      : assert(params.isNotEmpty);
 
   Widget mapStr(BuildContext context, String str) => Padding(
       padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),

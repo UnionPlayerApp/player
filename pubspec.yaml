@@ -3,10 +3,10 @@ description: A Union Player Flutter application.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 2.0.7+42
+version: 2.1.0+43
 
 environment:
-  sdk: ">=2.13.0 <4.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:

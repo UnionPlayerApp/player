@@ -13,7 +13,7 @@ abstract class ScheduleState extends Equatable {
 }
 
 class ScheduleLoadingState extends ScheduleState {
-  const ScheduleLoadingState({String? errorText}) : super(errorText: errorText);
+  const ScheduleLoadingState({super.errorText});
 
   @override
   ScheduleLoadingState copyWithError({required String errorText}) => ScheduleLoadingState(errorText: errorText);
@@ -26,8 +26,8 @@ class ScheduleLoadedState extends ScheduleState {
   const ScheduleLoadedState({
     required this.items,
     required this.currentIndex,
-    String? errorText,
-  }) : super(errorText: errorText);
+    super.errorText,
+  });
 
   @override
   ScheduleLoadedState copyWithError({required String errorText}) => ScheduleLoadedState(
