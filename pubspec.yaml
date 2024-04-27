@@ -3,7 +3,7 @@ description: A Union Player Flutter application.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 2.1.0+43
+version: 2.1.1+44
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -15,7 +15,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  app_tracking_transparency: ^2.0.4
+  app_tracking_transparency: ^2.0.5
   audio_service: ^0.18.13
   audio_session: ^0.1.19
   cloud_firestore: ^4.17.2

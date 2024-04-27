@@ -20,12 +20,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         ));
   }
 
-
   @override
-  Future<void> close() async {
-    _customSubscription.cancel();
-    super.close();
-  }
+  Future<void> close() => super.close().then((_) => _customSubscription.cancel()).then((_) => stop());
 
   Future<void> stop() => _audioHandler.stop();
 

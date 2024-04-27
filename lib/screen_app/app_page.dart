@@ -36,6 +36,12 @@ class _AppState extends State<AppPage> {
   AppBloc? _bloc;
 
   @override
+  void initState() {
+    super.initState();
+    FirebaseAnalytics.instance.logEvent(name: gaAppStart);
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _bloc ??= BlocProvider.of(context);
@@ -43,7 +49,6 @@ class _AppState extends State<AppPage> {
 
   @override
   Widget build(BuildContext context) {
-    FirebaseAnalytics.instance.logEvent(name: gaAppStart);
     return BlocBuilder<AppBloc, AppState>(
       builder: (BuildContext context, AppState state) {
         return PopScope(
