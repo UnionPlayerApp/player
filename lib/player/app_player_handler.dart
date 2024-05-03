@@ -97,7 +97,7 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
       await _player.stop();
       await _player.setUrl(audioUrl);
       if (isPlaying) {
-        await _player.play();
+        _player.play();
       }
       _isPlayingBeforeInterruption = isPlaying;
       debugPrint("set audio stream = $audioUrl");

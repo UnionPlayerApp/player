@@ -2,12 +2,16 @@ import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../screen_listen/listen_event.dart';
+
 class AppBlocObserver extends BlocObserver {
   @override
   void onEvent(Bloc bloc, Object? event) {
-    log("*** AppBlocObserver -> onEvent()");
-    log("bloc  = $bloc");
-    log("event = $event");
+    if (event is! ListenPlaybackEvent) {
+      log("*** AppBlocObserver -> onEvent()");
+      log("bloc  = $bloc");
+      log("event = $event");
+    }
     super.onEvent(bloc, event);
   }
 
