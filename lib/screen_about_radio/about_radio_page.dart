@@ -40,12 +40,10 @@ class _AboutRadioState extends AboutWidgetState<AboutRadioPage> {
       );
 
   Widget _stateWidget(BuildContext context, AboutRadioState state) {
-    switch (state.runtimeType) {
+    switch (state) {
       case AboutRadioWebViewState _:
-        state as AboutRadioWebViewState;
         return _webViewWidget(context, state);
       case AboutRadioErrorState _:
-        state as AboutRadioErrorState;
         return _errorWidget(context, state);
       case AboutRadioLoadingState _:
       default:

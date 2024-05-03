@@ -10,6 +10,7 @@
 .svn
 .fvm
 .fvmrc
+devtools_options.yaml
 
 # IntelliJ related
 *.iml
