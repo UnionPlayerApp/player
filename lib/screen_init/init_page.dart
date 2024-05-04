@@ -309,7 +309,6 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
   }
 
   Widget _createHomePage(AsyncSnapshot<dynamic> snapshot) {
-    return _progressPage();
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasData) {
         final bool isPlaying = snapshot.data;
