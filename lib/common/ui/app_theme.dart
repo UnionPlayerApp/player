@@ -6,7 +6,7 @@ import 'text_styles.dart';
 // *** light themes ***
 
 ThemeData appThemeLight() {
-  final base = ThemeData.light();
+  final base = ThemeData.light(useMaterial3: false);
   return base.copyWith(
     // colors section
     dividerColor: AppColors.platinum,
