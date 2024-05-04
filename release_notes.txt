@@ -4,6 +4,8 @@ Release 2.1.2+46, 03/05/2024
 * Fixed switching the audio quality issue.
 * Fixed text overflow in the Settings page.
 * Fixed MissingForegroundServiceTypeException.
+* Fixed string localizations
+* Fixed material3 issue
 
 Release 2.1.1+45, 27/04/2024
 
