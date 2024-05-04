@@ -4,6 +4,7 @@ import 'package:union_player_app/common/constants/constants.dart';
 import 'package:union_player_app/common/core/extensions.dart';
 
 import '../ui/app_colors.dart';
+import '../ui/font_sizes.dart';
 
 class ProgressPage extends StatelessWidget {
   final String _version;
@@ -33,7 +34,16 @@ class ProgressPage extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 12.h),
-              child: Text(_version, style: Theme.of(context).textTheme.titleSmall),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text("FontSize.px15 => ${FontSizes.px15}"),
+                  Text("FontSize.px16 => ${FontSizes.px16}"),
+                  Text("FontSize.px20 => ${FontSizes.px20}"),
+                  Text("FontSize.px22 => ${FontSizes.px22}"),
+                  Text(_version, style: Theme.of(context).textTheme.titleSmall),
+                ],
+              ),
             ),
           ),
         ],
