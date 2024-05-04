@@ -28,6 +28,8 @@ void main() async {
     () async {
       WidgetsFlutterBinding.ensureInitialized();
 
+      await ScreenUtil.ensureScreenSize();
+
       await _initLocator();
 
       final packageInfo = GetIt.I.get<PackageInfo>();
