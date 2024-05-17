@@ -63,16 +63,18 @@ class _AppState extends State<AppPage> {
     );
   }
 
-  void _onPopInvoked(_) async {
-    final now = DateTime.now();
-    const duration = Duration(seconds: 2);
-    if (_backPressTime == null || now.difference(_backPressTime!) > duration) {
-      _backPressTime = now;
-      showSnackBar(context, messageKey: StringKeys.pressAgainToExit, duration: duration);
-    } else {
-      await _bloc?.stop();
-      FirebaseAnalytics.instance.logEvent(name: gaAppStop);
-      SystemNavigator.pop();
+  void _onPopInvoked(bool didPop) async {
+    if (!didPop) {
+      final now = DateTime.now();
+      const duration = Duration(seconds: 2);
+      if (_backPressTime == null || now.difference(_backPressTime!) > duration) {
+        _backPressTime = now;
+        showSnackBar(context, messageKey: StringKeys.pressAgainToExit, duration: duration);
+      } else {
+        FirebaseAnalytics.instance.logEvent(name: gaAppStop);
+        await _bloc?.stop();
+        SystemNavigator.pop();
+      }
     }
   }
 
@@ -121,7 +123,7 @@ class _AppState extends State<AppPage> {
 
   Widget _body(AppState state) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: SafeArea(child: _createNavPage(state)),
     );
   }
