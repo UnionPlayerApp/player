@@ -123,7 +123,7 @@ class _AboutAppState extends AboutWidgetState<AboutAppPage> {
         children: [
           Text(translate(StringKeys.customerInfo, context), style: style, textAlign: TextAlign.center),
           SizedBox(height: 8.h),
-          Text("2021 - 2023", style: style),
+          Text("2021 - 2024", style: style),
         ],
       ),
     );
