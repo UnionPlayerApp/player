@@ -98,7 +98,7 @@ class ListenBloc extends Bloc<ListenEvent, ListenState> {
     add(ListenLoadEvent(isScheduleLoaded: false, loadingError: error));
   }
 
-  _onQueue(List<MediaItem>? queue) {
+  void _onQueue(List<MediaItem>? queue) {
     if (queue == null) {
       debugPrint("MainBloc._onQueue(queue) -> queue is null");
       _onCustom("Schedule load error: queue is null");

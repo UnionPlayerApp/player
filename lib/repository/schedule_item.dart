@@ -46,7 +46,8 @@ class ScheduleItem extends Equatable {
   String toString() => "ScheduleItem, "
       "start = ${formatDateTime(start)} = ${start.millisecondsSinceEpoch}, "
       "finish = ${formatDateTime(finish)} = ${finish.millisecondsSinceEpoch}, "
-      "title = $title";
+      "title = $title, "
+      "artist = $artist";
 
   @override
   List<Object?> get props => [start.millisecondsSinceEpoch, finish.millisecondsSinceEpoch];
