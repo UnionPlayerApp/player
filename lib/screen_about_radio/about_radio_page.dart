@@ -57,7 +57,7 @@ class _AboutRadioState extends AboutWidgetState<AboutRadioPage> {
     final headerStyle = Theme.of(context).textTheme.titleLarge;
     final bodyStyle = Theme.of(context).textTheme.bodyMedium;
     final header = Text(translate(StringKeys.anyError, context), style: headerStyle);
-    final body = Text(state.errorType, style: bodyStyle, textAlign: TextAlign.center);
+    final body = Text(state.body, style: bodyStyle, textAlign: TextAlign.center);
     const padding = EdgeInsets.all(8.0);
     return Center(
       child: Column(

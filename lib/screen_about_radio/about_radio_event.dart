@@ -2,14 +2,18 @@ import 'dart:ui';
 
 import 'package:equatable/equatable.dart';
 
-abstract class AboutRadioEvent extends Equatable {}
+import '../common/core/exceptions.dart';
+
+abstract class AboutRadioEvent extends Equatable {
+  const AboutRadioEvent();
+}
 
 class InitialEvent extends AboutRadioEvent {
   final Color backgroundColor;
   final Locale locale;
   final bool isDarkMode;
 
-  InitialEvent({required this.locale, required this.isDarkMode, required this.backgroundColor});
+  const InitialEvent({required this.locale, required this.isDarkMode, required this.backgroundColor});
 
   @override
   List<Object?> get props => [locale, isDarkMode, backgroundColor];
@@ -22,15 +26,17 @@ class InitialEvent extends AboutRadioEvent {
 }
 
 class WebViewLoadSuccessEvent extends AboutRadioEvent {
+  const WebViewLoadSuccessEvent();
+
   @override
   List<Object?> get props => [];
 }
 
 class WebViewLoadErrorEvent extends AboutRadioEvent {
-  final String errorDescription;
+  final WebResourceException exception;
 
-  WebViewLoadErrorEvent(this.errorDescription);
+  const WebViewLoadErrorEvent({required this.exception});
 
   @override
-  List<Object?> get props => [errorDescription];
+  List<Object?> get props => [exception];
 }

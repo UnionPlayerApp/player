@@ -1,6 +1,10 @@
+Release 2.1.7+51, 20/05/2024
+
+* Added Firebase Crashlytics error recording for the webview issues
+
 Release 2.1.6+50, 19/05/2024
 
-* Fixed issue with updating the notification center information.
+- Fixed issue with updating the notification center information.
 
 Release 2.1.5+49, 18/05/2024
 
