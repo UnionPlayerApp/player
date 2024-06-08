@@ -145,7 +145,9 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
       "auth_uid": _userCredential.user?.uid ?? "null",
     };
     params.forEach((key, value) => debugPrint("key: $key, value type: ${value.runtimeType}, value: $value"));
-    FirebaseAnalytics.instance.logEvent(name: gaAppStatus, parameters: params);
+    FirebaseAnalytics.instance
+      ..logEvent(name: gaAppStatus, parameters: params)
+      ..logEvent(name: gaAppStart);
     debugPrint("App initialize success, app params = $params");
     return isPlaying;
   }

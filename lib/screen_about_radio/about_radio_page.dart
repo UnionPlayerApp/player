@@ -18,13 +18,11 @@ class AboutRadioPage extends StatefulWidget {
   State<StatefulWidget> createState() => _AboutRadioState();
 }
 
-class _AboutRadioState extends AboutWidgetState<AboutRadioPage> {
-  late final _bloc = context.read<AboutRadioBloc>();
+class _AboutRadioState extends AboutWidgetState<AboutRadioPage, AboutRadioBloc> {
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _bloc.add(InitialEvent(
+  void initData() {
+    bloc.add(InitialEvent(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       isDarkMode: Get.isDarkMode,
       locale: Get.locale ?? defaultLocale,

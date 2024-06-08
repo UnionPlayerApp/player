@@ -19,13 +19,11 @@ class AboutAppPage extends StatefulWidget {
   State<StatefulWidget> createState() => _AboutAppState();
 }
 
-class _AboutAppState extends AboutWidgetState<AboutAppPage> {
-  late final _bloc = context.read<AboutAppBloc>();
+class _AboutAppState extends AboutWidgetState<AboutAppPage, AboutAppBloc> {
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _bloc.add(AboutAppInitEvent(locale: Localizations.localeOf(context)));
+  void initData() {
+    bloc.add(AboutAppInitEvent(locale: Localizations.localeOf(context)));
   }
 
   @override
@@ -102,7 +100,7 @@ class _AboutAppState extends AboutWidgetState<AboutAppPage> {
   Widget _contactButton({required String assetPath, required AboutAppContactEvent event}) => Padding(
         padding: EdgeInsets.symmetric(horizontal: 15.h),
         child: InkWell(
-          onTap: () => _bloc.add(event),
+          onTap: () => bloc.add(event),
           child: SvgPicture.asset(assetPath),
         ),
       );
