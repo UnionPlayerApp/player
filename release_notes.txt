@@ -1,6 +1,10 @@
-Release 2.1.7+51, 20/05/2024
+Release 2.1.8+52, 15/06/2024
 
 * Added Firebase Crashlytics error recording for the webview issues
+
+Release 2.1.7+51, 20/05/2024
+
+- Added Firebase Crashlytics error recording for the webview issues
 
 Release 2.1.6+50, 19/05/2024
 

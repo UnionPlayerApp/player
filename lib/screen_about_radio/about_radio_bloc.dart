@@ -18,7 +18,7 @@ class AboutRadioBloc extends Bloc<AboutRadioEvent, AboutRadioState> {
     on<WebViewLoadErrorEvent>(_onWebViewLoadError);
   }
 
-  var _loadWithError = false;
+  var _isLoadError = false;
 
   late final _webViewController = WebViewController()
     ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -27,20 +27,26 @@ class AboutRadioBloc extends Bloc<AboutRadioEvent, AboutRadioState> {
         onProgress: (progress) {
           debugPrint("The About page loading progress: $progress");
         },
-        onPageStarted: (value) {
-          debugPrint("The About page loading started. value: $value");
-          _loadWithError = false;
+        onPageStarted: (url) {
+          _isLoadError = false;
+          debugPrint("The About page loading started, url: $url");
         },
-        onPageFinished: (value) {
-          debugPrint("The About page loading finished. value: $value");
-          if (!_loadWithError) {
+        onPageFinished: (url) {
+          final success = !_isLoadError;
+          if (success) {
             add(const WebViewLoadSuccessEvent());
           }
+          debugPrint("The About page loading finished, success: $success, url: $url");
         },
         onWebResourceError: (WebResourceError error) {
-          debugPrint("The About page loading error => type: ${error.errorType}, description: ${error.description}");
-          _loadWithError = true;
+          _isLoadError = true;
           add(WebViewLoadErrorEvent(exception: WebResourceException(error: error)));
+          debugPrint("The About page loading error => "
+              "code: ${error.errorCode}, "
+              "type: ${error.errorType}, "
+              "description: ${error.description}, "
+              "url: ${error.url}"
+              "isForMainFrame: ${error.isForMainFrame}");
         },
         onNavigationRequest: (NavigationRequest request) {
           return NavigationDecision.navigate;
@@ -62,7 +68,9 @@ class AboutRadioBloc extends Bloc<AboutRadioEvent, AboutRadioState> {
   }
 
   FutureOr<void> _onWebViewLoadError(WebViewLoadErrorEvent event, Emitter<AboutRadioState> emitter) {
-    FirebaseCrashlytics.instance.recordError(event.exception, StackTrace.current);
+    FirebaseCrashlytics.instance
+        .recordError(event.exception, StackTrace.current)
+        .then((_) => FirebaseCrashlytics.instance.sendUnsentReports());
     final errorBody = "url:\n"
         "${event.exception.error.url ?? "web url is unknown (null)"}\n\n"
         "description:\n"

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:union_player_app/common/enums/string_keys.dart';
 import 'package:union_player_app/model/system_data/email_data.dart';
 import 'package:union_player_app/model/system_data/player_data.dart';
@@ -12,16 +13,18 @@ import '../../screen_about_app/developer_model.dart';
 import 'about_data.dart';
 
 class SystemData {
-  AboutData aboutData = AboutData();
-  EmailData emailData = EmailData();
-  StreamData streamData = StreamData();
-  XmlData xmlData = XmlData();
-  PlayerData playerData = PlayerData();
+  final aboutData = AboutData();
+  final emailData = EmailData();
+  final streamData = StreamData();
+  final xmlData = XmlData();
+  final playerData = PlayerData();
 
   void setAboutData(DocumentSnapshot<Object?> doc) {
     try {
       aboutData.setData(doc);
+      debugPrint("AboutData loaded value: ${aboutData.url}");
     } catch (error) {
+      debugPrint("AboutData load error: $error");
       throw Exception(error.toString());
     }
   }

@@ -226,28 +226,28 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
     }
 
     try {
-      DocumentSnapshot doc = await collection.doc("email_data").get();
+      final doc = await collection.doc("email_data").get();
       _systemData.setEmailData(doc);
     } catch (error) {
       throw Exception("Email data read error: $error");
     }
 
     try {
-      DocumentSnapshot doc = await collection.doc("xml_data").get();
+      final doc = await collection.doc("xml_data").get();
       _systemData.setXmlData(doc);
     } catch (error) {
       throw Exception("XML data read error: $error");
     }
 
     try {
-      DocumentSnapshot doc = await collection.doc("about_data").get();
+      final doc = await collection.doc("about_data").get();
       _systemData.setAboutData(doc);
     } catch (error) {
       throw Exception("About data read error: $error");
     }
 
     try {
-      DocumentSnapshot doc = await collection.doc("stream_data").get();
+      final doc = await collection.doc("stream_data").get();
       _systemData.setStreamData(doc);
     } catch (error) {
       throw Exception("Stream data read error: $error");
