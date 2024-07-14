@@ -1,9 +1,9 @@
 name: union_player_app
 description: A Union Player Flutter application.
 
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none'
 
-version: 2.1.8+52
+version: 2.1.9+53
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -29,6 +29,7 @@ dependencies:
   firebase_crashlytics: ^4.0.1
   firebase_performance: ^0.10.0+1
   flutter_bloc: ^8.1.6
+  flutter_html: ^3.0.0-beta.2
   flutter_screenutil: ^5.9.3
   flutter_svg: ^2.0.10+1
   form_field_validator: ^1.1.0
@@ -46,8 +47,8 @@ dependencies:
   tuple: ^2.0.2
   url_launcher: ^6.3.0
   uuid: ^4.4.0
-  webview_flutter: ^4.8.0
   xml: ^6.5.0
+  webview_flutter: ^4.8.0
 
 dev_dependencies:
   flutter_launcher_icons:

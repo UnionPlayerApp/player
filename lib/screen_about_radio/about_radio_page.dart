@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:union_player_app/common/localizations/string_translation.dart';
@@ -37,17 +38,12 @@ class _AboutRadioState extends AboutWidgetState<AboutRadioPage, AboutRadioBloc> 
         builder: (context, state) => _stateWidget(context, state),
       );
 
-  Widget _stateWidget(BuildContext context, AboutRadioState state) {
-    switch (state) {
-      case AboutRadioWebViewState _:
-        return _webViewWidget(context, state);
-      case AboutRadioErrorState _:
-        return _errorWidget(context, state);
-      case AboutRadioLoadingState _:
-      default:
-        return _loadingWidget();
-    }
-  }
+  Widget _stateWidget(BuildContext context, AboutRadioState state) => switch (state) {
+        AboutRadioHtmlState _ => _htmlWidget(context, state),
+        AboutRadioWebViewState _ => _webViewWidget(context, state),
+        AboutRadioErrorState _ => _errorWidget(context, state),
+        _ => _loadingWidget(),
+      };
 
   Widget _loadingWidget() => const Center(child: CircularProgressIndicator());
 
@@ -78,6 +74,18 @@ class _AboutRadioState extends AboutWidgetState<AboutRadioPage, AboutRadioBloc> 
             controller: state.controller,
             gestureRecognizers: const {},
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _htmlWidget(BuildContext context, AboutRadioHtmlState state) {
+    return Column(
+      children: [
+        SizedBox(height: 30.h),
+        const AppLogoWidget(),
+        Expanded(
+          child: Html(data: state.data),
         ),
       ],
     );

@@ -1,6 +1,10 @@
+Release 2.1.9+53, 15/07/2024
+
+* Replaced WebView by HTML
+
 Release 2.1.8+52, 15/06/2024
 
-* Added Firebase Crashlytics error recording for the webview issues
+- Added Firebase Crashlytics error recording for the webview issues
 
 Release 2.1.7+51, 20/05/2024
 

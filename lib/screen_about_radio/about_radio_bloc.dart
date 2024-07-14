@@ -3,11 +3,12 @@ import 'dart:async';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:union_player_app/common/core/exceptions.dart';
 import 'package:union_player_app/model/system_data/system_data.dart';
 import 'package:union_player_app/screen_about_radio/about_radio_event.dart';
 import 'package:union_player_app/screen_about_radio/about_radio_state.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+
+import '../common/core/exceptions.dart';
 
 class AboutRadioBloc extends Bloc<AboutRadioEvent, AboutRadioState> {
   final SystemData _systemData;
@@ -55,12 +56,7 @@ class AboutRadioBloc extends Bloc<AboutRadioEvent, AboutRadioState> {
     );
 
   FutureOr<void> _onInitial(InitialEvent event, Emitter<AboutRadioState> emitter) {
-    emitter(const AboutRadioLoadingState());
-    final url = _buildUrl(event.locale, event.isDarkMode);
-    final uri = Uri.parse(url);
-    _webViewController
-      ..setBackgroundColor(event.backgroundColor)
-      ..loadRequest(uri);
+    emitter(AboutRadioHtmlState (data: _systemData.aboutData.htmlData));
   }
 
   FutureOr<void> _onWebViewLoadSuccess(WebViewLoadSuccessEvent event, Emitter<AboutRadioState> emitter) {
