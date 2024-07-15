@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:union_player_app/model/system_data/system_data.dart';
 import 'package:union_player_app/screen_about_radio/about_radio_event.dart';
 import 'package:union_player_app/screen_about_radio/about_radio_state.dart';
@@ -56,7 +57,37 @@ class AboutRadioBloc extends Bloc<AboutRadioEvent, AboutRadioState> {
     );
 
   FutureOr<void> _onInitial(InitialEvent event, Emitter<AboutRadioState> emitter) {
-    emitter(AboutRadioHtmlState (data: _systemData.aboutData.htmlData));
+    String htmlString = '''
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Simple HTML Document</title>
+    </head>
+    <body>
+      <h3><b>Paragraph 1 Title</b></h3>
+      <p>This is the content of the first paragraph.</p>
+
+      <h3><b>Paragraph 2 Title</b></h3>
+      <p>This is the content of the second paragraph.</p>
+
+      <h3><b>Paragraph 3 Title</b></h3>
+      <p>This is the content of the third paragraph.</p>
+    </body>
+    </html>
+  ''';
+
+    Map<String, Style> styles = {
+      "body": Style(
+        backgroundColor: Colors.transparent,
+        fontFamily: "Arial",
+        fontSize: FontSize(16.0),
+      ),
+      "h3": Style(
+        fontSize: FontSize(20.0),
+      ),
+    };
+
+    emitter(AboutRadioHtmlState (data: _systemData.aboutData.htmlData, styles: styles));
   }
 
   FutureOr<void> _onWebViewLoadSuccess(WebViewLoadSuccessEvent event, Emitter<AboutRadioState> emitter) {
