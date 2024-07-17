@@ -1,6 +1,10 @@
+Release 2.1.10+54, 17/07/2024
+
+* Improved HTML initializing.
+
 Release 2.1.9+53, 15/07/2024
 
-* Replaced WebView by HTML
+- Replaced WebView by HTML
 
 Release 2.1.8+52, 15/06/2024
 
