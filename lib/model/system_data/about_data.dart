@@ -1,23 +1,41 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_html/flutter_html.dart' as html;
 import 'package:get/get.dart';
 
 import '../../common/constants/constants.dart';
+import '../../common/ui/app_colors.dart';
+import '../../common/ui/font_sizes.dart';
 
 class AboutData {
-  var url = "";
-  final _dataMap = <String, String>{};
+  late final _dataMap = <String, String>{};
+
+  late final _darkStyles = {
+    "body": html.Style(
+      color: AppColors.cultured,
+      backgroundColor: AppColors.transparent,
+      fontFamily: 'Open Sans',
+      fontSize: html.FontSize(FontSizes.px14),
+    ),
+  };
+
+  late final _lightStyles = {
+    "body": html.Style(
+      color: AppColors.blackOlive,
+      backgroundColor: AppColors.transparent,
+      fontFamily: 'Open Sans',
+      fontSize: html.FontSize(FontSizes.px14),
+    ),
+  };
 
   String get htmlData => _dataMap[_dataKey()] ?? '';
 
+  Map<String, html.Style> get htmlStyles => Get.isDarkMode ? _darkStyles : _lightStyles;
+
   void setData(DocumentSnapshot<Object?> doc) {
     try {
-      url = doc["url"];
-      _setDataMap(doc, key: 'data_ru_light');
-      _setDataMap(doc, key: 'data_be_light');
-      _setDataMap(doc, key: 'data_en_light');
-      _setDataMap(doc, key: 'data_ru_dark');
-      _setDataMap(doc, key: 'data_be_dark');
-      _setDataMap(doc, key: 'data_en_dark');
+      _setDataMap(doc, key: 'data_ru');
+      _setDataMap(doc, key: 'data_be');
+      _setDataMap(doc, key: 'data_en');
     } catch (error) {
       throw Exception(error.toString());
     }
@@ -25,8 +43,7 @@ class AboutData {
 
   String _dataKey() {
     final languageCode = (Get.locale ?? defaultLocale).languageCode.toLowerCase();
-    final lightMode = Get.isDarkMode ? "dark" : "light";
-    return 'data_${languageCode}_$lightMode';
+    return 'data_$languageCode';
   }
 
   void _setDataMap(DocumentSnapshot<Object?> doc, {required String key}) => _dataMap[key] = doc[key];
