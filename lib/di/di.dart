@@ -6,7 +6,6 @@ import 'package:just_audio/just_audio.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:uuid/uuid.dart';
 
-import '../common/app_logger.dart';
 import '../common/routes.dart';
 import '../common/widgets/info_page.dart';
 import '../common/widgets/progress_page.dart';
@@ -32,7 +31,6 @@ import '../screen_settings/settings_page.dart';
 
 class BindingModule {
   static void providesTools() {
-    GetIt.I.registerLazySingleton<AppLogger>(() => AppLogger());
     GetIt.I.registerLazySingleton<AudioHandler>(() => AppPlayerHandler(
           GetIt.I.get(),
           GetIt.I.get(),

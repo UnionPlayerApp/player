@@ -6,7 +6,7 @@ import '../constants/constants.dart';
 import '../ui/app_colors.dart';
 
 class AppLogoWidget extends StatelessWidget {
-  const AppLogoWidget({Key? key}) : super(key: key);
+  const AppLogoWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

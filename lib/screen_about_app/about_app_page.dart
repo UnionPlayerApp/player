@@ -46,9 +46,9 @@ class _AboutAppState extends AboutWidgetState<AboutAppPage> {
 
   Widget _stateWidget(BuildContext context, AboutAppState state) {
     switch (state.runtimeType) {
-      case AboutAppLoadedState:
+      case AboutAppLoadedState _:
         return _loadedWidget(context, state as AboutAppLoadedState);
-      case AboutAppLoadingState:
+      case AboutAppLoadingState _:
       default:
         return _loadingWidget();
     }

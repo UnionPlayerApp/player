@@ -1,8 +1,6 @@
-import 'dart:async';
-
-import 'package:audio_service/audio_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -35,13 +33,27 @@ class _AppState extends State<AppPage> {
   late final _schedulePage = _routes.page(context, routeName: Routes.schedule);
   late final _settingsPage = _routes.page(context, routeName: Routes.settings);
 
+  AppBloc? _bloc;
+
+  @override
+  void initState() {
+    super.initState();
+    FirebaseAnalytics.instance.logEvent(name: gaAppStart);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _bloc ??= BlocProvider.of(context);
+  }
+
   @override
   Widget build(BuildContext context) {
-    FirebaseAnalytics.instance.logEvent(name: gaAppStart);
     return BlocBuilder<AppBloc, AppState>(
       builder: (BuildContext context, AppState state) {
-        return WillPopScope(
-          onWillPop: () => _onWillPop(),
+        return PopScope(
+          canPop: false,
+          onPopInvoked: _onPopInvoked,
           child: Scaffold(
             body: _body(state),
             bottomNavigationBar: _bottomNavigationBar(state),
@@ -49,6 +61,19 @@ class _AppState extends State<AppPage> {
         );
       },
     );
+  }
+
+  void _onPopInvoked(_) async {
+    final now = DateTime.now();
+    const duration = Duration(seconds: 2);
+    if (_backPressTime == null || now.difference(_backPressTime!) > duration) {
+      _backPressTime = now;
+      showSnackBar(context, messageKey: StringKeys.pressAgainToExit, duration: duration);
+    } else {
+      await _bloc?.stop();
+      FirebaseAnalytics.instance.logEvent(name: gaAppStop);
+      SystemNavigator.pop();
+    }
   }
 
   Widget _bottomNavigationBar(AppState state) => BottomAppBar(
@@ -75,7 +100,7 @@ class _AppState extends State<AppPage> {
     final textStyle = theme.textTheme.bodySmall!.copyWith(color: color, fontSize: FontSizes.px15);
     return Expanded(
       child: InkWell(
-        onTap: () => context.read<AppBloc>().add(AppNavEvent(navType: navType)),
+        onTap: () => _bloc?.add(AppNavEvent(navType: navType)),
         borderRadius: BorderRadius.circular(10.r),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -92,20 +117,6 @@ class _AppState extends State<AppPage> {
         ),
       ),
     );
-  }
-
-  Future<bool> _onWillPop() async {
-    final now = DateTime.now();
-    const duration = Duration(seconds: 2);
-    if (_backPressTime == null || now.difference(_backPressTime!) > duration) {
-      _backPressTime = now;
-      showSnackBar(context, messageKey: StringKeys.pressAgainToExit, duration: duration);
-      return Future.value(false);
-    } else {
-      await GetIt.I.get<AudioHandler>().stop();
-      FirebaseAnalytics.instance.logEvent(name: gaAppStop);
-      return Future.value(true);
-    }
   }
 
   Widget _body(AppState state) {

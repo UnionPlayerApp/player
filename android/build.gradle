@@ -1,17 +1,6 @@
-buildscript {
-    ext.kotlin_version = '1.7.20'
-    repositories {
-        google()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.gms:google-services:4.3.14'
-        classpath 'com.google.firebase:perf-plugin:1.4.2'
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.2'
-    }
+plugins {
+    // Add the dependency for the Performance Monitoring Gradle plugin
+    id 'com.google.firebase.firebase-perf' version '1.4.2' apply false
 }
 
 allprojects {
@@ -22,10 +11,9 @@ allprojects {
 }
 
 rootProject.buildDir = '../build'
+
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
     project.evaluationDependsOn(':app')
 }
 
