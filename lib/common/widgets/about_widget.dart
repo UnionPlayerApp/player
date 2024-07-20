@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:union_player_app/common/enums/string_keys.dart';
@@ -6,8 +7,26 @@ import 'package:union_player_app/common/enums/string_keys.dart';
 import '../constants/constants.dart';
 import '../localizations/string_translation.dart';
 
-abstract class AboutWidgetState<W extends StatefulWidget> extends State<W> {
+abstract class AboutWidgetState<W extends StatefulWidget, B extends Bloc> extends State<W> {
+  late final bloc = BlocProvider.of<B>(context);
+
+  var _isNotDataInitialized = true;
+
   StringKeys get titleKey;
+
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isNotDataInitialized) {
+      initData();
+      _isNotDataInitialized = false;
+    }
+  }
+
+  void initData() {
+    // nothing
+  }
 
   Widget bodyBuilder(BuildContext context);
 

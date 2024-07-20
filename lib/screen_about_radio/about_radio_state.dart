@@ -21,11 +21,20 @@ class AboutRadioWebViewState extends AboutRadioState {
   List<Object?> get props => [controller];
 }
 
-class AboutRadioErrorState extends AboutRadioState {
-  final String errorType;
+class AboutRadioHtmlState extends AboutRadioState {
+  final String data;
 
-  const AboutRadioErrorState(this.errorType);
+  const AboutRadioHtmlState({required this.data});
 
   @override
-  List<Object> get props => [errorType];
+  List<Object?> get props => [data];
+}
+
+class AboutRadioErrorState extends AboutRadioState {
+  final String body;
+
+  const AboutRadioErrorState(this.body);
+
+  @override
+  List<Object> get props => [body];
 }

@@ -1,15 +1,18 @@
 import 'package:union_player_app/repository/schedule_item.dart';
 
-abstract class ScheduleRepositoryEvent {}
+abstract class ScheduleRepositoryEvent {
+  const ScheduleRepositoryEvent();
+}
 
 class ScheduleRepositorySuccessEvent extends ScheduleRepositoryEvent {
   final List<ScheduleItem> items;
+  final ScheduleItem? currentItem;
 
-  ScheduleRepositorySuccessEvent(this.items);
+  const ScheduleRepositorySuccessEvent({required this.items, required this.currentItem});
 }
 
 class ScheduleRepositoryErrorEvent extends ScheduleRepositoryEvent {
   final String error;
 
-  ScheduleRepositoryErrorEvent(this.error);
+  const ScheduleRepositoryErrorEvent(this.error);
 }

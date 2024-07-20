@@ -66,7 +66,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   }
 
   Future<SettingsChangingResult> _setChanges(dynamic value) {
-    switch (value.runtimeType) {
+    switch (value) {
       case LanguageType _:
         return _setLanguage(value);
       case SoundQualityType _:

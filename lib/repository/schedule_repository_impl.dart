@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:union_player_app/common/core/file_utils.dart';
 import 'package:union_player_app/repository/schedule_item.dart';
 import 'package:union_player_app/repository/schedule_repository_event.dart';
 import 'package:union_player_app/repository/schedule_repository_interface.dart';
-import 'package:union_player_app/common/core/file_utils.dart';
 import 'package:xml/xml.dart';
 
 import '../common/core/date_time.dart';
@@ -67,11 +67,10 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
   int _millisToNextLoad() {
     if (_items.isEmpty) return 1 * Duration.millisecondsPerSecond;
 
-    final emptyElement = ScheduleItem.empty();
-    final currentElement = _items.firstWhere((element) => element.isCurrent, orElse: () => emptyElement);
+    final currentItem = _currentItem();
 
-    if (currentElement != emptyElement) {
-      return currentElement.millisToFinish;
+    if (currentItem != null) {
+      return currentItem.millisToFinish;
     }
 
     final now = DateTime.now();
@@ -81,6 +80,14 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
     }
 
     return 10 * Duration.millisecondsPerSecond;
+  }
+
+  ScheduleItem? _currentItem() {
+    try {
+      return _items.firstWhere((element) => element.isCurrent);
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<ScheduleRepositoryEvent> _load(String url) async {
@@ -119,12 +126,13 @@ class ScheduleRepositoryImpl implements IScheduleRepository {
         loadedItems.first.decreaseStart(diffInMillis);
       }
 
-      _items.clear();
-      _items.addAll(savedItems);
-      _items.addAll(loadedItems);
+      _items
+        ..clear()
+        ..addAll(savedItems)
+        ..addAll(loadedItems);
     }
 
-    return ScheduleRepositorySuccessEvent(_items);
+    return ScheduleRepositorySuccessEvent(items: _items, currentItem: _currentItem());
   }
 
   @override

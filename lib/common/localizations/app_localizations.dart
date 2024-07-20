@@ -1,36 +1,34 @@
 import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:union_player_app/common/core/typedefs.dart';
 
 class AppLocalizations {
-  late final Locale locale;
+  final Locale locale;
 
   AppLocalizations(this.locale);
 
-  // Helper method to keep the code in the widgets concise
-  // Localizations are accessed using an InheritedWidget "of" syntax
-  static AppLocalizations? of(BuildContext context) {
-    return Localizations.of<AppLocalizations>(context, AppLocalizations);
-  }
+  static AppLocalizations? of(BuildContext context) => Localizations.of<AppLocalizations>(context, AppLocalizations);
 
-  late final Map<String, String> _localizedStrings;
+  JsonMapString? _localizedStrings;
 
-  Future<bool> load() async {
-    // Load the language JSON file from the "lang" folder
-    String jsonString =
-    await rootBundle.loadString('assets/localizations/${locale.languageCode}.json');
-    Map<String, dynamic> jsonMap = json.decode(jsonString);
+  Future<bool> load() => rootBundle.loadString('assets/localizations/${locale.languageCode}.json').then((jsonString) {
+        try {
+          final jsonMap = json.decode(jsonString) as JsonMap;
+          _localizedStrings = jsonMap.map((key, value) => MapEntry(key, value.toString()));
+          debugPrint("localizations load success");
+          return true;
+        } catch (error) {
+          debugPrint("localizations load error: $error");
+          _localizedStrings = null;
+          return false;
+        }
+      }).onError((error, _) {
+        debugPrint("localizations load error: $error");
+        return false;
+      });
 
-    _localizedStrings = jsonMap.map((key, value) {
-      return MapEntry(key, value.toString());
-    });
-
-    return true;
-  }
-
-  // This method will be called from every widget which needs a localized text
-  String? translate(String key) {
-    return _localizedStrings[key];
-  }
+  String translate(String key) =>
+      _localizedStrings != null ? _localizedStrings![key] ?? "NOT FOUND" : "localizations don't load";
 }
-

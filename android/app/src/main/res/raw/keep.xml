@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@mipmap/ic_notification,@mipmap/ic_notification_transparent,@mipmap/ic_launcher,@drawable/ic_launcher_background,@drawable/union_radio_logo,@drawable/union_player_logo" />

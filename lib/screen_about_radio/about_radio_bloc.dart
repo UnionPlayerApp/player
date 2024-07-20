@@ -1,11 +1,14 @@
 import 'dart:async';
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:union_player_app/model/system_data/system_data.dart';
 import 'package:union_player_app/screen_about_radio/about_radio_event.dart';
 import 'package:union_player_app/screen_about_radio/about_radio_state.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+
+import '../common/core/exceptions.dart';
 
 class AboutRadioBloc extends Bloc<AboutRadioEvent, AboutRadioState> {
   final SystemData _systemData;
@@ -16,7 +19,7 @@ class AboutRadioBloc extends Bloc<AboutRadioEvent, AboutRadioState> {
     on<WebViewLoadErrorEvent>(_onWebViewLoadError);
   }
 
-  var _loadWithError = false;
+  var _isLoadError = false;
 
   late final _webViewController = WebViewController()
     ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -25,20 +28,26 @@ class AboutRadioBloc extends Bloc<AboutRadioEvent, AboutRadioState> {
         onProgress: (progress) {
           debugPrint("The About page loading progress: $progress");
         },
-        onPageStarted: (value) {
-          debugPrint("The About page loading started. value: $value");
-          _loadWithError = false;
+        onPageStarted: (url) {
+          _isLoadError = false;
+          debugPrint("The About page loading started, url: $url");
         },
-        onPageFinished: (value) {
-          debugPrint("The About page loading finished. value: $value");
-          if (!_loadWithError) {
-            add(WebViewLoadSuccessEvent());
+        onPageFinished: (url) {
+          final success = !_isLoadError;
+          if (success) {
+            add(const WebViewLoadSuccessEvent());
           }
+          debugPrint("The About page loading finished, success: $success, url: $url");
         },
         onWebResourceError: (WebResourceError error) {
-          debugPrint("The About page loading error => type: ${error.errorType}, description: ${error.description}");
-          _loadWithError = true;
-          add(WebViewLoadErrorEvent(error.description));
+          _isLoadError = true;
+          add(WebViewLoadErrorEvent(exception: WebResourceException(error: error)));
+          debugPrint("The About page loading error => "
+              "code: ${error.errorCode}, "
+              "type: ${error.errorType}, "
+              "description: ${error.description}, "
+              "url: ${error.url}"
+              "isForMainFrame: ${error.isForMainFrame}");
         },
         onNavigationRequest: (NavigationRequest request) {
           return NavigationDecision.navigate;
@@ -47,12 +56,7 @@ class AboutRadioBloc extends Bloc<AboutRadioEvent, AboutRadioState> {
     );
 
   FutureOr<void> _onInitial(InitialEvent event, Emitter<AboutRadioState> emitter) {
-    emitter(const AboutRadioLoadingState());
-    final url = _buildUrl(event.locale, event.isDarkMode);
-    final uri = Uri.parse(url);
-    _webViewController
-      ..setBackgroundColor(event.backgroundColor)
-      ..loadRequest(uri);
+    emitter(AboutRadioHtmlState (data: _systemData.aboutData.htmlData));
   }
 
   FutureOr<void> _onWebViewLoadSuccess(WebViewLoadSuccessEvent event, Emitter<AboutRadioState> emitter) {
@@ -60,7 +64,14 @@ class AboutRadioBloc extends Bloc<AboutRadioEvent, AboutRadioState> {
   }
 
   FutureOr<void> _onWebViewLoadError(WebViewLoadErrorEvent event, Emitter<AboutRadioState> emitter) {
-    emitter(AboutRadioErrorState(event.errorDescription));
+    FirebaseCrashlytics.instance
+        .recordError(event.exception, StackTrace.current)
+        .then((_) => FirebaseCrashlytics.instance.sendUnsentReports());
+    final errorBody = "url:\n"
+        "${event.exception.error.url ?? "web url is unknown (null)"}\n\n"
+        "description:\n"
+        "${event.exception.error.description}";
+    emitter(AboutRadioErrorState(errorBody));
   }
 
   String _buildUrl(Locale locale, bool isDarkMode) {

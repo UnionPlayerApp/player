@@ -19,13 +19,11 @@ class AboutAppPage extends StatefulWidget {
   State<StatefulWidget> createState() => _AboutAppState();
 }
 
-class _AboutAppState extends AboutWidgetState<AboutAppPage> {
-  late final _bloc = context.read<AboutAppBloc>();
+class _AboutAppState extends AboutWidgetState<AboutAppPage, AboutAppBloc> {
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _bloc.add(AboutAppInitEvent(locale: Localizations.localeOf(context)));
+  void initData() {
+    bloc.add(AboutAppInitEvent(locale: Localizations.localeOf(context)));
   }
 
   @override
@@ -45,9 +43,9 @@ class _AboutAppState extends AboutWidgetState<AboutAppPage> {
       );
 
   Widget _stateWidget(BuildContext context, AboutAppState state) {
-    switch (state.runtimeType) {
+    switch (state) {
       case AboutAppLoadedState _:
-        return _loadedWidget(context, state as AboutAppLoadedState);
+        return _loadedWidget(context, state);
       case AboutAppLoadingState _:
       default:
         return _loadingWidget();
@@ -102,7 +100,7 @@ class _AboutAppState extends AboutWidgetState<AboutAppPage> {
   Widget _contactButton({required String assetPath, required AboutAppContactEvent event}) => Padding(
         padding: EdgeInsets.symmetric(horizontal: 15.h),
         child: InkWell(
-          onTap: () => _bloc.add(event),
+          onTap: () => bloc.add(event),
           child: SvgPicture.asset(assetPath),
         ),
       );
@@ -123,7 +121,7 @@ class _AboutAppState extends AboutWidgetState<AboutAppPage> {
         children: [
           Text(translate(StringKeys.customerInfo, context), style: style, textAlign: TextAlign.center),
           SizedBox(height: 8.h),
-          Text("2021 - 2023", style: style),
+          Text("2021 - 2024", style: style),
         ],
       ),
     );

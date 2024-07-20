@@ -112,8 +112,8 @@ class SettingsPage extends StatelessWidget {
           ),
       child: Row(
         children: [
-          Text(translate(labelKey, context), style: Theme.of(context).textTheme.bodySmall),
-          const Spacer(),
+          Expanded(child: Text(translate(labelKey, context), style: Theme.of(context).textTheme.bodySmall, maxLines: 2)),
+          const SizedBox(width: 4.0),
           Text(translate(valueKey, context), style: Theme.of(context).textTheme.bodySmall),
         ],
       ),

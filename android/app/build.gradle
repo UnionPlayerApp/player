@@ -65,6 +65,10 @@ android {
             ndk {
                 debugSymbolLevel 'SYMBOL_TABLE'
             }
+
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles 'proguard-rules.pro'
         }
     }
 

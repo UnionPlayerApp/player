@@ -8,6 +8,7 @@
 .buildlog
 .history
 .svn
+devtools_options.yaml
 .fvm
 .fvmrc
 
@@ -52,3 +53,7 @@ app.*.map.json
 /android/app/release
 
 !assets
+
+# FVM Version Cache
+.fvm/
+/.fvmrc

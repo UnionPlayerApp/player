@@ -97,7 +97,7 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
       await _player.stop();
       await _player.setUrl(audioUrl);
       if (isPlaying) {
-        await _player.play();
+        _player.play();
       }
       _isPlayingBeforeInterruption = isPlaying;
       debugPrint("set audio stream = $audioUrl");
@@ -188,10 +188,20 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
 
   Future<void> _handleScheduleEvent(ScheduleRepositoryEvent event) async {
     if (event is ScheduleRepositorySuccessEvent) {
-      debugPrint("schedule -> new queue has ${event.items.length} items");
-      final nextItems = event.items.map(_mapScheduleItemToMediaItem).toList();
-      queue.add(nextItems);
-      if (nextItems.isNotEmpty) mediaItem.add(nextItems[0]);
+      if (event.items.isNotEmpty) {
+        debugPrint("schedule -> new queue has ${event.items.length} items");
+        final nextMediaItems = event.items.map(_mapScheduleItemToMediaItem).toList();
+        queue.add(nextMediaItems);
+      } else {
+        debugPrint("schedule -> new queue is empty");
+      }
+      if (event.currentItem != null) {
+        debugPrint("schedule -> updating current item by ${event.currentItem}");
+        final currentMediaItem = _mapScheduleItemToMediaItem(event.currentItem!);
+        mediaItem.add(currentMediaItem);
+      } else {
+        debugPrint("schedule -> current item is not defined");
+      }
     }
 
     if (event is ScheduleRepositoryErrorEvent) {
@@ -247,7 +257,7 @@ class AppPlayerHandler extends BaseAudioHandler with SeekHandler {
     return uriList[index];
   }
 
-  _handleInterruptionEvent(AudioInterruptionEvent event) {
+  void _handleInterruptionEvent(AudioInterruptionEvent event) {
     if (event.begin) {
       debugPrint(
         "audio interruption event => begin => is playing before interruption = $_isPlayingBeforeInterruption",

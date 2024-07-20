@@ -6,7 +6,7 @@ import 'text_styles.dart';
 // *** light themes ***
 
 ThemeData appThemeLight() {
-  final base = ThemeData.light();
+  final base = ThemeData.light(useMaterial3: false);
   return base.copyWith(
     // colors section
     dividerColor: AppColors.platinum,
@@ -36,12 +36,8 @@ ProgressIndicatorThemeData _appProgressIndicatorTheme(ProgressIndicatorThemeData
     );
 
 RadioThemeData _appRadioTheme(RadioThemeData base) => base.copyWith(
-      fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
-        if (states.contains(MaterialState.selected)) {
-          return AppColors.celadonBlue;
-        } else {
-          return AppColors.blackOlive;
-        }
+      fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
+        return states.contains(WidgetState.selected) ? AppColors.celadonBlue : AppColors.blackOlive;
       }),
     );
 
