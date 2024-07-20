@@ -35,6 +35,12 @@ class _AppState extends State<AppPage> {
   late final _settingsPage = _routes.page(context, routeName: Routes.settings);
 
   @override
+  void initState() {
+    super.initState();
+    FirebaseAnalytics.instance.logEvent(name: gaAppStart);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
       builder: (BuildContext context, AppState state) {

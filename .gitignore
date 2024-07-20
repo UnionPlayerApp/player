@@ -9,6 +9,8 @@
 .history
 .svn
 devtools_options.yaml
+.fvm
+.fvmrc
 
 # IntelliJ related
 *.iml
