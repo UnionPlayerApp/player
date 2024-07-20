@@ -85,7 +85,7 @@ class _AboutRadioState extends AboutWidgetState<AboutRadioPage, AboutRadioBloc> 
         SizedBox(height: 30.h),
         const AppLogoWidget(),
         Expanded(
-          child: Html(data: state.data),
+          child: Html(data: state.data, style: state.styles),
         ),
       ],
     );

@@ -12,5 +12,6 @@ class AppColors {
   static const jungleGreen = Color(0xFF1D2025);
   static const lapisLazuli = Color(0xFF2E6FAE);
   static const platinum = Color(0xFFE7E7E7);
+  static const transparent = Color(0x00000000);
   static const white = Color(0xFFFFFFFF);
 }

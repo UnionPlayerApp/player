@@ -22,7 +22,7 @@ class SystemData {
   void setAboutData(DocumentSnapshot<Object?> doc) {
     try {
       aboutData.setData(doc);
-      debugPrint("AboutData loaded value: ${aboutData.url}");
+      debugPrint("AboutData loaded with success");
     } catch (error) {
       debugPrint("AboutData load error: $error");
       throw Exception(error.toString());

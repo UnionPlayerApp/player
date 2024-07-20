@@ -56,7 +56,7 @@ class AboutRadioBloc extends Bloc<AboutRadioEvent, AboutRadioState> {
     );
 
   FutureOr<void> _onInitial(InitialEvent event, Emitter<AboutRadioState> emitter) {
-    emitter(AboutRadioHtmlState (data: _systemData.aboutData.htmlData));
+    emitter(AboutRadioHtmlState(data: _systemData.aboutData.htmlData, styles: _systemData.aboutData.htmlStyles));
   }
 
   FutureOr<void> _onWebViewLoadSuccess(WebViewLoadSuccessEvent event, Emitter<AboutRadioState> emitter) {
@@ -72,12 +72,5 @@ class AboutRadioBloc extends Bloc<AboutRadioEvent, AboutRadioState> {
         "description:\n"
         "${event.exception.error.description}";
     emitter(AboutRadioErrorState(errorBody));
-  }
-
-  String _buildUrl(Locale locale, bool isDarkMode) {
-    final darkModeSuffix = isDarkMode ? "-dark" : "";
-    final url = "${_systemData.aboutData.url}-${locale.languageCode.toLowerCase()}$darkModeSuffix";
-    debugPrint("About Radio url: $url");
-    return url;
   }
 }
