@@ -1,6 +1,10 @@
+Release 2.1.12+56, 21/07/2024
+
+* Changed texts of the Apple IDFA request
+
 Release 2.1.11+55, 20/07/2024
 
-* Upgrade Flutter and dependencies
+- Upgrade Flutter and dependencies
 
 Release 2.1.10+54, 17/07/2024
 
