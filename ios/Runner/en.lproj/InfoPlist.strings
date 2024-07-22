@@ -1,2 +1,2 @@
-NSUserTrackingUsageDescription = "\nA special anonymized identifier is required to display ads that are most relevant to you.\n\nWe remind you that your choice will not affect the performance of the application.";
+NSUserTrackingUsageDescription = "\nThis permission is needed to anonymous analyze the using of the application.\n\nYour choice will not affect the performance of the application.";
 CFBundleDisplayName = "Union Radio 1";
