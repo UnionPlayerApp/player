@@ -1,7 +1,11 @@
+Release 2.1.14+58, 23/07/2024
+
+* Changed texts of the app transparency permission request
+
 Release 2.1.13+57, 22/07/2024
 
-* Removed excess app transparency permission request dialog.
-* Changed texts of the app transparency permission request
+- Removed excess app transparency permission request dialog.
+- Changed texts of the app transparency permission request
 
 Release 2.1.12+56, 21/07/2024
 
