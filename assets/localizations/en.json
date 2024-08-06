@@ -44,7 +44,7 @@
   "appInitTitle": "Application initialization...",
   "willMadeNextRelease": "At next release...",
   "trackingDialogTitle": "Dear Listener!",
-  "trackingDialogText": "The Apple company requires us to ask for your permission to use a unique advertising identifier. However, our application does not show you ads. Therefore, your answer, whatever it is, will not affect the performance of the application.\n\nSincerely,\n\nThe staff",
+  "trackingDialogText": "To improve the performance of our application and analyze its usage, we need your permission to use the Apple Advertising Identifier (IDFA). The data collected through this identifier does not include any personal information and is used solely for analytical purposes. We ensure that your data will be processed confidentially and securely.\n\nSincerely,\n\nThe staff",
   "trackingDialogButton": "Continue",
   "buttonOk":  "Ok",
   "buttonCancel": "Cancel",

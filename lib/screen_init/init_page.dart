@@ -37,8 +37,7 @@ import '../firebase_options.dart';
 class InitPage extends StatefulWidget {
   final PackageInfo _packageInfo;
 
-  const InitPage({super.key, required PackageInfo packageInfo})
-      : _packageInfo = packageInfo;
+  const InitPage({super.key, required PackageInfo packageInfo}) : _packageInfo = packageInfo;
 
   @override
   InitPageState createState() => InitPageState();
@@ -181,9 +180,6 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
     try {
       var status = await AppTrackingTransparency.trackingAuthorizationStatus;
       if (status == TrackingStatus.notDetermined) {
-        await _showAppTrackingInfoDialog();
-        // Wait for dialog popping animation
-        await Future.delayed(const Duration(milliseconds: 200));
         status = await AppTrackingTransparency.requestTrackingAuthorization();
         debugPrint("App tracking transparency status = $status");
       }
@@ -192,25 +188,6 @@ class InitPageState extends State<InitPage> with AutomaticKeepAliveClientMixin, 
     } catch (error) {
       debugPrint("App tracking transparency init error: $error");
     }
-  }
-
-  Future<void> _showAppTrackingInfoDialog() async {
-    final title = Text(translate(StringKeys.trackingDialogTitle, context), textAlign: TextAlign.center);
-    final content = Text(translate(StringKeys.trackingDialogText, context), textAlign: TextAlign.center);
-    final button = TextButton(
-      child: Text(translate(StringKeys.trackingDialogButton, context)),
-      onPressed: () => Navigator.pop(context),
-    );
-    final dialogWidget = AlertDialog(
-      actionsAlignment: MainAxisAlignment.center,
-      title: title,
-      content: content,
-      actions: [button],
-    );
-    return showDialog<void>(
-      context: context,
-      builder: (context) => dialogWidget,
-    );
   }
 
   Future _initSystemData() async {
