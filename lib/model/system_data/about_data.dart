@@ -33,9 +33,9 @@ class AboutData {
 
   void setData(DocumentSnapshot<Object?> doc) {
     try {
-      _setDataMap(doc, key: 'data_ru');
-      _setDataMap(doc, key: 'data_be');
-      _setDataMap(doc, key: 'data_en');
+      _setDataMap(doc, key: "data_ru");
+      _setDataMap(doc, key: "data_be");
+      _setDataMap(doc, key: "data_en");
     } catch (error) {
       throw Exception(error.toString());
     }

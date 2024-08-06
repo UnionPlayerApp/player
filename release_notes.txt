@@ -1,6 +1,10 @@
+Release 2.1.11+55, 20/07/2024
+
+* Upgrade Flutter and dependencies
+
 Release 2.1.10+54, 17/07/2024
 
-* Improved HTML initializing.
+- Improved HTML initializing.
 
 Release 2.1.9+53, 15/07/2024
 
